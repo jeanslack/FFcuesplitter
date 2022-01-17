@@ -7,10 +7,11 @@ files encodings via chardet library.
 
 # Features
 
-- Supported input formats: Many, all supported by FFmpeg.
+- Works on Linux, MacOs, FreeBSD and Windows.
+- It supports many input formats, including the APE format, without installing third-party libraries.
 - Supported output formats: wav, wv, flac, m4a, ogg, mp3
 - Auto-tag from .cue file data.
-- It supports additionals parameters for FFmpeg.
+- Ability to pass additionals parameters to FFmpeg, such as bitrate quality.
 - Can be used both as a Python module and in command line mode.
 
 ## Requires
