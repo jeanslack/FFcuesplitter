@@ -11,7 +11,7 @@ FILE "Three Samples.flac" WAVE
     INDEX 01 00:00:00
   TRACK 02 AUDIO
     TITLE "è di 400 Hz"
-    INDEX 01 00:01:00
+    INDEX 01 00:02:00
   TRACK 03 AUDIO
     TITLE "è di 500 Hz"
-    INDEX 01 00:02:00
+    INDEX 01 00:04:00

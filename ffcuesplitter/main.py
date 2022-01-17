@@ -31,9 +31,9 @@ from ffcuesplitter.datastrings import informations
 from ffcuesplitter.cuesplitter import FFCueSplitter
 from ffcuesplitter.str_utils import msgdebug, msgend
 from ffcuesplitter.exceptions import (InvalidFileError,
-                                     ParserError,
-                                     FFCueSplitterError
-                                     )
+                                      ParserError,
+                                      FFCueSplitterError
+                                      )
 
 # data strings
 INFO = informations()
