@@ -163,9 +163,16 @@ class FFProbe():
 
     """
 
-    def __init__(self, ffprobe_url, filename, parse=True,
-                 pretty=True, select=None, entries=None,
-                 show_format=True, show_streams=True, writer=None):
+    def __init__(self,
+                 ffprobe_url,
+                 filename,
+                 parse=True,
+                 pretty=True,
+                 select=None,
+                 entries=None,
+                 show_format=True,
+                 show_streams=True,
+                 writer=None):
         """
         -------------------
         Parameters meaning:

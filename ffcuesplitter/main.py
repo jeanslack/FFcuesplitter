@@ -63,7 +63,7 @@ def main():
                         required=False,
                         )
     parser.add_argument('-f', '--format-type',
-                        choices=["wav", "wv", "flac", "mp3", "ogg", "m4a"],
+                        choices=["wav", "wv", "flac", "m4a", "mp3", "ogg"],
                         help=("Preferred audio format to output, "
                               "default is 'flac'"),
                         required=False,
