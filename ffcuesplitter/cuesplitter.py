@@ -305,7 +305,6 @@ class FFCueSplitter():
             cmd = shlex.split(command)
         else:
             cmd = command
-
         try:
             with Popen(cmd,
                        stderr=subprocess.PIPE,
@@ -461,7 +460,7 @@ class FFCueSplitter():
                                            durations,
                                            self.kwargs['tracks']):
                     count += 1
-                    msg(f'\nTRACK {count}/{len(title)} '
+                    msg(f'\nTRACK {count}/{len(self.kwargs["tracks"])} '
                         f'>> "{title["TITLE"]}" ...')
                     self.run(cmd, dur)
 

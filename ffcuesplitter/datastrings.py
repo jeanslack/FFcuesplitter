@@ -30,17 +30,17 @@ def informations():
             'mail': '<jeanlucperni@gmail.com>',
             'copyright': '© 2022',
             'version': '1.0.0',
-            'release': 'January 16 2022',
+            'release': 'January 17 2022',
             'rls_name': "FFcuesplitter",
             'prg_name': "ffcuesplitter",
             'webpage': "https://github.com/jeanslack/FFcuesplitter",
-            'short_decript': ("FFmpeg based audio splitter for .cue "
-                              "sheet files."),
+            'short_decript': ("FFmpeg based audio splitter for audio "
+                              "CD images with .cue sheet files."),
             }
     long_desript = """
 FFcuesplitter is a multi-platform cue sheet splitter entirely based on
-FFmpeg. It splits big audio tracks and automatically tags them using the
-information contained in the associated **"CUE"** sheet file.
+FFmpeg. Accurately splits big audio tracks and automatically tags them
+using the information contained in the associated **"CUE"** sheet file.
 It can handle multiple CUE sheet files encodings via chardet library.
 """
 
