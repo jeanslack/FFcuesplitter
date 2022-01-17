@@ -366,7 +366,7 @@ class FFCueSplitter():
                         'COMMENT': track.get('COMMENT', ''),
                         }
             cmd = f'"{self.kwargs["ffmpeg_url"]}"'
-            cmd += (f" -logleve {self.kwargs['ffmpeg_loglevel']} "
+            cmd += (f" -loglevel {self.kwargs['ffmpeg_loglevel']} "
                     f"-stats -hide_banner -nostdin")
             cmd += f' -i "{self.kwargs["FILE"]}"'
             cmd += f" -ss {frames_to_seconds(track['START'])}"  # conv to secs
@@ -447,13 +447,14 @@ class FFCueSplitter():
 
         """
         logpath = os.path.join(self.kwargs['dirname'], 'ffmpeg_output.log')
+        msgdebug(info=(f"Temporary Target: "
+                       f"'{os.path.abspath(self.kwargs['outputdir'])}'"))
         with tempfile.TemporaryDirectory(suffix=None,
                                          prefix='ffcuesplitter_',
                                          dir=None) as tmpdir:
             self.kwargs['tempdir'] = tmpdir
             commands, durations = self.command_building()
             count = 0
-            msg('\n')
             msgdebug(info="Extracting audio tracks (type Ctrl+c to stop):")
             with open(logpath, 'w', encoding='utf-8') as self.logfile:
                 for cmd, dur, title in zip(commands,
@@ -465,6 +466,11 @@ class FFCueSplitter():
                     self.run(cmd, dur)
 
                 msg('\n')
+                msgdebug(info="...done exctracting")
+                msgdebug(info="Move files to: ",
+                         tail=(f"\033[34m"
+                               f"'{os.path.abspath(self.kwargs['outputdir'])}'"
+                               f"\033[0m"))
                 try:
                     os.makedirs(self.kwargs['outputdir'],
                                 mode=0o777, exist_ok=True)
@@ -472,10 +478,6 @@ class FFCueSplitter():
                     raise FFCueSplitterError(error) from error
 
                 self.move_files_on_outputdir()
-                msgdebug(info="Target (output) path: ",
-                         tail=(f"\033[34m"
-                               f"'{os.path.abspath(self.kwargs['outputdir'])}'"
-                               f"\033[0m"))
     # ----------------------------------------------------------#
 
     def cuefile_parser(self, lines):
