@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Name:         str_utils.py (module)
-Porpose:      module for cosmetic output command line
+Porpose:      module for cosmetic output console in ANSI sequences
 Writer:       Gianluca Pernigoto <jeanlucperni@gmail.com>
-Copyright:    (c) 2015/2022 Gianluca Pernigoto <jeanlucperni@gmail.com>
+Copyright:    (c) 2022 Gianluca Pernigoto <jeanlucperni@gmail.com>
 license:      GPL3
 Rev:          Jan 10 2022
 Code checker: flake8, pylint

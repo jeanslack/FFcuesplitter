@@ -39,7 +39,7 @@ LONG_HELP = cr[2]
 SHORT_HELP = cr[3]
 LICENSE = cr[6]  # short_license
 
-INST_REQ = ["chardet>=4.0.0"]
+INST_REQ = ["chardet>=4.0.0", "tqdm>=4.38.0"]
 SETUP_REQ = ["setuptools>=47.1.1",
              "wheel>=0.34.2",
              "twine>=3.1.1"

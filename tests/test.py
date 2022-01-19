@@ -2,7 +2,7 @@
 
 """
 Porpose: Contains test cases for the splitcue object.
-Rev: Jan.05.2022
+Rev: Jan.19.2022
 """
 import os
 import sys
@@ -79,9 +79,9 @@ class ParserCueSheetTestCase(unittest.TestCase):
         self.assertEqual(parser['tracks'][2]['ALBUM'], 'Sox - Three samples')
 
 
-class FFmpegCommandsTestCase(unittest.TestCase):
+class FFmpegArgumentsTestCase(unittest.TestCase):
     """
-    Test case to get data from cue sheet file
+    Test case to get data from FFmpeg arguments building
     """
     def setUp(self):
         """
@@ -93,16 +93,29 @@ class FFmpegCommandsTestCase(unittest.TestCase):
                      'dry': True
                      }
 
-    def test_ffmpeg_commands(self):
+    def test_ffmpeg_arguments(self):
         """
-        test cuefile parsing with ASCII encoding
+        test argument strings
         """
         fname = {'filename': FILECUE_ASCII}
         split = FFCueSplitter(**{**self.args, **fname})
         split.open_cuefile()
-        ret = split.do_operations()
+        split.kwargs['tempdir'] = os.path.abspath('.')
+        data = split.arguments_building()
 
-        self.assertEqual(ret, None)
+        self.assertEqual(data['arguments'][2].split()[0], '-i')
+
+    def test_track_durations(self):
+        """
+        test durations of the tracks in seconds
+        """
+        fname = {'filename': FILECUE_ASCII}
+        split = FFCueSplitter(**{**self.args, **fname})
+        split.open_cuefile()
+        split.kwargs['tempdir'] = os.path.abspath('.')
+        data = split.arguments_building()
+
+        self.assertEqual(data['seconds'], [2.0, 2.0, 2.0])
 
 
 def main():

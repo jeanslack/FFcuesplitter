@@ -25,6 +25,14 @@ This file is part of ffcuesplitter.
 """
 
 
+class FFMpegError(Exception):
+    """Excepion raised by FFMpeg class"""
+
+
+class FFProbeError(Exception):
+    """Excepion raised by FFProbe class"""
+
+
 class InvalidFileError(Exception):
     """Exception type raised when CUE file is invalid."""
 
@@ -34,4 +42,4 @@ class ParserError(Exception):
 
 
 class FFCueSplitterError(Exception):
-    """Exception raised while working in temp folder."""
+    """Exception raised in all other cases."""
