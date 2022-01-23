@@ -2,7 +2,6 @@
 # -*- coding: UTF-8 -*-
 """
 First release: January 16 2022
-
 ########################################################
 Name: ffcuesplitter
 Porpose: run ffcuesplitter module

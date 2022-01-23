@@ -1,28 +1,32 @@
-# FFcuesplitter - FFmpeg based audio splitter for audio CD images with .cue sheet files.
+# FFcuesplitter - FFmpeg based audio splitter for audio CD images supplied with .cue sheet files.
 
-FFcuesplitter is a multi-platform cue sheet splitter entirely based on FFmpeg.
-Accurately splits big audio tracks and automatically tags them using the information 
-contained in the associated **"CUE"** sheet file. It can handle multiple CUE sheet 
-files encodings via chardet library.    
+FFcuesplitter is a multi-platform CUE sheet splitter entirely based on FFmpeg. 
+Splits big audio tracks and automatically tags them using the information 
+contained in the associated **"CUE"** sheet. It supports many input formats 
+(due to FFmpeg), including APE format without need installing third-party libs 
+or packages. automatically support multiple CUE sheet encodings via chardet, deflacue 
+libraries. Can be used both as a Python module (API) and in command line mode.   
 
 # Features
 
-- Works on Linux, MacOs, FreeBSD and Windows.
-- It supports many input formats, including the APE format, without installing third-party libraries.
-- Supported output formats: wav, wv, flac, m4a, ogg, mp3
-- Auto-tag from .cue file data.
-- Ability to pass additionals parameters to FFmpeg, such as bitrate quality.
+- It supports many input formats
+- Supported formats to output: wav, flac, ogg, mp3
+- Ability to Auto-tag from .cue file data.
+- Supports multiple .cue file encodings.
+- It plans to work on Linux, MacOs, FreeBSD and Windows.
 - Can be used both as a Python module and in command line mode.
 
 ## Requires
 
 - Python >=3.6
-- [chardet](https://pypi.org/project/chardet/) (The Universal Character Encoding Detector)
+- [deflacue](https://pypi.org/project/deflacue/)
+- [chardet](https://pypi.org/project/chardet/)
+- [tqdm](https://pypi.org/project/tqdm/#description)
 - [FFmpeg](https://ffmpeg.org/) *(including ffprobe)*
 
  
 Ubuntu users can install required dependencies like this:   
-`sudo apt install ffmpeg python3-chardet`   
+`sudo apt install ffmpeg python3-chardet python3-tqdm`   
 
 ## Usage
 
@@ -32,12 +36,13 @@ Ubuntu users can install required dependencies like this:
 ffcuesplitter -i IMPUTFILE
              [-h] 
              [--version] 
-             [-f {wav,wv,flac,mp3,ogg,m4a}] 
+             [-f {wav,flac,mp3,ogg}] 
              [-o OUTPUTDIR]
              [-ow {ask,never,always}] 
              [--ffmpeg_url URL]
              [--ffmpeg_loglevel {error,warning,info,verbose,debug}]
              [--ffmpeg_add_params 'PARAMS ...'] 
+             [-p {tqdm,mymet,standard}]
              [--ffprobe_url URL] 
              [--dry]
 
@@ -52,40 +57,47 @@ To split and convert several audio formats into the relative individual
 
 `ffcuesplitter -i '/User/music/collection/inputfile.cue' -f wav -o 'my-awesome-tracklist'`   
 
-This command splits the individual audio tracks into `wav` format 
+To splits the individual audio tracks into `wav` format 
 and saves them in the 'my-awesome-tracklist' folder.   
 
 ### From Python Interpreter
 
 ```python
 >>> from ffcuesplitter.cuesplitter import FFCueSplitter
+```
+
+Splittings:   
+
+```python
 >>> split = FFCueSplitter(filename='/home/user/my_file.cue')
 >>> split.open_cuefile()
 >>> split.do_operations()
 ```
 
-For a more advanced use the following examples are suggested:   
+Get data tracks:   
 
 ```python
->>> from ffcuesplitter.cuesplitter import FFCueSplitter
->>> split = FFCueSplitter(filename='/home/user/my_file.cue',
-                          outputdir='/home/user',
-                          suffix='flac',
-                          overwrite='ask',
-                          ffmpeg_url='ffmpeg',
-                          ffmpeg_loglevel='warning',
-                          ffprobe_url='ffprobe',
-                          ffmpeg_add_params='-compression_level 8',
-                          dry=False
-                          )
->>> split.open_cuefile()
->>> split.kwargs['tempdir'] = '/tmp/mytempdir'
->>> commands, durations = split.command_building()
->>> with open(logpath, 'w', encoding='utf-8') as split.logfile:
-...     for cmd, dur in zip(commands, durations):
-...         split.run(cmd, dur)
->>> split.move_files_on_outputdir()
+>>> data = FFCueSplitter(filename='/home/user/other.cue', dry=True)
+>>> data.open_cuefile()
+>>> trackdata = data.audiotraks
+>>> cd_info = data.cue.meta.data
+>>> data.kwargs['tempdir'] = '.'
+>>> ffmpeg_args = data.ffmpeg_arguments()
 ```
+
+Only processing some file:   
+
+```python
+>>> myfile = FFCueSplitter(filename='/home/user/my_file.cue', progress_meter='tqdm')
+>>> myfile.open_cuefile()
+>>> myfile.kwargs['tempdir'] = '/tmp/mytempdir'
+>>> myfile.ffmpeg_arguments()
+>>> myfile.processing(myfile.arguments[2], myfile.seconds[2])
+>>> myfile.move_files_on_outputdir()
+```
+
+More details are described in the `__doc__` strings of `FFCueSplitter` class or by typing 
+`help(FFCueSplitter)` in the Python console, or by reading the **ffcuesplitter man page**.
 
 ## Installation
 

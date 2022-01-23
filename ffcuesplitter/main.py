@@ -2,11 +2,11 @@
 First release: January 16 2022
 
 Name: main.py
-Porpose: provides an argparser interface for FFcuesplitter class
+Porpose: provides command line arguments for ffcuesplitter
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: January 16 2022
+Rev: January 22 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -32,7 +32,9 @@ from ffcuesplitter.cuesplitter import FFCueSplitter
 from ffcuesplitter.str_utils import msgdebug
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       ParserError,
-                                      FFCueSplitterError
+                                      FFCueSplitterError,
+                                      FFProbeError,
+                                      FFMpegError,
                                       )
 
 # data strings
@@ -63,7 +65,7 @@ def main():
                         required=False,
                         )
     parser.add_argument('-f', '--format-type',
-                        choices=["wav", "wv", "flac", "m4a", "mp3", "ogg"],
+                        choices=["wav", "flac", "mp3", "ogg"],
                         help=("Preferred audio format to output, "
                               "default is 'flac'"),
                         required=False,
@@ -88,22 +90,22 @@ def main():
                         required=False,
                         default='ask'
                         )
-    parser.add_argument("--ffmpeg_url",
+    parser.add_argument("--ffmpeg-url",
                         metavar='URL',
                         help=("Specify a custom ffmpeg path, "
                               "e.g. '/usr/bin/ffmpeg', Default is `ffmpeg`"),
                         required=False,
                         default='ffmpeg'
                         )
-    parser.add_argument("--ffmpeg_loglevel",
+    parser.add_argument("--ffmpeg-loglevel",
                         choices=["error", "warning", "info",
                                  "verbose", "debug"],
                         help=("Specify a ffmpeg loglevel, "
                               "Default is `warning`"),
                         required=False,
-                        default='warning'
+                        default='info'
                         )
-    parser.add_argument("--ffmpeg_add_params",
+    parser.add_argument("--ffmpeg-add-params",
                         metavar="'PARAMS ...'",
                         help=("Additionals ffmpeg parameters, as 'codec "
                               "quality', etc. Note, all additional parameters "
@@ -111,7 +113,14 @@ def main():
                         required=False,
                         default=''
                         )
-    parser.add_argument("--ffprobe_url",
+    parser.add_argument("-p", "--progress-meter",
+                        help=("Progress bar mode. This takes effect during "
+                              "FFmpeg process loops. Default is `tqdm`"),
+                        choices=["tqdm", "mymet", "standard"],
+                        required=False,
+                        default='tqdm'
+                        )
+    parser.add_argument("--ffprobe-url",
                         metavar='URL',
                         help=("Specify a custom ffprobe path, "
                               "e.g. '/usr/bin/ffprobe', Default is `ffprobe`"),
@@ -135,6 +144,7 @@ def main():
         kwargs['ffmpeg_loglevel'] = args.ffmpeg_loglevel
         kwargs['ffmpeg_add_params'] = args.ffmpeg_add_params
         kwargs['ffprobe_url'] = args.ffprobe_url
+        kwargs['progress_meter'] = args.progress_meter
         kwargs['dry'] = args.dry
 
         try:
@@ -142,10 +152,14 @@ def main():
             split.open_cuefile()
             split.do_operations()
 
-        except (InvalidFileError, ParserError, FFCueSplitterError) as error:
+        except (InvalidFileError,
+                ParserError,
+                FFCueSplitterError,
+                FFProbeError,
+                FFMpegError) as error:
             msgdebug(err=f"{error}")
         else:
-            msgdebug(info=f"Finished!")
+            msgdebug(info="Finished!")
     else:
         parser.error("Requires an INPUTFILE, please provide it")
 
