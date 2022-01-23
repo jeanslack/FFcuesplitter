@@ -64,26 +64,11 @@ def frames_to_seconds(frames):
 # ------------------------------------------------------------------------
 
 
-def get_output_seconds_from_ffmpeg(timehuman):
-    """
-    Converts ffmpeg time ('00:02:00') to seconds,
-    Return int(seconds) object.
-
-    """
-    if timehuman == 'N/A':
-        return int('0')
-
-    pos = timehuman.split(':')
-    hours, minutes, seconds = int(pos[0]), int(pos[1]), float(pos[2])
-
-    return hours * 3600 + minutes * 60 + seconds
-
-# ------------------------------------------------------------------------
-
-
 class Popen(subprocess.Popen):
     """
-    Inherit subprocess.Popen class to set _startupinfo
+    Inherit subprocess.Popen class to set _startupinfo.
+    This avoids displaying a console window on MS-Windows
+    using GUI's .
     """
     if platform.system() == 'Windows':
         _startupinfo = subprocess.STARTUPINFO()
@@ -98,22 +83,3 @@ class Popen(subprocess.Popen):
 
     # def communicate_or_kill(self, *args, **kwargs):
         # return process_communicate_or_kill(self, *args, **kwargs)
-# ------------------------------------------------------------------------
-
-
-def progress(output, duration):
-    """
-    Given a time position from the FFmpeg output lines,
-    it calculates the progress time as percentage which
-    is joined to ffmpeg data processing.
-    """
-    i = output.index('time=') + 5
-    pos = output[i:].split()[0]
-    sec = get_output_seconds_from_ffmpeg(pos)
-    percentage = round((sec / duration) * 100 if duration != 0 else 100)
-    out = [a for a in "=".join(output.split()).split('=') if a]
-    ffprog = []
-    for key, val in pairwise(out):
-        ffprog.append(f"{key}: {val} | ")
-
-    return f"progress: {str(int(percentage))}% | {''.join(ffprog)}"

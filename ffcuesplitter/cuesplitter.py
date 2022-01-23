@@ -86,12 +86,9 @@ class FFCueSplitter(FFMpeg):
         outputdir:
                 absolute or relative pathname to output files
         suffix:
-                output format, one of ("wav", "wv", "flac",
-                                       "mp3", "ogg", "m4a") .
+                output format, one of ("wav", "flac", "mp3", "ogg") .
         overwrite:
-                controls for overwriting files, one of "ask",
-                "never", "always". Also see `move_files_on_outputdir`
-                method.
+                overwriting options, one of "ask", "never", "always".
         ffmpeg_url:
                 a custon path of ffmpeg
         ffmpeg_loglevel:
@@ -99,11 +96,9 @@ class FFCueSplitter(FFMpeg):
         ffprobe_url:
                 a custon path of ffprobe.
         ffmpeg_add_params:
-                additionals parameters of FFmpeg
+                additionals parameters of FFmpeg.
         progress_meter:
-                one of 'tqdm', 'mymet', 'standard', default is
-                'standard'. Note, this option has no effect if
-                you don't use the `do_operations` method.
+                one of 'tqdm', 'standard', default is 'standard'.
         dry:
                 with `True`, perform the dry run with no changes
                 done to filesystem.
@@ -221,12 +216,12 @@ class FFCueSplitter(FFMpeg):
             self.move_files_on_outputdir()
     # ----------------------------------------------------------------#
 
-    def get_duration_tracks(self, tracks):
+    def get_track_duration(self, tracks):
         """
         Gets total duration of the source audio tracks via `ffprobe'
-        command and sets `duration key` for progress meter.
-        Given a total duration calculates the remains
-        duration for the last track.
+        for chunks calculation on the progress meter.
+        Given a total duration calculates the remains duration
+        for the last track as well.
 
         This method is called by `cuefile_parser` method, Do not
         call this method directly.
@@ -236,12 +231,8 @@ class FFCueSplitter(FFMpeg):
         Returns:
             tracks (list), all track data taken from the cue file.
         """
-        probe = FFProbe(self.kwargs['ffprobe_url'],
-                        tracks[0].get('FILE'),
-                        show_streams=False,
-                        pretty=False
-                        )
-        duration = probe.data_format('duration')
+        ffprobe = FFProbe(self.kwargs['ffprobe_url'], tracks[0].get('FILE'))
+        probe = ffprobe.format_media()
 
         time = []
         for idx, items in enumerate(tracks):
@@ -251,9 +242,9 @@ class FFCueSplitter(FFMpeg):
                 time.append(trk)
 
         if not time:
-            last = float(duration) - tracks[0]['START'] / 44100
+            last = float(probe['duration']) - tracks[0]['START'] / 44100
         else:
-            last = float(duration) - sum(time)
+            last = float(probe['duration']) - sum(time)
         time.append(last)
         for keydur, remain in zip(tracks, time):
             keydur['DURATION'] = remain
@@ -305,7 +296,7 @@ class FFCueSplitter(FFMpeg):
                 sourcenames[f'{data["FILE"]}'].append(data)
 
         for val in sourcenames.values():
-            self.audiotracks += self.get_duration_tracks(val)
+            self.audiotracks += self.get_track_duration(val)
 
         return self.audiotracks
     # ----------------------------------------------------------------#

@@ -33,7 +33,7 @@ import platform
 from tqdm import tqdm
 from ffcuesplitter.exceptions import FFMpegError
 from ffcuesplitter.str_utils import msg
-from ffcuesplitter.utils import Popen, progress
+from ffcuesplitter.utils import Popen
 
 if not platform.system() == 'Windows':
     import shlex
@@ -72,9 +72,7 @@ class FFMpeg:
         self.arguments = []
         self.seconds = []
 
-        meters = {'mymet': '-stats -hide_banner -nostdin',
-                  'tqdm': '-progress pipe:1 -nostats -nostdin',
-                  'standard': ''}
+        meters = {'tqdm': '-progress pipe:1 -nostats -nostdin', 'standard': ''}
 
         for track in self.audiotracks:
             metadata = {'ARTIST': track.get('ARTIST', ''),
@@ -118,61 +116,12 @@ class FFMpeg:
                 return
             self.processing_with_tqdm_progress(cmd, secs)
 
-        elif self.kwargs['progress_meter'] == 'mymet':
-            cmd = arg if self.plat == 'Windows' else shlex.split(arg)
-            if self.kwargs['dry'] is True:
-                msg(cmd)  # stdout cmd in dry mode
-                return
-            self.processing_with_mymet_progress(cmd, secs)
-
         elif self.kwargs['progress_meter'] == 'standard':
             cmd = arg if self.plat == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
                 msg(cmd)  # stdout cmd in dry mode
                 return
             self.processing_with_standard_progress(cmd)
-    # --------------------------------------------------------------#
-
-    def processing_with_mymet_progress(self, cmd, seconds):
-        """
-        FFmpeg sub-processing showing a progress indicator
-        for each loop at the same line of the stdout.
-        The lines shown contain percentage, size, time, bitrate
-        and speed indicators.
-        Also writes a log file to the same destination folder
-        as the .cue file .
-        Raises:
-            FFMpegError
-        Returns:
-            None
-        """
-        try:
-            with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
-                log.write(f'COMMAND: {cmd}\n\n')
-                with Popen(cmd,
-                           stderr=subprocess.PIPE,
-                           bufsize=1,
-                           universal_newlines=True) as proc:
-
-                    for output in proc.stderr:
-                        log.write(output)
-                        if 'time=' in output.strip():  # ...in processing
-                            prog = progress(output, round(seconds, 6))
-                            sys.stdout.write(f"    {prog}\r")
-                            sys.stdout.flush()
-
-                    if proc.wait():  # error
-                        raise FFMpegError(f"ffmpeg FAILED: See log details: "
-                                          f"'{self.kwargs['logtofile']}'"
-                                          f"\nExit status: {proc.wait()}")
-
-        except (OSError, FileNotFoundError) as excepterr:
-            raise FFMpegError(excepterr) from excepterr
-
-        except KeyboardInterrupt:
-            # proc.kill()
-            proc.terminate()
-            sys.exit("\n[KeyboardInterrupt] FFmpeg process terminated.")
     # --------------------------------------------------------------#
 
     def processing_with_tqdm_progress(self, cmd, seconds):
