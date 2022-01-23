@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-First release: Gen 16 2022
+First release: Jan 20 2022
 
 Name: setup.py
 Porpose: building ffcuesplitter sources and package
@@ -9,7 +9,7 @@ USAGE: python3 setup.py sdist bdist_wheel
 Platform: Gnu/Linux-Unix-MacOs
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Gen 16 2022
+Rev: Jan 22 2022
 Code checker: flake8, pylint
 ####################################################################
 
@@ -39,7 +39,7 @@ LONG_HELP = cr[2]
 SHORT_HELP = cr[3]
 LICENSE = cr[6]  # short_license
 
-INST_REQ = ["chardet>=4.0.0", "tqdm>=4.38.0"]
+INST_REQ = ["chardet>=4.0.0", "tqdm>=4.38.0", "deflacue>=2.0.1"]
 SETUP_REQ = ["setuptools>=47.1.1",
              "wheel>=0.34.2",
              "twine>=3.1.1"
@@ -48,7 +48,7 @@ SETUP_REQ = ["setuptools>=47.1.1",
 CLASSIFIERS = [
             'Development Status :: 4 - Beta',
             'Environment :: Console',
-            'Intended Audience :: End Users/Desktop',
+            'Intended Audience :: End Users/Desktop :: Developers',
             'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
             'Natural Language :: English',
             'Operating System :: Microsoft :: Windows',
@@ -66,7 +66,7 @@ CLASSIFIERS = [
 # get the package data
 DATA_FILES = [('share/man/man1', ['man/ffcuesplitter.1.gz']),
               ('share/ffcuesplitter', ['AUTHORS', 'BUGS',
-                                       'CHANGELOG', 'COPYING',
+                                       'CHANGELOG', 'LICENSE',
                                        'TODO', 'README.md']),
               ]
 

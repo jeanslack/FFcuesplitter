@@ -2,7 +2,7 @@
 
 """
 Porpose: Contains test cases for the splitcue object.
-Rev: Jan.19.2022
+Rev: Jan.22.2022
 """
 import os
 import sys
@@ -47,36 +47,38 @@ class ParserCueSheetTestCase(unittest.TestCase):
         fname = {'filename': '/invalid/file.cue'}
 
         with self.assertRaises(InvalidFileError):
-            FFCueSplitter(**{**self.args, **fname})
+            check = FFCueSplitter(**{**self.args, **fname})
+            check.open_cuefile()
 
-    def test_parser_with_iso_file_encoding(self):
+
+    def test_tracks_with_iso_file_encoding(self):
         """
         test cuefile parsing with ISO-8859-1 encoding
         """
         fname = {'filename': FILECUE_ISO}
         split = FFCueSplitter(**{**self.args, **fname})
-        parser = split.open_cuefile()
+        split.open_cuefile()
+        tracks = split.audiotracks
 
-        self.assertEqual(parser['FILE'], os.path.join(WORKDIR,
-                                                      'Three Samples.flac'))
-        self.assertEqual(parser['tracks'][0]['END'], 88200)
-        self.assertEqual(parser['tracks'][1]['END'], 176400)
-        self.assertEqual(parser['tracks'][2]['START'], 176400)
-        self.assertEqual(parser['tracks'][2]['TITLE'], 'è di 500 Hz')
+        self.assertEqual(tracks[0]['FILE'], 'Three Samples.flac')
+        self.assertEqual(tracks[0]['END'], 88200)
+        self.assertEqual(tracks[1]['END'], 176400)
+        self.assertEqual(tracks[2]['START'], 176400)
+        self.assertEqual(tracks[2]['TITLE'], 'è di 500 Hz.flac')
 
-    def test_parser_with_ascii_file_encoding(self):
+    def test_tracks_with_ascii_file_encoding(self):
         """
         test cuefile parsing with ASCII encoding
         """
         fname = {'filename': FILECUE_ASCII}
         split = FFCueSplitter(**{**self.args, **fname})
-        parser = split.open_cuefile()
+        split.open_cuefile()
+        tracks = split.audiotracks
 
-        self.assertEqual(parser['outputdir'], WORKDIR)
-        self.assertEqual(parser['tracks'][0]['START'], 0)
-        self.assertEqual(parser['tracks'][1]['START'], 88200)
-        self.assertEqual(parser['tracks'][2]['DURATION'], 2.0)
-        self.assertEqual(parser['tracks'][2]['ALBUM'], 'Sox - Three samples')
+        self.assertEqual(tracks[0]['START'], 0)
+        self.assertEqual(tracks[1]['START'], 88200)
+        self.assertEqual(tracks[2]['DURATION'], 2.0)
+        self.assertEqual(tracks[2]['ALBUM'], 'Sox - Three samples')
 
 
 class FFmpegArgumentsTestCase(unittest.TestCase):
@@ -101,9 +103,8 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         split = FFCueSplitter(**{**self.args, **fname})
         split.open_cuefile()
         split.kwargs['tempdir'] = os.path.abspath('.')
-        data = split.arguments_building()
-
-        self.assertEqual(data['arguments'][2].split()[0], '-i')
+        data = split.ffmpeg_arguments()
+        self.assertEqual(data['arguments'][2].split()[0], '"ffmpeg"')
 
     def test_track_durations(self):
         """
@@ -113,7 +114,7 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         split = FFCueSplitter(**{**self.args, **fname})
         split.open_cuefile()
         split.kwargs['tempdir'] = os.path.abspath('.')
-        data = split.arguments_building()
+        data = split.ffmpeg_arguments()
 
         self.assertEqual(data['seconds'], [2.0, 2.0, 2.0])
 

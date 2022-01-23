@@ -2,11 +2,11 @@
 First release: January 16 2022
 
 Name: main.py
-Porpose: provides an argparser interface for FFcuesplitter class
+Porpose: provides command line arguments for ffcuesplitter
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: January 19 2022
+Rev: January 22 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -65,7 +65,7 @@ def main():
                         required=False,
                         )
     parser.add_argument('-f', '--format-type',
-                        choices=["wav", "wv", "flac", "m4a", "mp3", "ogg"],
+                        choices=["wav", "flac", "mp3", "ogg"],
                         help=("Preferred audio format to output, "
                               "default is 'flac'"),
                         required=False,

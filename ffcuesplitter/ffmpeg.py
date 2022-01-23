@@ -1,13 +1,13 @@
 # -*- coding: UTF-8 -*-
 """
 Name: ffmpeg.py
-Porpose: builds arguments and commands for processing with FFmpeg
+Porpose: builds arguments for FFmpeg processing.
 Compatibility: Python3
 Platform: all platforms
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
 Copyright: (c) 202 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Jannuary.18.2022
+Rev: Jannuary.23.2022
 Code checker: flake8, pylint
 ########################################################
 
@@ -33,7 +33,7 @@ import platform
 from tqdm import tqdm
 from ffcuesplitter.exceptions import FFMpegError
 from ffcuesplitter.str_utils import msg
-from ffcuesplitter.utils import Popen, progress, frames_to_seconds
+from ffcuesplitter.utils import Popen, progress
 
 if not platform.system() == 'Windows':
     import shlex
@@ -44,19 +44,24 @@ class FFMpeg:
     FFMpeg is a parent base class interface for FFCueSplitter.
     It represents FFmpeg commands and their sub-processing.
     """
+    DATACODECS = {'wav': 'pcm_s16le -ar 44100',
+                  'flac': 'flac -ar 44100',
+                  'ogg': 'libvorbis -ar 44100',
+                  'mp3': 'libmp3lame -ar 44100',
+                  }
 
     def __init__(self, **kwargs):
         """
         Constructor
         """
         self.kwargs = kwargs
+        self.audiotracks = kwargs
         self.seconds = None
         self.arguments = None
-        self.cmd = None
         self.plat = platform.system()
     # -------------------------------------------------------------#
 
-    def arguments_building(self):
+    def ffmpeg_arguments(self):
         """
         Builds `FFmpeg` arguments and calculates time seconds
         for each audio track.
@@ -66,37 +71,35 @@ class FFMpeg:
         """
         self.arguments = []
         self.seconds = []
-        datacodecs = {'wav': ['pcm_s16le', 'wav'],
-                      'wv': ['libwavpack', 'wv'],
-                      'flac': ['flac', 'flac'],
-                      'm4a': ['alac', 'm4a'],
-                      'ogg': ['libvorbis', 'ogg'],
-                      'mp3': ['libmp3lame', 'mp3'],
-                      }
-        codec, outext = datacodecs[self.kwargs['format']]
 
-        for track in self.kwargs['tracks']:
+        meters = {'mymet': '-stats -hide_banner -nostdin',
+                  'tqdm': '-progress pipe:1 -nostats -nostdin',
+                  'standard': ''}
+
+        for track in self.audiotracks:
             metadata = {'ARTIST': track.get('ARTIST', ''),
                         'ALBUM': track.get('ALBUM', ''),
                         'TITLE': track.get('TITLE', ''),
-                        'TRACK': (str(track['TRACK']) + '/' +
-                                  str(len(self.kwargs['tracks']))),
+                        'TRACK': (str(track['TRACK_NUM']) + '/' +
+                                  str(len(self.audiotracks))),
                         'GENRE': track.get('GENRE', ''),
                         'DATE': track.get('DATE', ''),
                         'COMMENT': track.get('COMMENT', ''),
+                        'DISCID': track.get('DISCID', ''),
                         }
-            cmd = f'-i "{self.kwargs["FILE"]}"'
-            cmd += f" -ss {frames_to_seconds(track['START'])}"  # conv to secs
-
+            cmd = f'"{self.kwargs["ffmpeg_url"]}" '
+            cmd += f' -loglevel {self.kwargs["ffmpeg_loglevel"]}'
+            cmd += f" {meters[self.kwargs['progress_meter']]}"
+            cmd += f' -i "{track["FILE"]}"'
+            cmd += f" -ss {round(track['START'] / 44100, 6)}"  # ff to secs
             if 'END' in track:
-                cmd += f" -to {frames_to_seconds(track['END'])}"  # to secs
-
+                cmd += f" -to {round(track['END'] / 44100, 6)}"  # ff to secs
             for key, val in metadata.items():
                 cmd += f' -metadata {key}="{val}"'
-
-            cmd += f' -c:a {codec}'
+            cmd += (f' -c:a {FFMpeg.DATACODECS[self.kwargs["format"]]}')
             cmd += f" {self.kwargs['ffmpeg_add_params']}"
-            name = f"{track['TRACK']} - {track.get('TITLE', '')}.{outext}"
+            num = str(track['TRACK_NUM']).rjust(2, '0')
+            name = f'{num} - {track["TITLE"]}'
             cmd += f' "{os.path.join(self.kwargs["tempdir"], name)}"'
             self.arguments.append(cmd)
             self.seconds.append(track['DURATION'])
@@ -104,31 +107,49 @@ class FFMpeg:
         return {'arguments': self.arguments, 'seconds': self.seconds}
     # --------------------------------------------------------------#
 
-    def processing_with_mymet_progress(self, arguments, seconds):
+    def processing(self, arg, secs):
+        """
+        Redirect to required meter processing
+        """
+        if self.kwargs['progress_meter'] == 'tqdm':
+            cmd = arg if self.plat == 'Windows' else shlex.split(arg)
+            if self.kwargs['dry'] is True:
+                msg(cmd)  # stdout cmd in dry mode
+                return
+            self.processing_with_tqdm_progress(cmd, secs)
+
+        elif self.kwargs['progress_meter'] == 'mymet':
+            cmd = arg if self.plat == 'Windows' else shlex.split(arg)
+            if self.kwargs['dry'] is True:
+                msg(cmd)  # stdout cmd in dry mode
+                return
+            self.processing_with_mymet_progress(cmd, secs)
+
+        elif self.kwargs['progress_meter'] == 'standard':
+            cmd = arg if self.plat == 'Windows' else shlex.split(arg)
+            if self.kwargs['dry'] is True:
+                msg(cmd)  # stdout cmd in dry mode
+                return
+            self.processing_with_standard_progress(cmd)
+    # --------------------------------------------------------------#
+
+    def processing_with_mymet_progress(self, cmd, seconds):
         """
         FFmpeg sub-processing showing a progress indicator
         for each loop at the same line of the stdout.
         The lines shown contain percentage, size, time, bitrate
         and speed indicators.
         Also writes a log file to the same destination folder
-        as the output files .
-
+        as the .cue file .
         Raises:
             FFMpegError
         Returns:
             None
         """
-        args = (f'"{self.kwargs["ffmpeg_url"]}" -loglevel '
-                f'{self.kwargs["ffmpeg_loglevel"]}')
-        args += ' -stats -hide_banner -nostdin'
-        args += f' {arguments}'
-        self.cmd = args if self.plat == 'Windows' else shlex.split(args)
-        if self.kwargs['dry'] is True:
-            msg(self.cmd)  # print cmd in dry mode
-            return
         try:
             with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
-                with Popen(self.cmd,
+                log.write(f'COMMAND: {cmd}\n\n')
+                with Popen(cmd,
                            stderr=subprocess.PIPE,
                            bufsize=1,
                            universal_newlines=True) as proc:
@@ -141,7 +162,7 @@ class FFMpeg:
                             sys.stdout.flush()
 
                     if proc.wait():  # error
-                        raise FFMpegError(f"ffmpeg FAILED: See details: "
+                        raise FFMpegError(f"ffmpeg FAILED: See log details: "
                                           f"'{self.kwargs['logtofile']}'"
                                           f"\nExit status: {proc.wait()}")
 
@@ -154,26 +175,17 @@ class FFMpeg:
             sys.exit("\n[KeyboardInterrupt] FFmpeg process terminated.")
     # --------------------------------------------------------------#
 
-    def processing_with_tqdm_progress(self, arguments, seconds):
+    def processing_with_tqdm_progress(self, cmd, seconds):
         """
         FFmpeg sub-processing showing a tqdm progress meter
         for each loop. Also writes a log file to the same
-        destination folder as the output files .
+        destination folder as the .cue file .
         Raises:
             FFMpegError
         Returns:
             None
         """
-        args = (f'"{self.kwargs["ffmpeg_url"]}" -loglevel '
-                f'{self.kwargs["ffmpeg_loglevel"]}')
-        args += ' -progress pipe:1 -nostats -nostdin'
-        args += f' {arguments}'
-        self.cmd = args if self.plat == 'Windows' else shlex.split(args)
-        if self.kwargs['dry'] is True:
-            msg(self.cmd)
-            return
-
-        progbar = tqdm(total=round(seconds, 6),
+        progbar = tqdm(total=round(seconds),
                        unit="s",
                        dynamic_ncols=True
                        )
@@ -182,7 +194,8 @@ class FFMpeg:
 
         try:
             with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
-                with Popen(self.cmd,
+                log.write(f'\nCOMMAND: {cmd}')
+                with Popen(cmd,
                            stdout=subprocess.PIPE,
                            stderr=log,
                            bufsize=1,
@@ -190,17 +203,17 @@ class FFMpeg:
 
                     for output in proc.stdout:
                         if "out_time_ms" in output.strip():
-                            s_processed = int(output.split('=')[1]) / 1_000_000
+                            s_processed = round(int(output.split('=')[1]) /
+                                                1_000_000)
                             s_increase = s_processed - previous_s
                             progbar.update(s_increase)
                             previous_s = s_processed
 
                     if proc.wait():  # error
                         progbar.close()
-                        raise FFMpegError(f"ffmpeg FAILED: See details: "
+                        raise FFMpegError(f"ffmpeg FAILED: See log details: "
                                           f"'{self.kwargs['logtofile']}'"
                                           f"\nExit status: {proc.wait()}")
-
             progbar.close()
 
         except (OSError, FileNotFoundError) as excepterr:
@@ -214,25 +227,19 @@ class FFMpeg:
             sys.exit("\n[KeyboardInterrupt] FFmpeg process terminated.")
     # --------------------------------------------------------------#
 
-    def processing_with_standard_progress(self, arguments, *args):
+    def processing_with_standard_progress(self, cmd):
         """
         FFmpeg sub-processing with stderr output to console.
-        This method prints anything depending on the loglevel
-        option.
+        The output depending on the ffmpeg loglevel option.
         Raises:
             FFMpegError
         Returns:
             None
         """
-        args = (f'"{self.kwargs["ffmpeg_url"]}" -loglevel '
-                f'{self.kwargs["ffmpeg_loglevel"]}')
-        args += f' {arguments}'
-        self.cmd = args if self.plat == 'Windows' else shlex.split(args)
-        if self.kwargs['dry'] is True:
-            msg(self.cmd)
-            return
+        with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
+            log.write(f'COMMAND: {cmd}')
         try:
-            subprocess.run(self.cmd, check=True, shell=False)
+            subprocess.run(cmd, check=True, shell=False)
 
         except FileNotFoundError as err:
             raise FFMpegError(f"{err}") from err

@@ -43,7 +43,7 @@ def pairwise(iterable):
                 'time', '00:00:39.02', 'bitrate', '435.0kbits/s', speed',
                 '5.15x']
     for x, y in pairwise(iterable):
-        print(x,y)
+        (x,y)
 
     <https://stackoverflow.com/questions/5389507/iterating-over-every-
     two-elements-in-a-list>
@@ -54,27 +54,13 @@ def pairwise(iterable):
 # ------------------------------------------------------------------------
 
 
-def pos_to_frames(pos) -> int:
-    """
-    Converts position (mm:ss:ff) into frames.
-
-    :param pos:
-
-    """
-    minutes, seconds, frames = map(int, pos.strip().split(' ')[2].split(':'))
-    seconds = (minutes * 60) + seconds
-    rate = 44100
-    return (seconds * rate) + (frames * (rate // 75))
-# ------------------------------------------------------------------------
-
-
 def frames_to_seconds(frames):
     """
     Converts frames (10407600) to seconds (236.0) and then
     converts them to a time format string (0:03:56) using datetime.
     """
-    rate = frames / 44100
-    return str(datetime.timedelta(seconds=rate))
+    secs = frames / 44100
+    return str(datetime.timedelta(seconds=secs))
 # ------------------------------------------------------------------------
 
 

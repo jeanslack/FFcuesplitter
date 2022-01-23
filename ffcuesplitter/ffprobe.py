@@ -79,7 +79,7 @@ class FFProbe():
                 if '=' in line:
                     k, v = line.split('=')
                     formatdict[k.strip()] = v.strip()
-        print(formatdict)
+        formatdict
 
     ----------------------
     USE with `parse=False`:
@@ -90,12 +90,12 @@ class FFProbe():
         Get simple output data:
         -----------------------
 
-            `data = FFProbe(ffprobe_url,
+             data = FFProbe(ffprobe_url,
                             filename_url,
                             parse=False,
                             writer='xml')
                             )`
-            print(data.custom_output())
+             data.custom_output()
 
         To get a kind of output:
         ------------------------
@@ -112,7 +112,7 @@ class FFProbe():
                             show_streams=False,
                             writer='compact=nk=1:p=0'
                             )`
-            print(data.custom_output().strip())
+            data.custom_output().strip()
 
             The `entries` arg is the key to search some entry on sections
 
@@ -208,10 +208,10 @@ class FFProbe():
 
         try:
             with Popen(cmnd,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    universal_newlines=True,
-                    ) as proc:
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       universal_newlines=True,
+                       ) as proc:
                 output, error = proc.communicate()
 
                 if proc.returncode:
@@ -286,13 +286,20 @@ class FFProbe():
         return self.subtitle
     # --------------------------------------------------------------#
 
-    def data_format(self):
+    def data_format(self, item=None):
         """
         Return a metadata list for data format. If there is not
         data format return a empty list
         """
         for dataformat in self.mediaformat:
             self._format.append(dataformat)
+
+        if item:
+            for _list in self._format:
+                for i in _list:
+                    if str(item) in i:
+                        return i.split('=')[1]
+
         return self._format
     # --------------------------------------------------------------#
 

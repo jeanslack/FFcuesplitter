@@ -29,7 +29,7 @@ def informations():
     data = {'author': "Gianluca Pernigotto - Jeanslack",
             'mail': '<jeanlucperni@gmail.com>',
             'copyright': '© 2022',
-            'version': '1.0.1 alfa',
+            'version': '1.0.2',
             'release': 'January 20 2022',
             'rls_name': "FFcuesplitter",
             'prg_name': "ffcuesplitter",

@@ -6,7 +6,7 @@ Porpose: FFmpeg based audio splitter for Cue sheet files
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: January 16 2022
+Rev: January 22 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -30,21 +30,19 @@ import os
 import shutil
 import tempfile
 import chardet
+from deflacue.deflacue import CueParser
 from ffcuesplitter.str_utils import msgdebug, msg
 from ffcuesplitter.exceptions import (InvalidFileError,
-                                      ParserError,
                                       FFCueSplitterError,
                                       )
 from ffcuesplitter.ffprobe import FFProbe
 from ffcuesplitter.ffmpeg import FFMpeg
-from ffcuesplitter.utils import pos_to_frames
 
 
 class FFCueSplitter(FFMpeg):
     """
-    This class implements an interface for parsing .cue sheet
-    files in order to retrieve the required data to accurately
-    split audio CD images using FFmpeg.
+    This class implements an interface for retrieve the required
+    data to accurately split audio CD images using FFmpeg.
 
     Usage:
             >>> from ffcuesplitter.cuesplitter import FFCueSplitter
@@ -52,16 +50,14 @@ class FFCueSplitter(FFMpeg):
             >>> split.open_cuefile()
             >>> split.do_operations()
 
-    For a more advanced use of this class do not use `do_operations`
-    method which automates all operations. The following examples are
-    suggested:
+    For a more advanced use of this class follow this examples:
             >>> from ffcuesplitter.cuesplitter import FFCueSplitter
             >>> split = FFCueSplitter(filename='/home/user/my_file.cue')
             >>> split.open_cuefile()
-            >>> split.kwargs['tempdir'] = '/user/mytempdir'
-            >>> split.arguments_building()
+            >>> split.kwargs['tempdir'] = '/tmp/mytempdir'
+            >>> split.ffmpeg_arguments()
             >>> for args, secs in zip(split.arguments, split.seconds):
-            ...     split.processing_with_tqdm_progress(args, secs)
+            ...     split.processing(args, secs)
             >>> split.move_files_on_outputdir()
 
     For a full meaning of the arguments to pass to the instance, read
@@ -111,11 +107,9 @@ class FFCueSplitter(FFMpeg):
         dry:
                 with `True`, perform the dry run with no changes
                 done to filesystem.
-
         """
         super().__init__()
 
-        self.logfile = None
         self.kwargs = {'filename': os.path.abspath(filename)}
         self.kwargs['dirname'] = os.path.dirname(self.kwargs['filename'])
         if outputdir == '.':
@@ -131,21 +125,10 @@ class FFCueSplitter(FFMpeg):
         self.kwargs['progress_meter'] = progress_meter
         self.kwargs['dry'] = dry
         self.kwargs['logtofile'] = os.path.join(self.kwargs['dirname'],
-                                                'ffmpeg_output.log')
-
-        filesuffix = os.path.splitext(self.kwargs['filename'])[1]
-        isfile = os.path.isfile(self.kwargs['filename'])
-
-        if not isfile or filesuffix not in ('.cue', '.CUE'):
-            raise InvalidFileError(f"Invalid CUE sheet file: "
-                                   f"'{self.kwargs['filename']}'")
-
-        os.chdir(self.kwargs['dirname'])
-
-        with open(self.kwargs['filename'], 'rb') as file:
-            self.bdata = file.read()
-            self.encoding = chardet.detect(self.bdata)
-    # ----------------------------------------------------------#
+                                                'ffcuesplitter.log')
+        self.audiotracks = None
+        self.cue = None
+    # ----------------------------------------------------------------#
 
     def move_files_on_outputdir(self):
         """
@@ -191,60 +174,11 @@ class FFCueSplitter(FFMpeg):
                     raise FFCueSplitterError(error) from error
 
         return None
-    # ----------------------------------------------------------#
-
-    def make_end_positions_and_durations(self, tracks):
-        """
-        Gets total duration of the big audio track via `ffprobe'
-        command and defines the `END` frames for any tracks minus
-        last. Given a total duration calculates the remains
-        duration for the last track.
-
-        This method is called by `cuefile_parser` method, Do not
-        call this method directly.
-
-        Raises:
-            FFCueSplitterError
-        Returns:
-            tracks (list), all track data taken from the cue file.
-        """
-        probe = FFProbe(self.kwargs['ffprobe_url'],
-                        self.kwargs['FILE'],
-                        show_streams=False,
-                        pretty=False
-                        )
-        frmt = probe.data_format()
-
-        for lst in frmt:
-            for dur in lst:
-                if 'duration' in dur:
-                    duration = dur.split('=')[1]
-        time = []
-        for idx, items in enumerate(tracks):
-            if idx != len(tracks) - 1:  # minus last
-
-                if 'pre_gap' in tracks[idx]:
-                    trk = (tracks[idx + 1]['START'] -
-                           tracks[idx]['START']) / (44100)  # get seconds
-                    time.append(trk)
-                    tracks[idx]['END'] = (tracks[idx + 1]['pre_gap'])
-                else:
-                    trk = (tracks[idx + 1]['START'] -
-                           tracks[idx]['START']) / (44100)
-                    time.append(trk)
-                    tracks[idx]['END'] = (tracks[idx + 1]['START'])
-
-        last = float(duration) - sum(time)
-        time.append(last)
-        for key, items in zip(tracks, time):
-            key['DURATION'] = items
-
-        return tracks
-    # ----------------------------------------------------------#
+    # ----------------------------------------------------------------#
 
     def do_operations(self):
         """
-        This method automates the work in a temporary context.
+        Automates the work in a temporary context.
 
         Raises:
             FFCueSplitterError
@@ -255,7 +189,7 @@ class FFCueSplitter(FFMpeg):
                                          prefix='ffcuesplitter_',
                                          dir=None) as tmpdir:
             self.kwargs['tempdir'] = tmpdir
-            self.arguments_building()
+            self.ffmpeg_arguments()
 
             msgdebug(info=(f"Temporary Target: '{self.kwargs['tempdir']}'"))
             count = 0
@@ -263,17 +197,11 @@ class FFCueSplitter(FFMpeg):
 
             for args, secs, title in zip(self.arguments,
                                          self.seconds,
-                                         self.kwargs['tracks']):
+                                         self.audiotracks):
                 count += 1
-                msg(f'\nTRACK {count}/{len(self.kwargs["tracks"])} '
+                msg(f'\nTRACK {count}/{len(self.audiotracks)} '
                     f'>> "{title["TITLE"]}" ...')
-
-                if self.kwargs['progress_meter'] == 'tqdm':
-                    self.processing_with_tqdm_progress(args, secs)
-                elif self.kwargs['progress_meter'] == 'mymet':
-                    self.processing_with_mymet_progress(args, secs)
-                elif self.kwargs['progress_meter'] == 'standard':
-                    self.processing_with_standard_progress(args)
+                self.processing(args, secs)
 
             if self.kwargs['dry'] is True:
                 return
@@ -291,85 +219,121 @@ class FFCueSplitter(FFMpeg):
                 raise FFCueSplitterError(error) from error
 
             self.move_files_on_outputdir()
-    # ----------------------------------------------------------#
+    # ----------------------------------------------------------------#
 
-    def cuefile_parser(self, lines):
+    def get_duration_tracks(self, tracks):
         """
-        CUE sheet file parsing. Gets cue file data for audio
-        tags and defines the `START` frames for any tracks.
-        This method is called by `open_cuefile` method,
-        Do not call this method directly.
+        Gets total duration of the source audio tracks via `ffprobe'
+        command and sets `duration key` for progress meter.
+        Given a total duration calculates the remains
+        duration for the last track.
 
-        Returns:
-            tracks (list), all track data taken from the cue file.
+        This method is called by `cuefile_parser` method, Do not
+        call this method directly.
 
         Raises:
-            ParserError: if invalid data found
+            FFCueSplitterError
+        Returns:
+            tracks (list), all track data taken from the cue file.
         """
-        general = {}
-        tracks = []
-        for line in lines:
-            if line.startswith('REM GENRE '):
-                general['GENRE'] = line.split('"')[1]
+        probe = FFProbe(self.kwargs['ffprobe_url'],
+                        tracks[0].get('FILE'),
+                        show_streams=False,
+                        pretty=False
+                        )
+        duration = probe.data_format('duration')
 
-            if line.startswith('REM DATE '):
-                general['DATE'] = line.split()[2]
+        time = []
+        for idx, items in enumerate(tracks):
+            if idx != len(tracks) - 1:  # minus last
+                trk = (tracks[idx + 1]['START'] -
+                       tracks[idx]['START']) / (44100)
+                time.append(trk)
 
-            if line.startswith('REM COMMENT '):
-                general['COMMENT'] = line.split('"')[1]
+        if not time:
+            last = float(duration) - tracks[0]['START'] / 44100
+        else:
+            last = float(duration) - sum(time)
+        time.append(last)
+        for keydur, remain in zip(tracks, time):
+            keydur['DURATION'] = remain
 
-            if line.startswith('PERFORMER '):
-                general['ARTIST'] = line.split('"')[1]
+        return tracks
+    # ----------------------------------------------------------------#
 
-            if line.startswith('TITLE '):
-                general['ALBUM'] = line.split('"')[1]
+    def deflacue_object_handler(self):
+        """
+        Handles `deflacue.CueParser` data.
+        Raises:
+            FFCueSplitterError: if no source audio file found
+        Returns:
+            'audiotracks' list object
+        """
+        self.audiotracks = []
+        cd_info = self.cue.meta.data
 
-            if line.startswith('FILE '):
-                file = os.path.join(self.kwargs['dirname'], line.split('"')[1])
-                self.kwargs['FILE'] = file  # get big audio file
+        def sanitize(val: str) -> str:
+            return val.replace('/', '')
 
-            if line.startswith('  TRACK '):
-                track = general.copy()
-                track['TRACK'] = int(line.strip().split(' ')[1], 10)
-                tracks.append(track)
+        tracks = self.cue.tracks
+        sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
 
-            if line.startswith('    TITLE '):
-                tracks[-1]['TITLE'] = line.split('"')[1]
+        for idx, track in enumerate(tracks):
+            track_file = track.file.path
 
-            if line.startswith('    PERFORMER '):
-                tracks[-1]['ARTIST'] = line.split('"')[1]
+            if not track_file.exists():
+                msgdebug(warn=(f'Source file `{track_file}` is not '
+                               f'found. Track is skipped.'))
 
-            if line.startswith('    INDEX 00 '):
-                tracks[-1]['pre_gap'] = pos_to_frames(line)  # conv to frames
+                if str(track_file) in sourcenames:
+                    sourcenames.pop(str(track_file))
+                    if not sourcenames:
+                        raise FFCueSplitterError('No audio source files '
+                                                 'found!')
+                continue
 
-            if line.startswith('    INDEX 01 '):
-                tracks[-1]['START'] = pos_to_frames(line)  # conv to frames
+            filename = (f"{sanitize(track.title)}.{self.kwargs['format']}")
 
-        if not tracks:
-            raise ParserError(f'Parsing failed, no data found: {tracks}')
+            data = {'FILE': str(track_file), **track.data, **cd_info}
+            data['TITLE'] = filename
+            data['START'] = track.start
 
-        return self.make_end_positions_and_durations(tracks)
-    # ----------------------------------------------------------#
+            if track.end != 0:
+                data['END'] = track.end
+
+            if f"{data['FILE']}" in sourcenames.keys():
+                sourcenames[f'{data["FILE"]}'].append(data)
+
+        for val in sourcenames.values():
+            self.audiotracks += self.get_duration_tracks(val)
+
+        return self.audiotracks
+    # ----------------------------------------------------------------#
+
+    def check_cuefile(self):
+        """
+        Cue file check
+        """
+        filesuffix = os.path.splitext(self.kwargs['filename'])[1]
+        isfile = os.path.isfile(self.kwargs['filename'])
+
+        if not isfile or filesuffix not in ('.cue', '.CUE'):
+            raise InvalidFileError(f"Invalid CUE sheet file: "
+                                   f"'{self.kwargs['filename']}'")
+    # ----------------------------------------------------------------#
 
     def open_cuefile(self):
         """
-        Defines a new UTF-8 encoded CUE sheet file as temporary
-        file and retrieves tracks data to be splitted.
-
-        Raises:
-            ParserError: if invalid data found
-        Returns:
-            data 'tracks' object (dict)
+        Read cue file and start file parsing via deflacue package
         """
-        with tempfile.NamedTemporaryFile(suffix='.cue',
-                                         mode='w+',
-                                         encoding='utf-8'
-                                         ) as cuefile:
-            cuefile.write(self.bdata.decode(self.encoding['encoding']))
-            cuefile.seek(0)
-            self.kwargs['tracks'] = self.cuefile_parser(cuefile.readlines())
+        self.check_cuefile()
+        os.chdir(self.kwargs['dirname'])
 
-        if not self.kwargs['tracks'] or not self.kwargs.get('FILE'):
-            raise ParserError(f'Invalid data found: {self.kwargs}')
+        with open(self.kwargs['filename'], 'rb') as file:
+            cuebyte = file.read()
+            encoding = chardet.detect(cuebyte)
 
-        return self.kwargs
+        parser = CueParser.from_file(self.kwargs['filename'],
+                                     encoding=encoding['encoding'])
+        self.cue = parser.run()
+        self.deflacue_object_handler()
