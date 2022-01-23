@@ -116,7 +116,7 @@ def main():
     parser.add_argument("-p", "--progress-meter",
                         help=("Progress bar mode. This takes effect during "
                               "FFmpeg process loops. Default is `tqdm`"),
-                        choices=["tqdm", "mymet", "standard"],
+                        choices=["tqdm", "standard"],
                         required=False,
                         default='tqdm'
                         )

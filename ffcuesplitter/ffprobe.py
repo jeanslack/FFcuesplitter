@@ -56,92 +56,68 @@ class FFProbe():
     ---------------------
 
     >>> from ffprobe import FFProbe
-
-    >>> data = FFProbe('ffprobe_url',
-                       'filename_url',
-                       parse=True,
-                       pretty=True,
-                       select=None,
-                       entries=None,
-                       show_format=True,
-                       show_streams=True,
-                       writer=None
-                       )
-
-        video = data.video_stream()
-        audio = data.audio_stream()
-        subtitle = data.subtitle_stream()
-        dataformat = data.data_format())
-
-        formatdict = dict()
-        for items in dataformat:
-            for line in items:
-                if '=' in line:
-                    k, v = line.split('=')
-                    formatdict[k.strip()] = v.strip()
-        formatdict
+    >>> data = FFProbe('ffprobe_url','filename_url')
+    >>> video = data.video_streams()  # <class 'list'>
+    >>> audio = data.audio_streams()  # <class 'list'>
+    >>> subtitle = data.subtitle_streams()  # <class 'list'>
+    >>> dataformat = data.format_media())  # <class 'dict'>
+    >>> dataformat['filename'], dataformat['duration']
+    >>> video[0]['codec_type']
+    >>> [i['index'] for i in audio]
 
     ----------------------
     USE with `parse=False`:
     ----------------------
 
     >>> from ffprobe import FFProbe
+    >>> data = FFProbe(ffprobe_url, filename_url, parse=False, writer='xml'))
+    >>> data.custom_output()
 
-        Get simple output data:
-        -----------------------
+    To get a kind of output:
+    ------------------------
 
-             data = FFProbe(ffprobe_url,
-                            filename_url,
-                            parse=False,
-                            writer='xml')
-                            )`
-             data.custom_output()
+    A example entry of a first audio streams section
 
-        To get a kind of output:
-        ------------------------
+    >>> data = FFProbe(ffprobe_url,
+                       filename_url,
+                       parse=False,
+                       pretty=True,
+                       select='a:0',
+                       entries='stream=codec_type',
+                       show_format=False,
+                       show_streams=False,
+                       writer='compact=nk=1:p=0')
 
-             A example entry of a first audio streams section
+    >>> data.custom_output().strip()
 
-            `data = FFProbe(ffprobe_url,
-                            filename_url,
-                            parse=False,
-                            pretty=True,
-                            select='a:0',
-                            entries='stream=codec_type',
-                            show_format=False,
-                            show_streams=False,
-                            writer='compact=nk=1:p=0'
-                            )`
-            data.custom_output().strip()
+    The `entries` arg is the key to search some entry on sections
 
-            The `entries` arg is the key to search some entry on sections
+        entries='stream=codec_type,codec_name,bits_per_sample'
+        entries='format=duration'
 
-                entries='stream=codec_type,codec_name,bits_per_sample'
-                entries='format=duration'
+    The `select` arg is the key to select a specified section
 
-            The `select` arg is the key to select a specified section
+        select='' # select all sections
+        select='v' # select all video sections
+        select='v:0' # select first video section
 
-                select='' # select all sections
-                select='v' # select all video sections
-                select='v:0' # select first video section
+    The `writer` arg alias:
 
-            The `writer` arg alias:
+        writer='default=nw=1:nk=1'
+        writer='default=noprint_wrappers=1:nokey=1'
 
-                writer='default=nw=1:nk=1'
-                writer='default=noprint_wrappers=1:nokey=1'
+        available writers name are:
 
-                available writers name are:
+        `default`, `compact`, `csv`, `flat`, `ini`, `json` and `xml`
 
-                `default`, `compact`, `csv`, `flat`, `ini`, `json` and `xml`
+        Options are list of key=value pairs, separated by ":"
 
-                Options are list of key=value pairs, separated by ":"
-
-                See `man ffprobe`
+        See `man ffprobe`
 
     ------------------------------------------------
     [i] This class was partially inspired to:
     ------------------------------------------------
-        <https://github.com/simonh10/ffprobe/blob/master/ffprobe/ffprobe.py>
+    <https://github.com/simonh10/ffprobe/blob/master/ffprobe/ffprobe.py>
 
     """
 
@@ -149,7 +125,7 @@ class FFProbe():
                  ffprobe_url=str('ffprobe'),
                  filename=str(''),
                  parse=bool(True),
-                 pretty=bool(True),
+                 pretty=bool(False),
                  select=None,
                  entries=None,
                  show_format=bool(True),
@@ -179,14 +155,10 @@ class FFProbe():
         The ffprobe command has stdout and stderr (unlike ffmpeg and ffplay)
         which allows me to initialize separate attributes also for errors
         """
-        self.mediastreams = []
-        self.mediaformat = []
-        self.video = []
-        self.audio = []
-        self._format = []
-        self.subtitle = []
+        self.mediastreams = None
+        self.mediaformat = None
+        self.datalines = None
         self.writer = None
-        self.datalines = []
 
         pretty = '-pretty' if pretty is True else ''
         show_format = '-show_format' if show_format is True else ''
@@ -229,6 +201,9 @@ class FFProbe():
         Indexes the catalogs [STREAM\\] and [FORMAT\\] given by
         the default output of FFprobe
         """
+        self.mediastreams = []
+        self.mediaformat = []
+
         probing = output.split('\n')  # create list with strings element
 
         for streams in probing:
@@ -253,54 +228,53 @@ class FFProbe():
 
     # --------------------------------------------------------------#
 
-    def video_stream(self):
+    def video_streams(self):
         """
         Return a metadata list for video stream. If there is not
         data video return a empty list
         """
+        videolist = []
         for datastream in self.mediastreams:
             if 'codec_type=video' in datastream:
-                self.video.append(datastream)
-        return self.video
+                video = dict([x.strip().split('=') for x in datastream])
+                videolist.append(video)
+        return videolist
     # --------------------------------------------------------------#
 
-    def audio_stream(self):
+    def audio_streams(self):
         """
         Return a metadata list for audio stream. If there is not
         data audio return a empty list
         """
+        audiolist = []
         for datastream in self.mediastreams:
             if 'codec_type=audio' in datastream:
-                self.audio.append(datastream)
-        return self.audio
+                audio = dict([x.strip().split('=') for x in datastream])
+                audiolist.append(audio)
+        return audiolist
     # --------------------------------------------------------------#
 
-    def subtitle_stream(self):
+    def subtitle_streams(self):
         """
         Return a metadata list for subtitle stream. If there is not
         data subtitle return a empty list
         """
+        subtitleslist = []
         for datastream in self.mediastreams:
             if 'codec_type=subtitle' in datastream:
-                self.subtitle.append(datastream)
-        return self.subtitle
+                subtitle = dict([x.strip().split('=') for x in datastream])
+                subtitleslist.append(subtitle)
+        return subtitleslist
     # --------------------------------------------------------------#
 
-    def data_format(self, item=None):
+    def format_media(self):
         """
-        Return a metadata list for data format. If there is not
-        data format return a empty list
+        Returns file data dict.
         """
-        for dataformat in self.mediaformat:
-            self._format.append(dataformat)
+        for media in self.mediaformat:
+            data = dict([x.strip().split('=') for x in media])
 
-        if item:
-            for _list in self._format:
-                for i in _list:
-                    if str(item) in i:
-                        return i.split('=')[1]
-
-        return self._format
+        return data
     # --------------------------------------------------------------#
 
     def custom_output(self):

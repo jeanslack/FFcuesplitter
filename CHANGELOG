@@ -5,6 +5,7 @@ January  22 2022  Version 1.0.2 Beta
 - added deflacue dependency for cue sheet parsing
 - update test cases
 - updates docs
+- improved FFProbe class
 
 +--------------------------------+
 January  20 2022  Version 1.0.1 Alfa
