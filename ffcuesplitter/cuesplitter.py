@@ -123,6 +123,7 @@ class FFCueSplitter(FFMpeg):
                                                 'ffcuesplitter.log')
         self.audiotracks = None
         self.cue = None
+        self.testpatch = None
     # ----------------------------------------------------------------#
 
     def move_files_on_outputdir(self):
@@ -195,7 +196,7 @@ class FFCueSplitter(FFMpeg):
                                          self.audiotracks):
                 count += 1
                 msg(f'\nTRACK {count}/{len(self.audiotracks)} '
-                    f'>> "{title["TITLE"]}" ...')
+                    f'>> "{title["TITLE"]}.{self.outsuffix}" ...')
                 self.processing(args, secs)
 
             if self.kwargs['dry'] is True:
@@ -231,8 +232,12 @@ class FFCueSplitter(FFMpeg):
         Returns:
             tracks (list), all track data taken from the cue file.
         """
-        ffprobe = FFProbe(self.kwargs['ffprobe_url'], tracks[0].get('FILE'))
-        probe = ffprobe.format_media()
+        if self.testpatch:
+            probe = {'duration': 6.000000}
+        else:
+            ffprobe = FFProbe(self.kwargs['ffprobe_url'],
+                              tracks[0].get('FILE'))
+            probe = ffprobe.format_media()
 
         time = []
         for idx, items in enumerate(tracks):
@@ -283,7 +288,7 @@ class FFCueSplitter(FFMpeg):
                                                  'found!')
                 continue
 
-            filename = (f"{sanitize(track.title)}.{self.kwargs['format']}")
+            filename = (f"{sanitize(track.title)}")
 
             data = {'FILE': str(track_file), **track.data, **cd_info}
             data['TITLE'] = filename
@@ -313,10 +318,13 @@ class FFCueSplitter(FFMpeg):
                                    f"'{self.kwargs['filename']}'")
     # ----------------------------------------------------------------#
 
-    def open_cuefile(self):
+    def open_cuefile(self, testpatch=None):
         """
         Read cue file and start file parsing via deflacue package
         """
+        if testpatch:  # used only for test cases
+            self.testpatch = True
+
         self.check_cuefile()
         os.chdir(self.kwargs['dirname'])
 

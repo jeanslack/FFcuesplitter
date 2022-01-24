@@ -48,7 +48,7 @@ class ParserCueSheetTestCase(unittest.TestCase):
 
         with self.assertRaises(InvalidFileError):
             check = FFCueSplitter(**{**self.args, **fname})
-            check.open_cuefile()
+            check.open_cuefile(testpatch=True)
 
 
     def test_tracks_with_iso_file_encoding(self):
@@ -57,14 +57,14 @@ class ParserCueSheetTestCase(unittest.TestCase):
         """
         fname = {'filename': FILECUE_ISO}
         split = FFCueSplitter(**{**self.args, **fname})
-        split.open_cuefile()
+        split.open_cuefile(testpatch=True)
         tracks = split.audiotracks
 
         self.assertEqual(tracks[0]['FILE'], 'Three Samples.flac')
         self.assertEqual(tracks[0]['END'], 88200)
         self.assertEqual(tracks[1]['END'], 176400)
         self.assertEqual(tracks[2]['START'], 176400)
-        self.assertEqual(tracks[2]['TITLE'], 'è di 500 Hz.flac')
+        self.assertEqual(tracks[2]['TITLE'], 'è di 500 Hz')
 
     def test_tracks_with_ascii_file_encoding(self):
         """
@@ -72,7 +72,7 @@ class ParserCueSheetTestCase(unittest.TestCase):
         """
         fname = {'filename': FILECUE_ASCII}
         split = FFCueSplitter(**{**self.args, **fname})
-        split.open_cuefile()
+        split.open_cuefile(testpatch=True)
         tracks = split.audiotracks
 
         self.assertEqual(tracks[0]['START'], 0)
@@ -101,7 +101,7 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         """
         fname = {'filename': FILECUE_ASCII}
         split = FFCueSplitter(**{**self.args, **fname})
-        split.open_cuefile()
+        split.open_cuefile(testpatch=True)
         split.kwargs['tempdir'] = os.path.abspath('.')
         data = split.ffmpeg_arguments()
         self.assertEqual(data['arguments'][2].split()[0], '"ffmpeg"')
@@ -112,7 +112,7 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         """
         fname = {'filename': FILECUE_ASCII}
         split = FFCueSplitter(**{**self.args, **fname})
-        split.open_cuefile()
+        split.open_cuefile(testpatch=True)
         split.kwargs['tempdir'] = os.path.abspath('.')
         data = split.ffmpeg_arguments()
 
