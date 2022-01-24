@@ -59,6 +59,21 @@ class FFMpeg:
         self.seconds = None
         self.arguments = None
         self.plat = platform.system()
+        self.outsuffix = None
+    # -------------------------------------------------------------#
+
+    def codec_setup(self, sourcef):
+        """
+        Evaluates codec option
+        """
+        if self.kwargs['format'] == 'copy':
+            self.outsuffix = os.path.splitext(sourcef)[1].replace('.', '')
+            codec = '-c copy'
+            return codec, self.outsuffix
+        else:
+            self.outsuffix = self.kwargs['format']
+            codec = f'-c:a {FFMpeg.DATACODECS[self.kwargs["format"]]}'
+            return codec, self.outsuffix
     # -------------------------------------------------------------#
 
     def ffmpeg_arguments(self):
@@ -75,6 +90,7 @@ class FFMpeg:
         meters = {'tqdm': '-progress pipe:1 -nostats -nostdin', 'standard': ''}
 
         for track in self.audiotracks:
+            codec, suffix = self.codec_setup(track["FILE"])
             metadata = {'ARTIST': track.get('ARTIST', ''),
                         'ALBUM': track.get('ALBUM', ''),
                         'TITLE': track.get('TITLE', ''),
@@ -94,10 +110,10 @@ class FFMpeg:
                 cmd += f" -to {round(track['END'] / 44100, 6)}"  # ff to secs
             for key, val in metadata.items():
                 cmd += f' -metadata {key}="{val}"'
-            cmd += (f' -c:a {FFMpeg.DATACODECS[self.kwargs["format"]]}')
+            cmd += f' {codec}'
             cmd += f" {self.kwargs['ffmpeg_add_params']}"
             num = str(track['TRACK_NUM']).rjust(2, '0')
-            name = f'{num} - {track["TITLE"]}'
+            name = f'{num} - {track["TITLE"]}.{suffix}'
             cmd += f' "{os.path.join(self.kwargs["tempdir"], name)}"'
             self.arguments.append(cmd)
             self.seconds.append(track['DURATION'])
