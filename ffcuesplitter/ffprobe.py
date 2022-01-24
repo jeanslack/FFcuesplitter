@@ -47,7 +47,7 @@ class FFProbe():
 
     If you specify `parse=False` you  get a customized output characterized
     by the arguments you define. Note that in this case the output given by
-    custom_output() instance will always be given in a string object.
+    get_string() instance will always be given in a string object.
     For instance, if you use `writer=json' you must use `eval' function
     to obtain a dict object.
 
@@ -60,9 +60,9 @@ class FFProbe():
     >>> video = data.video_streams()  # <class 'list'>
     >>> audio = data.audio_streams()  # <class 'list'>
     >>> subtitle = data.subtitle_streams()  # <class 'list'>
-    >>> dataformat = data.format_media())  # <class 'dict'>
+    >>> dataformat = data.format_media()  # <class 'dict'>
     >>> dataformat['filename'], dataformat['duration']
-    >>> video[0]['codec_type']
+    >>> video[0].get['codec_type']
     >>> [i['index'] for i in audio]
 
     ----------------------
@@ -71,7 +71,7 @@ class FFProbe():
 
     >>> from ffprobe import FFProbe
     >>> data = FFProbe(ffprobe_url, filename_url, parse=False, writer='xml'))
-    >>> data.custom_output()
+    >>> data.get_string()
 
     To get a kind of output:
     ------------------------
@@ -82,24 +82,9 @@ class FFProbe():
                        filename_url,
                        parse=False,
                        pretty=True,
-                       select='a:0',
-                       entries='stream=codec_type',
-                       show_format=False,
-                       show_streams=False,
                        writer='compact=nk=1:p=0')
 
-    >>> data.custom_output().strip()
-
-    The `entries` arg is the key to search some entry on sections
-
-        entries='stream=codec_type,codec_name,bits_per_sample'
-        entries='format=duration'
-
-    The `select` arg is the key to select a specified section
-
-        select='' # select all sections
-        select='v' # select all video sections
-        select='v:0' # select first video section
+    >>> data.get_string().strip()
 
     The `writer` arg alias:
 
@@ -126,10 +111,6 @@ class FFProbe():
                  filename=str(''),
                  parse=bool(True),
                  pretty=bool(False),
-                 select=None,
-                 entries=None,
-                 show_format=bool(True),
-                 show_streams=bool(True),
                  writer=None):
         """
         -------------------
@@ -138,10 +119,6 @@ class FFProbe():
             ffprobe_url     command name by $PATH defined or a binary url
             filename_url    a pathname appropriately quoted
             parse           defines the output mode
-            show_format     show format informations
-            show_streams    show all streams information
-            select          select which section to show (''= all sections)
-            entries         get one or more entries
             pretty          get human values (True) or machine values (False)
             writer          define a format of printing output
 
@@ -161,20 +138,14 @@ class FFProbe():
         self.writer = None
 
         pretty = '-pretty' if pretty is True else ''
-        show_format = '-show_format' if show_format is True else ''
-        show_streams = '-show_streams' if show_streams is True else ''
-        select = f'-select_streams {select}' if select else ''
-        entries = f'-show_entries {entries}' if entries else ''
         writer = f'-of {writer}' if writer else '-of default'
 
         if parse:
-
             cmnd = (f'"{ffprobe_url}" -i "{filename}" -v error {pretty} '
-                    f'{show_format} {show_streams} -print_format default')
+                    f'-show_format -show_streams -print_format default')
         else:
             cmnd = (f'"{ffprobe_url}" -i "{filename}" -v error {pretty} '
-                    f'{select} {entries} {show_format} {show_streams} '
-                    f'{writer}')
+                    f'-show_format -show_streams {writer}')
 
         cmnd = cmnd if platform.system() == 'Windows' else shlex.split(cmnd)
 
@@ -225,7 +196,6 @@ class FFProbe():
                 self.datalines = []
             else:
                 self.datalines.append(fformat)
-
     # --------------------------------------------------------------#
 
     def video_streams(self):
@@ -277,7 +247,7 @@ class FFProbe():
         return data
     # --------------------------------------------------------------#
 
-    def custom_output(self):
+    def get_string(self):
         """
         Print output defined by writer argument. To use this feature
         you must specify parse=False, example:
@@ -289,7 +259,7 @@ class FFProbe():
 
         Then, to get output data call this method:
 
-        output = data.custom_output()
+        output = data.get_string()
 
         Valid writers are: `default`, `json`, `compact`, `csv`, `flat`,
         `ini` and `xml` .
