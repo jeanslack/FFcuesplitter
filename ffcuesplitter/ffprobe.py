@@ -28,240 +28,52 @@ This file is part of Videomass.
 """
 import subprocess
 import platform
-import re
+import json
 from ffcuesplitter.exceptions import FFProbeError
 from ffcuesplitter.utils import Popen
 
-if not platform.system() == 'Windows':
-    import shlex
+
+def convert_kwargs_to_cmd_line_args(kwargs):
+    """Helper function to build command line arguments out of dict."""
+    args = []
+    for key in sorted(kwargs.keys()):
+        val = kwargs[key]
+        args.append(f'{key}')
+        if val is not None:
+            args.append(f'{val}')
+    return args
 
 
-class FFProbe():
+
+def ffprobe(filename, cmd='ffprobe', **kwargs):
     """
-    FFProbe wraps the ffprobe command and pulls the data into
-    an object form. The `parse` argument defines the parser's behavior.
+    Run ffprobe on the specified file and return a
+    JSON representation of the output.
 
-    If you specify `parser=True' (default) which give an auto-parsed output
-    in a object list for each instance (see examples below). The `select`,
-    `entries`, and `writer` arguments will be ignored;
-
-    If you specify `parse=False` you  get a customized output characterized
-    by the arguments you define. Note that in this case the output given by
-    get_string() instance will always be given in a string object.
-    For instance, if you use `writer=json' you must use `eval' function
-    to obtain a dict object.
-
-    ---------------------
-    USE with `parse=True` (default):
-    ---------------------
-
-    >>> from ffprobe import FFProbe
-    >>> data = FFProbe('ffprobe_url','filename_url')
-    >>> video = data.video_streams()  # <class 'list'>
-    >>> audio = data.audio_streams()  # <class 'list'>
-    >>> subtitle = data.subtitle_streams()  # <class 'list'>
-    >>> dataformat = data.format_media()  # <class 'dict'>
-    >>> dataformat['filename'], dataformat['duration']
-    >>> video[0].get['codec_type']
-    >>> [i['index'] for i in audio]
-
-    ----------------------
-    USE with `parse=False`:
-    ----------------------
-
-    >>> from ffprobe import FFProbe
-    >>> data = FFProbe(ffprobe_url, filename_url, parse=False, writer='xml'))
-    >>> data.get_string()
-
-    To get a kind of output:
-    ------------------------
-
-    A example entry of a first audio streams section
-
-    >>> data = FFProbe(ffprobe_url,
-                       filename_url,
-                       parse=False,
-                       pretty=True,
-                       writer='compact=nk=1:p=0')
-
-    >>> data.get_string().strip()
-
-    The `writer` arg alias:
-
-        writer='default=nw=1:nk=1'
-        writer='default=noprint_wrappers=1:nokey=1'
-
-        available writers name are:
-
-        `default`, `compact`, `csv`, `flat`, `ini`, `json` and `xml`
-
-        Options are list of key=value pairs, separated by ":"
-
-        See `man ffprobe`
-
-    ------------------------------------------------
-    [i] This class was partially inspired to:
-    ------------------------------------------------
-    <https://github.com/simonh10/ffprobe/blob/master/ffprobe/ffprobe.py>
-
+    Raises:
+        :class:`ffcuesplitter.FFProbeError`: if ffprobe
+        returns a non-zero exit code and a OSError,
+        FileNotFoundError.
     """
+    args = [cmd, '-show_format', '-show_streams', '-of', 'json']
+    args += convert_kwargs_to_cmd_line_args(kwargs)
+    args += [filename]
 
-    def __init__(self,
-                 ffprobe_url=str('ffprobe'),
-                 filename=str(''),
-                 parse=bool(True),
-                 pretty=bool(False),
-                 writer=None):
-        """
-        -------------------
-        Parameters meaning:
-        -------------------
-            ffprobe_url     command name by $PATH defined or a binary url
-            filename_url    a pathname appropriately quoted
-            parse           defines the output mode
-            pretty          get human values (True) or machine values (False)
-            writer          define a format of printing output
+    args = ' '.join(args) if platform.system() == 'Windows' else args
 
-        --------------------------------------------------
-        [?] to know the meaning of the above options, see:
-        --------------------------------------------------
-            <http://trac.ffmpeg.org/wiki/FFprobeTips>
-            <https://slhck.info/ffmpeg-encoding-course/#/46>
+    try:
+        with Popen(args,
+                   stdout=subprocess.PIPE,
+                   stderr=subprocess.PIPE,
+                   universal_newlines=True,
+                   ) as proc:
+            output, error = proc.communicate()
 
-        -------------------------------------------------------------------
-        The ffprobe command has stdout and stderr (unlike ffmpeg and ffplay)
-        which allows me to initialize separate attributes also for errors
-        """
-        self.mediastreams = None
-        self.mediaformat = None
-        self.datalines = None
-        self.writer = None
+            if proc.returncode != 0:
+                raise FFProbeError(f'ffprobe: {error}')
 
-        pretty = '-pretty' if pretty is True else ''
-        writer = f'-of {writer}' if writer else '-of default'
+    except (OSError, FileNotFoundError) as excepterr:
+        raise FFProbeError(excepterr) from excepterr
 
-        if parse:
-            cmnd = (f'"{ffprobe_url}" -i "{filename}" -v error {pretty} '
-                    f'-show_format -show_streams -print_format default')
-        else:
-            cmnd = (f'"{ffprobe_url}" -i "{filename}" -v error {pretty} '
-                    f'-show_format -show_streams {writer}')
-
-        cmnd = cmnd if platform.system() == 'Windows' else shlex.split(cmnd)
-
-        try:
-            with Popen(cmnd,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE,
-                       universal_newlines=True,
-                       ) as proc:
-                output, error = proc.communicate()
-
-                if proc.returncode:
-                    raise FFProbeError(f'ffprobe FAILED: {error}')
-                if parse:
-                    self.parser(output)
-                else:
-                    self.writer = output
-        except (OSError, FileNotFoundError) as excepterr:
-            raise FFProbeError(excepterr) from excepterr
-    # -------------------------------------------------------------#
-
-    def parser(self, output):
-        """
-        Indexes the catalogs [STREAM\\] and [FORMAT\\] given by
-        the default output of FFprobe
-        """
-        self.mediastreams = []
-        self.mediaformat = []
-
-        probing = output.split('\n')  # create list with strings element
-
-        for streams in probing:
-            if re.match('\\[STREAM\\]', streams):
-                self.datalines = []
-
-            elif re.match('\\[\\/STREAM\\]', streams):
-                self.mediastreams.append(self.datalines)
-                self.datalines = []
-            else:
-                self.datalines.append(streams)
-
-        for fformat in probing:
-            if re.match('\\[FORMAT\\]', fformat):
-                self.datalines = []
-
-            elif re.match('\\[\\/FORMAT\\]', fformat):
-                self.mediaformat.append(self.datalines)
-                self.datalines = []
-            else:
-                self.datalines.append(fformat)
-    # --------------------------------------------------------------#
-
-    def video_streams(self):
-        """
-        Return a metadata list for video stream. If there is not
-        data video return a empty list
-        """
-        videolist = []
-        for datastream in self.mediastreams:
-            if 'codec_type=video' in datastream:
-                video = dict([x.strip().split('=') for x in datastream])
-                videolist.append(video)
-        return videolist
-    # --------------------------------------------------------------#
-
-    def audio_streams(self):
-        """
-        Return a metadata list for audio stream. If there is not
-        data audio return a empty list
-        """
-        audiolist = []
-        for datastream in self.mediastreams:
-            if 'codec_type=audio' in datastream:
-                audio = dict([x.strip().split('=') for x in datastream])
-                audiolist.append(audio)
-        return audiolist
-    # --------------------------------------------------------------#
-
-    def subtitle_streams(self):
-        """
-        Return a metadata list for subtitle stream. If there is not
-        data subtitle return a empty list
-        """
-        subtitleslist = []
-        for datastream in self.mediastreams:
-            if 'codec_type=subtitle' in datastream:
-                subtitle = dict([x.strip().split('=') for x in datastream])
-                subtitleslist.append(subtitle)
-        return subtitleslist
-    # --------------------------------------------------------------#
-
-    def format_media(self):
-        """
-        Returns file data dict.
-        """
-        for media in self.mediaformat:
-            data = dict([x.strip().split('=') for x in media])
-
-        return data
-    # --------------------------------------------------------------#
-
-    def get_string(self):
-        """
-        Print output defined by writer argument. To use this feature
-        you must specify parse=False, example:
-
-        `data = FFProbe(filename_url,
-                        ffprobe_url,
-                        parse=False,
-                        writer='json')`
-
-        Then, to get output data call this method:
-
-        output = data.get_string()
-
-        Valid writers are: `default`, `json`, `compact`, `csv`, `flat`,
-        `ini` and `xml` .
-        """
-        return self.writer
+    else:
+        return json.loads(output)

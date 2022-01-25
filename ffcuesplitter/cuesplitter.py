@@ -35,7 +35,7 @@ from ffcuesplitter.str_utils import msgdebug, msg
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
                                       )
-from ffcuesplitter.ffprobe import FFProbe
+from ffcuesplitter.ffprobe import ffprobe
 from ffcuesplitter.ffmpeg import FFMpeg
 
 
@@ -46,26 +46,34 @@ class FFCueSplitter(FFMpeg):
 
     Usage:
             >>> from ffcuesplitter.cuesplitter import FFCueSplitter
-            >>> split = FFCueSplitter(filename='/home/user/my_file.cue')
+
+        Splittings:
+            >>> split = FFCueSplitter('/home/user/my_file.cue')
             >>> split.open_cuefile()
             >>> split.do_operations()
 
-    For a more advanced use of this class follow this examples:
-            >>> from ffcuesplitter.cuesplitter import FFCueSplitter
-            >>> split = FFCueSplitter(filename='/home/user/my_file.cue')
-            >>> split.open_cuefile()
-            >>> split.kwargs['tempdir'] = '/tmp/mytempdir'
-            >>> split.ffmpeg_arguments()
-            >>> for args, secs in zip(split.arguments, split.seconds):
-            ...     split.processing(args, secs)
-            >>> split.move_files_on_outputdir()
+        Get data tracks:
+            >>> data = FFCueSplitter('/home/user/other.cue', dry=True)
+            >>> data.open_cuefile()
+            >>> data.audiotracks  # trackdata
+            >>> data.cue.meta.data  # cd_info
+            >>> data.ffmpeg_arguments()
+
+        Only processing the track three:
+            >>> myfile = FFCueSplitter('/home/user/my_file.cue',
+                                       progress_meter='tqdm')
+            >>> f.open_cuefile()
+            >>> f.kwargs['tempdir'] = '/tmp/mytempdir'
+            >>> f.ffmpeg_arguments()
+            >>> f.processing(myfile.arguments[2], myfile.seconds[2])
+            >>> f.move_files_to_outputdir()
 
     For a full meaning of the arguments to pass to the instance, read
     the __init__ docstring of this class.
 
     """
     def __init__(self,
-                 filename=str(''),
+                 filename,
                  outputdir=str('.'),
                  suffix=str('flac'),
                  overwrite=str('ask'),
@@ -121,12 +129,13 @@ class FFCueSplitter(FFMpeg):
         self.kwargs['dry'] = dry
         self.kwargs['logtofile'] = os.path.join(self.kwargs['dirname'],
                                                 'ffcuesplitter.log')
+        self.kwargs['tempdir'] = '.'
         self.audiotracks = None
         self.cue = None
         self.testpatch = None
     # ----------------------------------------------------------------#
 
-    def move_files_on_outputdir(self):
+    def move_files_to_outputdir(self):
         """
         All files are processed in a /temp folder. After the split
         operation is complete, all tracks are moved from /temp folder
@@ -214,7 +223,7 @@ class FFCueSplitter(FFMpeg):
             except Exception as error:
                 raise FFCueSplitterError(error) from error
 
-            self.move_files_on_outputdir()
+            self.move_files_to_outputdir()
     # ----------------------------------------------------------------#
 
     def get_track_duration(self, tracks):
@@ -235,9 +244,10 @@ class FFCueSplitter(FFMpeg):
         if self.testpatch:
             probe = {'duration': 6.000000}
         else:
-            ffprobe = FFProbe(self.kwargs['ffprobe_url'],
-                              tracks[0].get('FILE'))
-            probe = ffprobe.format_media()
+            filename = tracks[0].get('FILE')
+            cmd = self.kwargs['ffprobe_url']
+            kwargs = {'-loglevel': 'error', '-hide_banner': None}
+            probe = ffprobe(filename, cmd=cmd, **kwargs)['format']
 
         time = []
         for idx, items in enumerate(tracks):
