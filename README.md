@@ -75,26 +75,25 @@ Splittings:
 >>> split.do_operations()
 ```
 
-Get data tracks:   
+Get data tracks and FFmpeg args:   
 
 ```python
->>> data = FFCueSplitter(filename='/home/user/other.cue', dry=True)
+>>> data = FFCueSplitter('/home/user/other.cue', dry=True)
 >>> data.open_cuefile()
->>> trackdata = data.audiotraks
->>> cd_info = data.cue.meta.data
->>> data.kwargs['tempdir'] = '.'
->>> ffmpeg_args = data.ffmpeg_arguments()
+>>> data.audiotracks  # trackdata
+>>> data.cue.meta.data  # cd_info
+>>> data.ffmpeg_arguments()
 ```
 
-Only processing some file:   
+Only processing one track:   
 
 ```python
->>> myfile = FFCueSplitter(filename='/home/user/my_file.cue', progress_meter='tqdm')
->>> myfile.open_cuefile()
->>> myfile.kwargs['tempdir'] = '/tmp/mytempdir'
->>> myfile.ffmpeg_arguments()
->>> myfile.processing(myfile.arguments[2], myfile.seconds[2])
->>> myfile.move_files_on_outputdir()
+>>> f = FFCueSplitter('/home/user/my_file.cue', progress_meter='tqdm')
+>>> f.open_cuefile()
+>>> f.kwargs['tempdir'] = '/tmp/mytempdir'
+>>> f.ffmpeg_arguments()
+>>> f.processing(myfile.arguments[2], myfile.seconds[2])  # track three
+>>> f.move_files_to_outputdir()
 ```
 
 More details are described in the `__doc__` strings of `FFCueSplitter` class or by typing 

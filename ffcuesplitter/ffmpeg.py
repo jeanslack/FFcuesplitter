@@ -69,11 +69,12 @@ class FFMpeg:
         if self.kwargs['format'] == 'copy':
             self.outsuffix = os.path.splitext(sourcef)[1].replace('.', '')
             codec = '-c copy'
-            return codec, self.outsuffix
+
         else:
             self.outsuffix = self.kwargs['format']
             codec = f'-c:a {FFMpeg.DATACODECS[self.kwargs["format"]]}'
-            return codec, self.outsuffix
+
+        return codec, self.outsuffix
     # -------------------------------------------------------------#
 
     def ffmpeg_arguments(self):
@@ -123,7 +124,7 @@ class FFMpeg:
 
     def processing(self, arg, secs):
         """
-        Redirect to required meter processing
+        Redirect to required processing
         """
         if self.kwargs['progress_meter'] == 'tqdm':
             cmd = arg if self.plat == 'Windows' else shlex.split(arg)

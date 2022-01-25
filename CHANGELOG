@@ -4,7 +4,9 @@ January  24 2022  Version 1.0.3 Beta
 
 - added MS-Windows compatibility.
 - Fixed test cases if ffprobe is not installed.
-- Added `copy` option, to not re-encoding output files.
+- Added `copy` option to not re-encoding output files.
+- refactor ffprobe.py
+- fixed __doc__ strings
 
 +--------------------------------+
 January  22 2022  Version 1.0.2 Beta
