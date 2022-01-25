@@ -9,7 +9,7 @@ USAGE: python3 setup.py sdist bdist_wheel
 Platform: Gnu/Linux-Unix-MacOs
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Jan 22 2022
+Rev: Jan 25 2022
 Code checker: flake8, pylint
 ####################################################################
 
@@ -34,10 +34,7 @@ from ffcuesplitter.datastrings import informations
 
 cr = informations()
 DATA = cr[0]
-LONG_DESCRIPTION = cr[1]
-LONG_HELP = cr[2]
-SHORT_HELP = cr[3]
-LICENSE = cr[6]  # short_license
+LICENSE = cr[2]  # short_license
 
 INST_REQ = ["chardet>=4.0.0", "tqdm>=4.38.0", "deflacue>=2.0.1"]
 SETUP_REQ = ["setuptools>=47.1.1",
@@ -64,11 +61,7 @@ CLASSIFIERS = [
                 ]
 
 # get the package data
-DATA_FILES = [('share/man/man1', ['man/ffcuesplitter.1.gz']),
-              ('share/ffcuesplitter', ['AUTHORS', 'BUGS',
-                                       'CHANGELOG', 'LICENSE',
-                                       'TODO', 'README.md']),
-              ]
+DATA_FILES = [('share/man/man1', ['man/ffcuesplitter.1.gz'])]
 
 with open('README.md', 'r', encoding='utf8') as readme:
     long_descript = readme.read()

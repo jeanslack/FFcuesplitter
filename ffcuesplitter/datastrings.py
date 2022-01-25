@@ -20,8 +20,6 @@ This file is part of ffcuesplitter.
     You should have received a copy of the GNU General Public License
     along with ffcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-
 def informations():
     """
     All general info of the ffcuesplitter
@@ -30,30 +28,13 @@ def informations():
             'mail': '<jeanlucperni@gmail.com>',
             'copyright': '© 2022',
             'version': '1.0.3',
-            'release': 'January 24 2022',
+            'release': 'January 25 2022',
             'rls_name': "FFcuesplitter",
             'prg_name': "ffcuesplitter",
             'webpage': "https://github.com/jeanslack/FFcuesplitter",
             'short_decript': ("FFmpeg based audio splitter for audio CD "
-                              "images supplied with .cue sheet files."),
+                              "images supplied with CUE sheet files."),
             }
-    long_desript = """
-FFcuesplitter is a multi-platform CUE sheet splitter entirely based on FFmpeg.
-Accurately splits big audio tracks and automatically tags them using the
-information contained in the associated **"CUE"** sheet. It supports many input
-formats (due to FFmpeg), including APE format, and no need installing
-third-party libs or packages. It can support multiple CUE sheet encodings via
-chardet library. Can be used both as a Python module (API) and in command
-line mode.
-"""
-
-    long_help = (f"{data['prg_name']}: {data['version']}\n"
-                 f"Webpage: <{data['webpage']}>")
-
-    short_help = "Usage: ffcuesplitter [OPTION] ['PATH NAME']"
-
-    try_help = ("Type 'ffcuesplitter -h' for help or, "
-                "more detailed, run 'man ffcuesplitter'")
 
     lic = f"""
 Copyright - {data['copyright']} {data['author']}
@@ -76,10 +57,4 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
     short_license = "GPL3 (Gnu Public License)"
 
-    return (data,
-            long_desript,
-            long_help,
-            short_help,
-            lic,
-            short_license,
-            try_help)
+    return (data, lic, short_license)

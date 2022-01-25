@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
 """
 Name: ffprobe.py
-Porpose: cross-platform API for ffprobe
-Compatibility: Python3, Python2
+Porpose: simple cross-platform wrap for ffprobe
+Compatibility: Python3
 Platform: all platforms
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
 Copyright: (c) 2018/2021 Gianluca Pernigotto <jeanlucperni@gmail.com>
@@ -33,16 +33,18 @@ from ffcuesplitter.exceptions import FFProbeError
 from ffcuesplitter.utils import Popen
 
 
-def convert_kwargs_to_cmd_line_args(kwargs):
-    """Helper function to build command line arguments out of dict."""
+def from_kwargs_to_args(kwargs):
+    """
+    Helper function to build command line
+    arguments out of dict.
+    """
     args = []
     for key in sorted(kwargs.keys()):
         val = kwargs[key]
-        args.append(f'{key}')
+        args.append(f'-{key}')
         if val is not None:
             args.append(f'{val}')
     return args
-
 
 
 def ffprobe(filename, cmd='ffprobe', **kwargs):
@@ -52,13 +54,21 @@ def ffprobe(filename, cmd='ffprobe', **kwargs):
 
     Raises:
         :class:`ffcuesplitter.FFProbeError`: if ffprobe
-        returns a non-zero exit code and a OSError,
-        FileNotFoundError.
+        returns a non-zero exit code;
+        `ffcuesplitter.FFProbeError` from `OSError`,
+        `FileNotFoundError` if a generic error.
+
+    Usage:
+        ffprobe(filename,
+                cmd='/usr/bin oi/ffprobe',
+                loglevel='error',
+                hide_banner=None,
+                etc,
+                )
     """
     args = [cmd, '-show_format', '-show_streams', '-of', 'json']
-    args += convert_kwargs_to_cmd_line_args(kwargs)
+    args += from_kwargs_to_args(kwargs)
     args += [filename]
-
     args = ' '.join(args) if platform.system() == 'Windows' else args
 
     try:
