@@ -83,3 +83,4 @@ class Popen(subprocess.Popen):
 
     # def communicate_or_kill(self, *args, **kwargs):
         # return process_communicate_or_kill(self, *args, **kwargs)
+# ------------------------------------------------------------------------

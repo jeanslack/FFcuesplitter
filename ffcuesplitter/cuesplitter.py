@@ -25,7 +25,6 @@ This file is part of ffcuesplitter.
     You should have received a copy of the GNU General Public License
     along with ffcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 import os
 import shutil
 import tempfile
@@ -132,7 +131,7 @@ class FFCueSplitter(FFMpeg):
         self.kwargs['tempdir'] = '.'
         self.audiotracks = None
         self.cue = None
-        self.testpatch = None
+        self.testpatch = None  # set for test cases only
     # ----------------------------------------------------------------#
 
     def move_files_to_outputdir(self):
@@ -183,7 +182,7 @@ class FFCueSplitter(FFMpeg):
 
     def do_operations(self):
         """
-        Automates the work in a temporary context.
+        Automates the work in a temporary context using tempfile.
 
         Raises:
             FFCueSplitterError
@@ -228,8 +227,8 @@ class FFCueSplitter(FFMpeg):
 
     def get_track_duration(self, tracks):
         """
-        Gets total duration of the source audio tracks via `ffprobe'
-        for chunks calculation on the progress meter.
+        Gets total duration of the source audio tracks for chunks
+        calculation on the progress meter during ffmpeg executions.
         Given a total duration calculates the remains duration
         for the last track as well.
 
@@ -246,20 +245,20 @@ class FFCueSplitter(FFMpeg):
         else:
             filename = tracks[0].get('FILE')
             cmd = self.kwargs['ffprobe_url']
-            kwargs = {'-loglevel': 'error', '-hide_banner': None}
-            probe = ffprobe(filename, cmd=cmd, **kwargs)['format']
+            kwargs = {'loglevel': 'error', 'hide_banner': None}
+            probe = ffprobe(filename, cmd=cmd, **kwargs)['format']['duration']
 
         time = []
-        for idx, items in enumerate(tracks):
-            if idx != len(tracks) - 1:  # minus last
-                trk = (tracks[idx + 1]['START'] -
-                       tracks[idx]['START']) / (44100)
+        for idx in enumerate(tracks):
+            if idx[0] != len(tracks) - 1:  # minus last
+                trk = (tracks[idx[0] + 1]['START'] -
+                       tracks[idx[0]]['START']) / (44100)
                 time.append(trk)
 
         if not time:
-            last = float(probe['duration']) - tracks[0]['START'] / 44100
+            last = float(probe) - tracks[0]['START'] / 44100
         else:
-            last = float(probe['duration']) - sum(time)
+            last = float(probe) - sum(time)
         time.append(last)
         for keydur, remain in zip(tracks, time):
             keydur['DURATION'] = remain
@@ -284,8 +283,8 @@ class FFCueSplitter(FFMpeg):
         tracks = self.cue.tracks
         sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
 
-        for idx, track in enumerate(tracks):
-            track_file = track.file.path
+        for track in enumerate(tracks):
+            track_file = track[1].file.path
 
             if not track_file.exists():
                 msgdebug(warn=(f'Source file `{track_file}` is not '
@@ -298,14 +297,14 @@ class FFCueSplitter(FFMpeg):
                                                  'found!')
                 continue
 
-            filename = (f"{sanitize(track.title)}")
+            filename = (f"{sanitize(track[1].title)}")
 
-            data = {'FILE': str(track_file), **track.data, **cd_info}
+            data = {'FILE': str(track_file), **track[1].data, **cd_info}
             data['TITLE'] = filename
-            data['START'] = track.start
+            data['START'] = track[1].start
 
-            if track.end != 0:
-                data['END'] = track.end
+            if track[1].end != 0:
+                data['END'] = track[1].end
 
             if f"{data['FILE']}" in sourcenames.keys():
                 sourcenames[f'{data["FILE"]}'].append(data)
@@ -332,7 +331,7 @@ class FFCueSplitter(FFMpeg):
         """
         Read cue file and start file parsing via deflacue package
         """
-        if testpatch:  # used only for test cases
+        if testpatch:
             self.testpatch = True
 
         self.check_cuefile()

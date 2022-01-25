@@ -129,8 +129,8 @@ def main():
                         )
     parser.add_argument("--dry",
                         action='store_true',
-                        help=("Perform the dry run with no "
-                              "changes done to filesystem."),
+                        help=("Perform the dry run with no changes done to "
+                              "filesystem. Only show what would be done."),
                         required=False,
                         )
     args = parser.parse_args()

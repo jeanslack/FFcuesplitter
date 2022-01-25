@@ -42,7 +42,8 @@ if not platform.system() == 'Windows':
 class FFMpeg:
     """
     FFMpeg is a parent base class interface for FFCueSplitter.
-    It represents FFmpeg commands and their sub-processing.
+    It represents FFmpeg command and arguments with their
+    sub-processing.
     """
     DATACODECS = {'wav': 'pcm_s16le -ar 44100',
                   'flac': 'flac -ar 44100',
@@ -58,13 +59,13 @@ class FFMpeg:
         self.audiotracks = kwargs
         self.seconds = None
         self.arguments = None
-        self.plat = platform.system()
+        self.osplat = platform.system()
         self.outsuffix = None
     # -------------------------------------------------------------#
 
     def codec_setup(self, sourcef):
         """
-        Evaluates codec option
+        Returns codec arg based on given format
         """
         if self.kwargs['format'] == 'copy':
             self.outsuffix = os.path.splitext(sourcef)[1].replace('.', '')
@@ -83,7 +84,7 @@ class FFMpeg:
         for each audio track.
 
         Returns:
-            dict(arguments[...], seconds[...])
+            dict(arguments:[...], seconds:[...])
         """
         self.arguments = []
         self.seconds = []
@@ -127,14 +128,14 @@ class FFMpeg:
         Redirect to required processing
         """
         if self.kwargs['progress_meter'] == 'tqdm':
-            cmd = arg if self.plat == 'Windows' else shlex.split(arg)
+            cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
                 msg(cmd)  # stdout cmd in dry mode
                 return
             self.processing_with_tqdm_progress(cmd, secs)
 
         elif self.kwargs['progress_meter'] == 'standard':
-            cmd = arg if self.plat == 'Windows' else shlex.split(arg)
+            cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
                 msg(cmd)  # stdout cmd in dry mode
                 return
@@ -146,17 +147,27 @@ class FFMpeg:
         FFmpeg sub-processing showing a tqdm progress meter
         for each loop. Also writes a log file to the same
         destination folder as the .cue file .
+
+        Usage for get seconds elapsed:
+         progbar = tqdm(total=round(seconds), unit="s", dynamic_ncols=True)
+         progbar.clear()
+         previous_s = 0
+
+            s_processed = round(int(output.split('=')[1]) / 1_000_000)
+            s_increase = s_processed - previous_s
+            progbar.update(s_increase)
+            previous_s = s_processed
+
         Raises:
             FFMpegError
         Returns:
             None
         """
-        progbar = tqdm(total=round(seconds),
+        progbar = tqdm(total=100,
                        unit="s",
                        dynamic_ncols=True
                        )
         progbar.clear()
-        previous_s = 0
 
         try:
             with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
@@ -169,18 +180,15 @@ class FFMpeg:
 
                     for output in proc.stdout:
                         if "out_time_ms" in output.strip():
-                            s_processed = round(int(output.split('=')[1]) /
-                                                1_000_000)
-                            s_increase = s_processed - previous_s
-                            progbar.update(s_increase)
-                            previous_s = s_processed
+                            s_processed = int(output.split('=')[1]) / 1_000_000
+                            percent = s_processed / seconds * 100
+                            progbar.update(round(percent) - progbar.n)
 
                     if proc.wait():  # error
                         progbar.close()
                         raise FFMpegError(f"ffmpeg FAILED: See log details: "
                                           f"'{self.kwargs['logtofile']}'"
                                           f"\nExit status: {proc.wait()}")
-            progbar.close()
 
         except (OSError, FileNotFoundError) as excepterr:
             progbar.close()
@@ -191,6 +199,8 @@ class FFMpeg:
             progbar.close()
             proc.terminate()
             sys.exit("\n[KeyboardInterrupt] FFmpeg process terminated.")
+
+        progbar.close()
     # --------------------------------------------------------------#
 
     def processing_with_standard_progress(self, cmd):
