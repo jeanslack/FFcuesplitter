@@ -4,7 +4,7 @@ Porpose: defines class Exceptions for ffcuesplitter
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: January 16 2022
+Rev: February 03 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -35,10 +35,6 @@ class FFProbeError(Exception):
 
 class InvalidFileError(Exception):
     """Exception type raised when CUE file is invalid."""
-
-
-class ParserError(Exception):
-    """Exception type raised when a CUE file parser error occurs."""
 
 
 class FFCueSplitterError(Exception):

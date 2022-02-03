@@ -6,7 +6,7 @@ Porpose: FFmpeg based audio splitter for Cue sheet files
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: January 22 2022
+Rev: February 03 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -76,9 +76,9 @@ class FFCueSplitter(FFMpeg):
                  outputdir=str('.'),
                  suffix=str('flac'),
                  overwrite=str('ask'),
-                 ffmpeg_url=str('ffmpeg'),
+                 ffmpeg_cmd=str('ffmpeg'),
                  ffmpeg_loglevel=str('info'),
-                 ffprobe_url=str('ffprobe'),
+                 ffprobe_cmd=str('ffprobe'),
                  ffmpeg_add_params=str(''),
                  progress_meter=str('standard'),
                  dry=bool(False)
@@ -96,12 +96,12 @@ class FFCueSplitter(FFMpeg):
                 output format, one of ("wav", "flac", "mp3", "ogg") .
         overwrite:
                 overwriting options, one of "ask", "never", "always".
-        ffmpeg_url:
-                a custon path of ffmpeg
+        ffmpeg_cmd:
+                an absolute path command of ffmpeg
         ffmpeg_loglevel:
                 one of "error", "warning", "info", "verbose", "debug" .
-        ffprobe_url:
-                a custon path of ffprobe.
+        ffprobe_cmd:
+                an absolute path command of ffprobe.
         ffmpeg_add_params:
                 additionals parameters of FFmpeg.
         progress_meter:
@@ -120,9 +120,9 @@ class FFCueSplitter(FFMpeg):
             self.kwargs['outputdir'] = os.path.abspath(outputdir)
         self.kwargs['format'] = suffix
         self.kwargs['overwrite'] = overwrite
-        self.kwargs['ffmpeg_url'] = ffmpeg_url
+        self.kwargs['ffmpeg_cmd'] = ffmpeg_cmd
         self.kwargs['ffmpeg_loglevel'] = ffmpeg_loglevel
-        self.kwargs['ffprobe_url'] = ffprobe_url
+        self.kwargs['ffprobe_cmd'] = ffprobe_cmd
         self.kwargs['ffmpeg_add_params'] = ffmpeg_add_params
         self.kwargs['progress_meter'] = progress_meter
         self.kwargs['dry'] = dry
@@ -130,6 +130,8 @@ class FFCueSplitter(FFMpeg):
                                                 'ffcuesplitter.log')
         self.kwargs['tempdir'] = '.'
         self.audiotracks = None
+        self.probedata = []
+        self.cue_encoding = None  # data chardet
         self.cue = None
         self.testpatch = None  # set for test cases only
     # ----------------------------------------------------------------#
@@ -241,12 +243,13 @@ class FFCueSplitter(FFMpeg):
             tracks (list), all track data taken from the cue file.
         """
         if self.testpatch:
-            probe = {'duration': 6.000000}
+            probe = {'format': {'duration': 6.000000}}
         else:
             filename = tracks[0].get('FILE')
-            cmd = self.kwargs['ffprobe_url']
+            cmd = self.kwargs['ffprobe_cmd']
             kwargs = {'loglevel': 'error', 'hide_banner': None}
-            probe = ffprobe(filename, cmd=cmd, **kwargs)['format']['duration']
+            probe = ffprobe(filename, cmd=cmd, **kwargs)
+            self.probedata.append(probe)
 
         time = []
         for idx in enumerate(tracks):
@@ -256,9 +259,10 @@ class FFCueSplitter(FFMpeg):
                 time.append(trk)
 
         if not time:
-            last = float(probe) - tracks[0]['START'] / 44100
+            last = (float(probe['format']['duration']) -
+                    tracks[0]['START'] / 44100)
         else:
-            last = float(probe) - sum(time)
+            last = float(probe['format']['duration']) - sum(time)
         time.append(last)
         for keydur, remain in zip(tracks, time):
             keydur['DURATION'] = remain
@@ -278,7 +282,7 @@ class FFCueSplitter(FFMpeg):
         cd_info = self.cue.meta.data
 
         def sanitize(val: str) -> str:
-            return val.replace('/', '')
+            return val.replace('/', '').replace('\\','').replace('"', '')
 
         tracks = self.cue.tracks
         sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
@@ -299,7 +303,7 @@ class FFCueSplitter(FFMpeg):
 
             filename = (f"{sanitize(track[1].title)}")
 
-            data = {'FILE': str(track_file), **track[1].data, **cd_info}
+            data = {'FILE': str(track_file), **cd_info, **track[1].data}
             data['TITLE'] = filename
             data['START'] = track[1].start
 
@@ -339,9 +343,9 @@ class FFCueSplitter(FFMpeg):
 
         with open(self.kwargs['filename'], 'rb') as file:
             cuebyte = file.read()
-            encoding = chardet.detect(cuebyte)
+            self.cue_encoding = chardet.detect(cuebyte)
 
         parser = CueParser.from_file(self.kwargs['filename'],
-                                     encoding=encoding['encoding'])
+                                     encoding=self.cue_encoding['encoding'])
         self.cue = parser.run()
         self.deflacue_object_handler()
