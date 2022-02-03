@@ -7,7 +7,7 @@ Platform: all platforms
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
 Copyright: (c) 202 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Jannuary.23.2022
+Rev: February 03 2022
 Code checker: flake8, pylint
 ########################################################
 

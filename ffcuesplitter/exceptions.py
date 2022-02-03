@@ -4,7 +4,7 @@ Porpose: defines class Exceptions for ffcuesplitter
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: January 16 2022
+Rev: February 03 2022
 Code checker: flake8 and pylint
 ####################################################################
 

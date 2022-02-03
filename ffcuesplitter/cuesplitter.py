@@ -6,7 +6,7 @@ Porpose: FFmpeg based audio splitter for Cue sheet files
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: January 22 2022
+Rev: February 03 2022
 Code checker: flake8 and pylint
 ####################################################################
 

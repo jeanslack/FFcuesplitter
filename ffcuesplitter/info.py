@@ -3,6 +3,7 @@ Name: info.py
 Porpose: useful information strings
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
+Rev: February 03 2022
 ####################################################################
 
 This file is part of ffcuesplitter.

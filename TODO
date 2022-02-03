@@ -1,32 +1,4 @@
 
 - Consider using `logger` for messages (?)
-- Put `from_kwargs_to_args` function in utils and use it for ffmpeg as well.
 
-- Ubuntu users can install required dependencies like this:
-  sudo apt install ffmpeg python3-chardet python3-tqdm
-  CHANGE to:
-  Installation
-    python3 -m pip install ffcuesplitter
-- ffprobe: get all data instead of duration only (or set demand)
 
-DONE
-----
-#### - change ffpeg_url/ffprobe_url in ffmpeg_cmd/ffprobe_cmd
-####- Review exception ParserError seems not used.
-####- data = {'FILE': str(track_file), **cd_info, **track[1].data} insted
-  of data = {'FILE': str(track_file), **track[1].data, **cd_info}####
-
-####- metadata = {'ARTIST': track.get('PERFORMER', ''),
-                        'ALBUM': track.get('ALBUM', ''),
-                        'TITLE': track.get('TITLE', ''),
-                        'TRACK': (str(track['TRACK_NUM']) + '/' +
-                                  str(len(self.audiotracks))),
-                        'DISCNUMBER': track.get('DISCNUMBER', ''),
-                        #'TOTAL-DISC': track.get('TOTALDISC', ''),
-                        'GENRE': track.get('GENRE', ''),
-                        'DATE': track.get('DATE', ''),
-                        'COMMENT': track.get('COMMENT', ''),
-                        'DISCID': track.get('DISCID', ''),
-                        }
-
-####- add -y param on ffmpeg command
