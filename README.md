@@ -25,9 +25,6 @@ as a Python module (API) and in command line mode.
 - [tqdm](https://pypi.org/project/tqdm/#description)
 - [FFmpeg](https://ffmpeg.org/) *(including ffprobe)*
 
- 
-Ubuntu users can install required dependencies like this:   
-`sudo apt install ffmpeg python3-chardet python3-tqdm`   
 
 ## Usage
 
@@ -40,11 +37,11 @@ ffcuesplitter -i IMPUTFILE
              [-f {wav,flac,mp3,ogg,copy}] 
              [-o OUTPUTDIR]
              [-ow {ask,never,always}] 
-             [--ffmpeg_url URL]
+             [--ffmpeg_cmd URL]
              [--ffmpeg_loglevel {error,warning,info,verbose,debug}]
              [--ffmpeg_add_params 'PARAMS ...'] 
              [-p {tqdm,mymet,standard}]
-             [--ffprobe_url URL] 
+             [--ffprobe_cmd URL] 
              [--dry]
 
 ```

@@ -93,17 +93,18 @@ class FFMpeg:
 
         for track in self.audiotracks:
             codec, suffix = self.codec_setup(track["FILE"])
-            metadata = {'ARTIST': track.get('ARTIST', ''),
+            metadata = {'ARTIST': track.get('PERFORMER', ''),
                         'ALBUM': track.get('ALBUM', ''),
                         'TITLE': track.get('TITLE', ''),
                         'TRACK': (str(track['TRACK_NUM']) + '/' +
                                   str(len(self.audiotracks))),
+                        'DISCNUMBER': track.get('DISCNUMBER', ''),
                         'GENRE': track.get('GENRE', ''),
                         'DATE': track.get('DATE', ''),
                         'COMMENT': track.get('COMMENT', ''),
                         'DISCID': track.get('DISCID', ''),
                         }
-            cmd = f'"{self.kwargs["ffmpeg_url"]}" '
+            cmd = f'"{self.kwargs["ffmpeg_cmd"]}" '
             cmd += f' -loglevel {self.kwargs["ffmpeg_loglevel"]}'
             cmd += f" {meters[self.kwargs['progress_meter']]}"
             cmd += f' -i "{track["FILE"]}"'
@@ -114,6 +115,7 @@ class FFMpeg:
                 cmd += f' -metadata {key}="{val}"'
             cmd += f' {codec}'
             cmd += f" {self.kwargs['ffmpeg_add_params']}"
+            cmd += ' -y'
             num = str(track['TRACK_NUM']).rjust(2, '0')
             name = f'{num} - {track["TITLE"]}.{suffix}'
             cmd += f' "{os.path.join(self.kwargs["tempdir"], name)}"'

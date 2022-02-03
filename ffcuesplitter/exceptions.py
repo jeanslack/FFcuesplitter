@@ -37,9 +37,5 @@ class InvalidFileError(Exception):
     """Exception type raised when CUE file is invalid."""
 
 
-class ParserError(Exception):
-    """Exception type raised when a CUE file parser error occurs."""
-
-
 class FFCueSplitterError(Exception):
     """Exception raised in all other cases."""

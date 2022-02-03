@@ -1,4 +1,16 @@
 +--------------------------------+
+February 03 2022  Version 1.0.5 Beta
++--------------------------------+
+
+- Removed `ParserError` exception.
+- Fixed missing Artist/Performer metadata.
+- Added `-y` parameter to ffmpeg arguments.
+- Changed ffmpeg-url command line option to ffmpeg-cmd
+- Changed ffprobe-url command line option to ffprobe-cmd
+- Improve file names sanitize.
+- Added `probedata` attribute to grab media informations by ffprobe command.
+
++--------------------------------+
 January  24 2022  Version 1.0.3 Beta
 +--------------------------------+
 

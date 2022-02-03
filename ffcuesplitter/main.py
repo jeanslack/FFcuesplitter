@@ -27,19 +27,19 @@ This file is part of ffcuesplitter.
 """
 import argparse
 
-from ffcuesplitter.datastrings import informations
+from ffcuesplitter.info import (__appname__,
+                                __description__,
+                                __version__,
+                                __release__
+                                )
 from ffcuesplitter.cuesplitter import FFCueSplitter
 from ffcuesplitter.str_utils import msgdebug
 from ffcuesplitter.exceptions import (InvalidFileError,
-                                      ParserError,
                                       FFCueSplitterError,
                                       FFProbeError,
                                       FFMpegError,
                                       )
 
-# data strings
-INFO = informations()
-DATA = INFO[0]
 
 
 def main():
@@ -47,20 +47,20 @@ def main():
     Defines and evaluates positional arguments
     using the argparser module.
     """
-    parser = argparse.ArgumentParser(prog=DATA['prg_name'],
-                                     description=DATA['short_decript'],
+    parser = argparse.ArgumentParser(prog=__appname__,
+                                     description=__description__,
                                      # add_help=False,
                                      )
     parser.add_argument('--version',
-                        help="Show the current version and exit",
+                        help="Show the current version and exit.",
                         action='version',
-                        version=(f"ffcuesplitter v{DATA['version']} "
-                                 f"- {DATA['release']}"),
+                        version=(f"ffcuesplitter v{__version__} "
+                                 f"- {__release__}"),
                         )
     parser.add_argument('-i', '--input-cuefile',
                         metavar='IMPUTFILE',
                         help=("An absolute or relative CUE sheet file, "
-                              "example: -i 'mycuesheetfile.cue'"),
+                              "example: -i 'mycuesheetfile.cue'."),
                         action="store",
                         required=False,
                         )
@@ -78,22 +78,22 @@ def main():
                               "output files. If a specified destination "
                               "folder does not exist, it will be created "
                               "automatically. By default it is the same "
-                              "path location as IMPUTFILE"),
+                              "path location as IMPUTFILE."),
                         required=False,
                         default='.'
                         )
     parser.add_argument("-ow", "--overwrite",
                         choices=["ask", "never", "always"],
                         dest="overwrite",
-                        help=("Overwrite files on destination if they exist, "
-                              "Default is `ask` before proceeding"),
+                        help=("Overwrite files on destination if they "
+                              "exist, Default is `ask` before overwriting."),
                         required=False,
                         default='ask'
                         )
-    parser.add_argument("--ffmpeg-url",
+    parser.add_argument("--ffmpeg-cmd",
                         metavar='URL',
-                        help=("Specify a custom ffmpeg path, "
-                              "e.g. '/usr/bin/ffmpeg', Default is `ffmpeg`"),
+                        help=("Specify an absolute ffmpeg path command, "
+                              "e.g. '/usr/bin/ffmpeg', Default is `ffmpeg`."),
                         required=False,
                         default='ffmpeg'
                         )
@@ -101,29 +101,29 @@ def main():
                         choices=["error", "warning", "info",
                                  "verbose", "debug"],
                         help=("Specify a ffmpeg loglevel, "
-                              "Default is `warning`"),
+                              "Default is `info`."),
                         required=False,
                         default='info'
                         )
     parser.add_argument("--ffmpeg-add-params",
                         metavar="'PARAMS ...'",
                         help=("Additionals ffmpeg parameters, as 'codec "
-                              "quality', etc. Note, all additional parameters "
-                              "must be quoted."),
+                              "quality', etc. Note, all additional "
+                              "parameters must be quoted."),
                         required=False,
                         default=''
                         )
     parser.add_argument("-p", "--progress-meter",
                         help=("Progress bar mode. This takes effect during "
-                              "FFmpeg process loops. Default is `tqdm`"),
+                              "FFmpeg process loops. Default is `tqdm`."),
                         choices=["tqdm", "standard"],
                         required=False,
                         default='tqdm'
                         )
-    parser.add_argument("--ffprobe-url",
+    parser.add_argument("--ffprobe-cmd",
                         metavar='URL',
-                        help=("Specify a custom ffprobe path, "
-                              "e.g. '/usr/bin/ffprobe', Default is `ffprobe`"),
+                        help=("Specify an absolute ffprobe path command, e.g. "
+                              "'/usr/bin/ffprobe', Default is `ffprobe`."),
                         required=False,
                         default='ffprobe'
                         )
@@ -140,10 +140,10 @@ def main():
         kwargs['outputdir'] = args.outputdir
         kwargs['suffix'] = args.format_type
         kwargs['overwrite'] = args.overwrite
-        kwargs['ffmpeg_url'] = args.ffmpeg_url
+        kwargs['ffmpeg_cmd'] = args.ffmpeg_cmd
         kwargs['ffmpeg_loglevel'] = args.ffmpeg_loglevel
         kwargs['ffmpeg_add_params'] = args.ffmpeg_add_params
-        kwargs['ffprobe_url'] = args.ffprobe_url
+        kwargs['ffprobe_cmd'] = args.ffprobe_cmd
         kwargs['progress_meter'] = args.progress_meter
         kwargs['dry'] = args.dry
 
@@ -153,7 +153,6 @@ def main():
             split.do_operations()
 
         except (InvalidFileError,
-                ParserError,
                 FFCueSplitterError,
                 FFProbeError,
                 FFMpegError) as error:

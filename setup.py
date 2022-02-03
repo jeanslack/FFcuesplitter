@@ -9,7 +9,7 @@ USAGE: python3 setup.py sdist bdist_wheel
 Platform: Gnu/Linux-Unix-MacOs
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Jan 25 2022
+Rev: Feb 02 2022
 Code checker: flake8, pylint
 ####################################################################
 
@@ -30,11 +30,15 @@ This file is part of ffcuesplitter.
 
 """
 from setuptools import setup, find_packages
-from ffcuesplitter.datastrings import informations
-
-cr = informations()
-DATA = cr[0]
-LICENSE = cr[2]  # short_license
+from ffcuesplitter.info import (__version__,
+                                __license__,
+                                __githuburl__,
+                                __author__,
+                                __contact__,
+                                __packagename__,
+                                __description__,
+                                __descriptionfull__
+                                )
 
 INST_REQ = ["chardet>=4.0.0", "tqdm>=4.38.0", "deflacue>=2.0.1"]
 SETUP_REQ = ["setuptools>=47.1.1",
@@ -45,7 +49,8 @@ SETUP_REQ = ["setuptools>=47.1.1",
 CLASSIFIERS = [
             'Development Status :: 4 - Beta',
             'Environment :: Console',
-            'Intended Audience :: End Users/Desktop :: Developers',
+            'Intended Audience :: End Users/Desktop',
+            'Intended Audience :: Developers',
             'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
             'Natural Language :: English',
             'Operating System :: Microsoft :: Windows',
@@ -66,15 +71,15 @@ DATA_FILES = [('share/man/man1', ['man/ffcuesplitter.1.gz'])]
 with open('README.md', 'r', encoding='utf8') as readme:
     long_descript = readme.read()
 
-setup(name=DATA['prg_name'],
-      version=DATA['version'],
-      description=DATA['short_decript'],
-      long_description=long_descript,
+setup(name=__packagename__,
+      version=__version__,
+      description=__description__,
+      long_description=__descriptionfull__,
       long_description_content_type='text/markdown',
-      author=DATA['author'],
-      author_email=DATA['mail'],
-      url=DATA['webpage'],
-      license=LICENSE,
+      author=__author__,
+      author_email=__contact__,
+      url=__githuburl__,
+      license=__license__,
       platforms=["All"],
       packages=find_packages(),
       data_files=DATA_FILES,
