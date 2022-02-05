@@ -5,26 +5,26 @@ Porpose: simple cross-platform wrap for ffprobe
 Compatibility: Python3
 Platform: all platforms
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
-Copyright: (c) 2018/2021 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Copyright: (c) 2022/2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Nov.25.2021
+Rev: Feb.04.2021
 Code checker: flake8, pylint
 ########################################################
 
-This file is part of Videomass.
+This file is part of FFcuesplitter.
 
-   Videomass is free software: you can redistribute it and/or modify
+   FFcuesplitter is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   Videomass is distributed in the hope that it will be useful,
+   FFcuesplitter is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with Videomass.  If not, see <http://www.gnu.org/licenses/>.
+   along with FFcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
 """
 import subprocess
 import platform
