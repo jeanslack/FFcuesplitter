@@ -1,5 +1,12 @@
 +--------------------------------+
-February 03 2022  Version 1.0.5 Beta
+February 05 2022  Version 1.0.7 Beta
++--------------------------------+
+
+- Updated doc strings.
+
+
++--------------------------------+
+February 03 2022  Version 1.0.6 Beta
 +--------------------------------+
 
 - Removed `ParserError` exception.

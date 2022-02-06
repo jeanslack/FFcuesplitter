@@ -6,28 +6,28 @@ license: GPL3
 Rev: February 03 2022
 ####################################################################
 
-This file is part of ffcuesplitter.
+This file is part of FFcuesplitter.
 
-    ffcuesplitter is free software: you can redistribute it and/or modify
+    FFcuesplitter is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    ffcuesplitter is distributed in the hope that it will be useful,
+    FFcuesplitter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with ffcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
+    along with FFcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Gianluca Pernigotto - Jeanslack"
 __contact__ = '<jeanlucperni@gmail.com>'
 __maintainer__ = "Gianluca Pernigotto - Jeanslack"
 __maintainer_contact__ = "jeanlucperni@gmail.com"
 __copyleft__ = '2022'
-__version__ = '1.0.6'
-__release__ = 'February  04 2022'
+__version__ = '1.0.7'
+__release__ = 'February  05 2022'
 __appname__ = "FFcuesplitter"
 __packagename__ = "ffcuesplitter"
 __license__ = "GPL3 (Gnu Public License)"
