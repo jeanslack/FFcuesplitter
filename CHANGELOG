@@ -1,9 +1,14 @@
 +--------------------------------+
-February 05 2022  Version 1.0.7 Beta
+February 06 2022  Version 1.0.7 Beta
 +--------------------------------+
 
-- Updated doc strings.
 
+- Possible errors using os.chdir() without first setting a value
+  to os.getcwd() for the next change.
+- The ffmpeg_arguments method now returns arguments with absolute
+  path names for input files as well.
+- Code refactoring.
+- Updated doc strings.
 
 +--------------------------------+
 February 03 2022  Version 1.0.6 Beta
