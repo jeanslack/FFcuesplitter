@@ -6,7 +6,7 @@ Porpose: provides command line arguments for ffcuesplitter
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: February 03 2022
+Rev: February 06 2022
 Code checker: flake8, pylint
 ####################################################################
 
@@ -26,7 +26,6 @@ This file is part of FFcuesplitter.
     along with FFcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
 """
 import argparse
-
 from ffcuesplitter.info import (__appname__,
                                 __description__,
                                 __version__,
@@ -39,7 +38,6 @@ from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFProbeError,
                                       FFMpegError,
                                       )
-
 
 
 def main():

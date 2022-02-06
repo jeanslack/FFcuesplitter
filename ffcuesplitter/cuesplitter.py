@@ -6,7 +6,7 @@ Porpose: FFmpeg based audio splitter for Cue sheet files
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: February 03 2022
+Rev: February 06 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -339,6 +339,7 @@ class FFCueSplitter(FFMpeg):
             self.testpatch = True
 
         self.check_cuefile()
+        curdir = os.getcwd()
         os.chdir(self.kwargs['dirname'])
 
         with open(self.kwargs['filename'], 'rb') as file:
@@ -349,3 +350,4 @@ class FFCueSplitter(FFMpeg):
                                      encoding=self.cue_encoding['encoding'])
         self.cue = parser.run()
         self.deflacue_object_handler()
+        os.chdir(curdir)

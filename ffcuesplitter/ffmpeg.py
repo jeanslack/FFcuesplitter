@@ -7,7 +7,7 @@ Platform: all platforms
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
 Copyright: (c) 2022/2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: February 03 2022
+Rev: February 06 2022
 Code checker: flake8, pylint
 ########################################################
 
@@ -107,7 +107,8 @@ class FFMpeg:
             cmd = f'"{self.kwargs["ffmpeg_cmd"]}" '
             cmd += f' -loglevel {self.kwargs["ffmpeg_loglevel"]}'
             cmd += f" {meters[self.kwargs['progress_meter']]}"
-            cmd += f' -i "{track["FILE"]}"'
+            fpath = os.path.join(self.kwargs["dirname"], track["FILE"])
+            cmd += f' -i "{fpath}"'
             cmd += f" -ss {round(track['START'] / 44100, 6)}"  # ff to secs
             if 'END' in track:
                 cmd += f" -to {round(track['END'] / 44100, 6)}"  # ff to secs
