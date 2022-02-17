@@ -1,4 +1,11 @@
 +--------------------------------+
+February 17 2022  Version 1.0.8 Beta
++--------------------------------+
+
+- Fixed double quotes on ffprobe command pathname.
+- Fixed double quotes on filenames passed to ffprobe.
+
++--------------------------------+
 February 06 2022  Version 1.0.7 Beta
 +--------------------------------+
 
