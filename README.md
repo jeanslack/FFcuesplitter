@@ -37,11 +37,11 @@ ffcuesplitter -i IMPUTFILE
              [-f {wav,flac,mp3,ogg,copy}] 
              [-o OUTPUTDIR]
              [-ow {ask,never,always}] 
-             [--ffmpeg_cmd URL]
-             [--ffmpeg_loglevel {error,warning,info,verbose,debug}]
-             [--ffmpeg_add_params 'PARAMS ...'] 
+             [--ffmpeg-cmd URL]
+             [--ffmpeg-loglevel {error,warning,info,verbose,debug}]
+             [--ffmpeg-add-params 'PARAMS ...'] 
              [-p {tqdm,mymet,standard}]
-             [--ffprobe_cmd URL] 
+             [--ffprobe-cmd URL] 
              [--dry]
 
 ```
