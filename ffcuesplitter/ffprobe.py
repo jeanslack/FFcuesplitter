@@ -7,7 +7,7 @@ Platform: all platforms
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
 Copyright: (c) 2022/2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Feb.17.2022
+Rev: Dec.14.2022
 Code checker: flake8, pylint
 ########################################################
 
@@ -78,6 +78,7 @@ def ffprobe(filename, cmd='ffprobe', **kwargs):
                    stdout=subprocess.PIPE,
                    stderr=subprocess.PIPE,
                    universal_newlines=True,
+                   encoding='utf8',
                    ) as proc:
             output, error = proc.communicate()
 

@@ -7,7 +7,7 @@ Platform: all platforms
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
 Copyright: (c) 2022/2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: February 06 2022
+Rev: Dec.14.2022
 Code checker: flake8, pylint
 ########################################################
 
@@ -179,6 +179,7 @@ class FFMpeg:
                            stdout=subprocess.PIPE,
                            stderr=log,
                            bufsize=1,
+                           encoding='utf8',
                            universal_newlines=True) as proc:
 
                     for output in proc.stdout:
@@ -218,7 +219,7 @@ class FFMpeg:
         with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
             log.write(f'COMMAND: {cmd}')
         try:
-            subprocess.run(cmd, check=True, shell=False)
+            subprocess.run(cmd, check=True, shell=False, encoding='utf8',)
 
         except FileNotFoundError as err:
             raise FFMpegError(f"{err}") from err

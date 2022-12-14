@@ -1,4 +1,12 @@
 +--------------------------------+
+December 14 2022  Version 1.0.11 Beta
++--------------------------------+
+
+- Added `encoding=utf8` argument to sub-processes.
+- Update man page.
+- Improved descriptions.
+
++--------------------------------+
 November 25 2022  Version 1.0.9 Beta
 +--------------------------------+
 

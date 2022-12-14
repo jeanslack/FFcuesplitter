@@ -2,20 +2,20 @@
 
 FFcuesplitter is a multi-platform CUE sheet splitter entirely based on FFmpeg. 
 Splits big audio tracks and automatically embeds tags using the information 
-contained in the associated **"CUE"** sheet. It supports many input formats 
-(due to FFmpeg), including APE format, without need installing extra audio libs 
-or packages. automatically support multiple CUE sheet encodings. Can be used both 
-as a Python module (API) and in command line mode.   
+contained in the associated **"CUE"** sheet. It supports multiple CUE sheet 
+encodings and many input formats (due to FFmpeg), including APE format, without 
+need installing extra audio libs and packages. Can be used both 
+as a Python module (API) or in command line mode.   
 
 # Features
 
-- It supports many input formats.
-- Supported formats to output: wav, flac, ogg, mp3.
-- Ability to copy codec without re-encoding.
+- Supports many input formats.
+- Convert to Wav, Flac, Ogg, Mp3.
+- Ability to copy source codec and format without re-encoding.
 - Auto-tag from .cue file data.
 - Supports multiple .cue file encodings.
 - Works on Linux, MacOs, FreeBSD, Windows.
-- Can be used both as a Python module and in command line mode.
+- Can be used both as a Python module or in command line mode.
 
 ## Requires
 
