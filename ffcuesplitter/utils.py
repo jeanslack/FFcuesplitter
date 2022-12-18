@@ -23,9 +23,33 @@ This file is part of FFcuesplitter.
     You should have received a copy of the GNU General Public License
     along with FFcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
 """
+import re
 import subprocess
 import platform
 import datetime
+
+
+def file_sanitize(string: str) -> str:
+    r"""
+    Makes the passed filename string consistent and compatible
+    with file systems of some operating systems.
+
+    All OS:
+    Remove all leading/trailing spaces and dots.
+
+    On Windows it removes the following illegal chars:
+    ^ ` ~ " # ' % & * : < > ? / \ { | }
+    On Unix it remove slash char: /
+    Returns the new sanitized string
+
+    """
+    newstr = string.strip().strip('.')  # spaces and dots
+
+    if not platform.system() == 'Windows':
+        return re.sub(r"[\"\*\:\<\>\?\/\|\\]", '', newstr)
+    else:
+        return newstr.replace('/', '')
+# ------------------------------------------------------------------------
 
 
 def pairwise(iterable):
@@ -33,17 +57,21 @@ def pairwise(iterable):
     Return a zip object from iterable.
     This function is used by run method.
     ----
-    USE:
+    USAGE:
 
     after splitting ffmpeg's progress strings such as:
-    output = "frame= 1178 fps=155 q=29.0 size=    2072kB time=00:00:39.02
-              bitrate= 435.0kbits/s speed=5.15x  "
+    >>> output = ("frame= 1178 fps=155 q=29.0 size=    2072kB "
+                  "time=00:00:39.02 bitrate= 435.0kbits/s speed=5.15x  ")
     in a list as:
-    iterable = ['frame', '1178', 'fps', '155', 'q', '29.0', 'size', '2072kB',
-                'time', '00:00:39.02', 'bitrate', '435.0kbits/s', speed',
-                '5.15x']
-    for x, y in pairwise(iterable):
-        (x,y)
+
+    >>> iterable = [a for a in "=".join(output.split()).split('=') if a]
+    >>> iterable  # get list like this:
+    >>> ['frame', '1178', 'fps', '155', 'q', '29.0', 'size', '2072kB',
+         'time', '00:00:39.02', 'bitrate', '435.0kbits/s', speed',
+         '5.15x']
+
+    >>> for x, y in pairwise(iterable):
+            x,y
 
     <https://stackoverflow.com/questions/5389507/iterating-over-every-
     two-elements-in-a-list>

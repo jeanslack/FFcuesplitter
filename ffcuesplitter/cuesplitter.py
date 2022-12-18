@@ -30,7 +30,10 @@ import shutil
 import tempfile
 import chardet
 from deflacue.deflacue import CueParser
-from ffcuesplitter.str_utils import msgdebug, msg
+from ffcuesplitter.str_utils import (msgdebug,
+                                     msg,
+                                     )
+from ffcuesplitter.utils import file_sanitize
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
                                       )
@@ -280,10 +283,6 @@ class FFCueSplitter(FFMpeg):
         """
         self.audiotracks = []
         cd_info = self.cue.meta.data
-
-        def sanitize(val: str) -> str:
-            return val.replace('/', '').replace('\\','').replace('"', '')
-
         tracks = self.cue.tracks
         sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
 
@@ -301,7 +300,7 @@ class FFCueSplitter(FFMpeg):
                                                  'found!')
                 continue
 
-            filename = (f"{sanitize(track[1].title)}")
+            filename = (f"{file_sanitize(track[1].title)}")
 
             data = {'FILE': str(track_file), **cd_info, **track[1].data}
             data['TITLE'] = filename
