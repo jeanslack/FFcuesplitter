@@ -6,7 +6,7 @@ Porpose: FFmpeg based audio splitter for Cue sheet files
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: February 06 2022
+Rev: Dec 18 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -33,7 +33,7 @@ from deflacue.deflacue import CueParser
 from ffcuesplitter.str_utils import (msgdebug,
                                      msg,
                                      )
-from ffcuesplitter.utils import file_sanitize
+from ffcuesplitter.utils import sanitize
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
                                       )
@@ -77,6 +77,7 @@ class FFCueSplitter(FFMpeg):
     def __init__(self,
                  filename,
                  outputdir=str('.'),
+                 subfolders=str(''),
                  suffix=str('flac'),
                  overwrite=str('ask'),
                  ffmpeg_cmd=str('ffmpeg'),
@@ -95,6 +96,9 @@ class FFCueSplitter(FFMpeg):
                 absolute or relative CUE sheet file
         outputdir:
                 absolute or relative pathname to output files
+        subfolders:
+                auto-create sufolders, one of ("artist/album", "artist+album",
+                                               "artist", "album")
         suffix:
                 output format, one of ("wav", "flac", "mp3", "ogg") .
         overwrite:
@@ -121,6 +125,7 @@ class FFCueSplitter(FFMpeg):
             self.kwargs['outputdir'] = self.kwargs['dirname']
         else:
             self.kwargs['outputdir'] = os.path.abspath(outputdir)
+        self.kwargs['subfolders'] = subfolders
         self.kwargs['format'] = suffix
         self.kwargs['overwrite'] = overwrite
         self.kwargs['ffmpeg_cmd'] = ffmpeg_cmd
@@ -285,6 +290,9 @@ class FFCueSplitter(FFMpeg):
         cd_info = self.cue.meta.data
         tracks = self.cue.tracks
         sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
+        if self.kwargs['subfolders']:  # Artist&Album names sanitize
+            self.set_subdirs(cd_info.get('PERFORMER', 'No Artist name'),
+                             cd_info.get('ALBUM', 'No Album name'))
 
         for track in enumerate(tracks):
             track_file = track[1].file.path
@@ -300,7 +308,7 @@ class FFCueSplitter(FFMpeg):
                                                  'found!')
                 continue
 
-            filename = (f"{file_sanitize(track[1].title)}")
+            filename = (f"{sanitize(track[1].title)}")  # title names sanitize
 
             data = {'FILE': str(track_file), **cd_info, **track[1].data}
             data['TITLE'] = filename
@@ -316,6 +324,32 @@ class FFCueSplitter(FFMpeg):
             self.audiotracks += self.get_track_duration(val)
 
         return self.audiotracks
+    # ----------------------------------------------------------------#
+
+    def set_subdirs(self, performer, album):
+        """
+        Set sub-folders with artist and album names.
+        This method reset the attribute `self.kwargs['outputdir']`
+        adding the new folders sanitized to output destination.
+        Raise FFCueSplitterError otherwise
+        """
+        subdirs = None
+
+        if self.kwargs['subfolders'] == 'artist+album':
+            subdirs = os.path.join(sanitize(performer), sanitize(album))
+
+        elif self.kwargs['subfolders'] == 'artist':
+            subdirs = f"{sanitize(performer)}"
+
+        elif self.kwargs['subfolders'] == 'album':
+            subdirs = f"{sanitize(album)}"
+
+        if subdirs is not None:
+            self.kwargs['outputdir'] = os.path.join(self.kwargs['outputdir'],
+                                                    subdirs)
+        else:
+            raise FFCueSplitterError(f"Invalid subfolders arguments: "
+                                     f"'{self.kwargs['subfolders']}'")
     # ----------------------------------------------------------------#
 
     def check_cuefile(self):

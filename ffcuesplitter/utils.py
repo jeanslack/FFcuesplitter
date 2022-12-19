@@ -4,7 +4,7 @@ Porpose: utils used by FFcuesplitter
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: January 16 2022
+Rev: Dec 18 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -29,26 +29,25 @@ import platform
 import datetime
 
 
-def file_sanitize(string: str) -> str:
+def sanitize(string: str) -> str:
     r"""
-    Makes the passed filename string consistent and compatible
+    Makes the passed string consistent and compatible
     with file systems of some operating systems.
 
     All OS:
     Remove all leading/trailing spaces and dots.
 
-    On Windows it removes the following illegal chars:
-    ^ ` ~ " # ' % & * : < > ? / \ { | }
+    On Windows it removes the following illegal chars: " * : < > ? / \ |
     On Unix it remove slash char: /
     Returns the new sanitized string
 
     """
     newstr = string.strip().strip('.')  # spaces and dots
 
-    if not platform.system() == 'Windows':
+    if platform.system() == 'Windows':
         return re.sub(r"[\"\*\:\<\>\?\/\|\\]", '', newstr)
-    else:
-        return newstr.replace('/', '')
+
+    return newstr.replace('/', '')
 # ------------------------------------------------------------------------
 
 

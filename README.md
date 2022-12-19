@@ -36,6 +36,7 @@ ffcuesplitter -i IMPUTFILE
              [--version] 
              [-f {wav,flac,mp3,ogg,copy}] 
              [-o OUTPUTDIR]
+             [-s {artist+album,artist,album}]
              [-ow {ask,never,always}] 
              [--ffmpeg-cmd URL]
              [--ffmpeg-loglevel {error,warning,info,verbose,debug}]
