@@ -6,7 +6,7 @@ Porpose: provides command line arguments for ffcuesplitter
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: February 06 2022
+Rev: Dec 18 2022
 Code checker: flake8, pylint
 ####################################################################
 
@@ -80,6 +80,18 @@ def main():
                         required=False,
                         default='.'
                         )
+    parser.add_argument("-s", "--subfolders",
+                        choices=["artist+album", "artist", "album"],
+                        help=("Add subfolders to the output destination (see "
+                              "--output-dir). The `artist+album` argument "
+                              "creates two subfolders with the artist and album "
+                              "names; `artist` creates a subfolder with the "
+                              "artist's name; `album` creates a subfolder "
+                              "with the album name. In these subfolders the "
+                              "final tracks will be saved."),
+                        required=False,
+                        default=''
+                        )
     parser.add_argument("-ow", "--overwrite",
                         choices=["ask", "never", "always"],
                         dest="overwrite",
@@ -136,6 +148,7 @@ def main():
     if args.input_cuefile:
         kwargs = {'filename': args.input_cuefile}
         kwargs['outputdir'] = args.outputdir
+        kwargs['subfolders'] = args.subfolders
         kwargs['suffix'] = args.format_type
         kwargs['overwrite'] = args.overwrite
         kwargs['ffmpeg_cmd'] = args.ffmpeg_cmd
