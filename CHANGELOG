@@ -1,12 +1,13 @@
 +--------------------------------+
-December 18 2022  Version 1.0.12 Beta
+December 20 2022  Version 1.0.12 Beta
 +--------------------------------+
 
-- Added sanitization for splitted file names, Artist name and Album
-  name subfolders.
-- Added -s option to auto-create Artist and Album subfolders.
+- Added names sanitization machinery.
+- Added `-s` `--subfolders` option.
 - Update man page.
 - Update README.md .
+- Added batch filenames list processing.
+- Added `-r` `--recursive` option.
 
 +--------------------------------+
 December 14 2022  Version 1.0.11 Beta

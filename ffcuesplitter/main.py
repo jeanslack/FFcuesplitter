@@ -32,7 +32,8 @@ from ffcuesplitter.info import (__appname__,
                                 __release__
                                 )
 from ffcuesplitter.cuesplitter import FFCueSplitter
-from ffcuesplitter.str_utils import msgdebug
+from ffcuesplitter.str_utils import msgdebug, msg
+from ffcuesplitter.utils import input_paths_parser
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
                                       FFProbeError,
@@ -55,11 +56,23 @@ def main():
                         version=(f"ffcuesplitter v{__version__} "
                                  f"- {__release__}"),
                         )
-    parser.add_argument('-i', '--input-cuefile',
-                        metavar='IMPUTFILE',
-                        help=("An absolute or relative CUE sheet file, "
-                              "example: -i 'mycuesheetfile.cue'."),
+    parser.add_argument('-i', '--input-fd',
+                        metavar='FILENAMES DIRNAMES',
+                        help=("It accepts both files and directories: Path "
+                              "names can be absolute or relative; Multiple "
+                              "files/directories must be separated by one or "
+                              "more spaces between them. See also recursive "
+                              "mode (-r, --recursive)"),
+                        nargs='+',
                         action="store",
+                        required=True,
+                        )
+    parser.add_argument('-r', '--recursive',
+                        action='store_true',
+                        help=("Recursion flag to search sub-directories "
+                              "under the given directories. Note that this "
+                              "flag will only work with dirnames and will "
+                              "have no effect with filenames."),
                         required=False,
                         )
     parser.add_argument('-f', '--format-type',
@@ -74,19 +87,21 @@ def main():
                         dest="outputdir",
                         help=("Absolute or relative destination path for "
                               "output files. If a specified destination "
-                              "folder does not exist, it will be created "
-                              "automatically. By default it is the same "
-                              "path location as IMPUTFILE."),
+                              "folder does not exist, it will be created. "
+                              "If no outputdir option is specified, the "
+                              "output files will be written to the default "
+                              "output folder (the same as inputfile)."),
                         required=False,
                         default='.'
                         )
     parser.add_argument("-s", "--subfolders",
                         choices=["artist+album", "artist", "album"],
-                        help=("Add subfolders to the output destination (see "
-                              "--output-dir). The `artist+album` argument "
-                              "creates two subfolders with the artist and album "
-                              "names; `artist` creates a subfolder with the "
-                              "artist's name; `album` creates a subfolder "
+                        help=("Create additional subfolders in the output "
+                              "destination (see --output-dir). The "
+                              "`artist+album` argument "
+                              "creates two subfolders with the artist and "
+                              "album names; `artist` creates a subfolder with "
+                              "the artist's name; `album` creates a subfolder "
                               "with the album name. In these subfolders the "
                               "final tracks will be saved."),
                         required=False,
@@ -116,7 +131,7 @@ def main():
                         default='info'
                         )
     parser.add_argument("--ffmpeg-add-params",
-                        metavar="'PARAMS ...'",
+                        metavar="'parameters'",
                         help=("Additionals ffmpeg parameters, as 'codec "
                               "quality', etc. Note, all additional "
                               "parameters must be quoted."),
@@ -145,8 +160,14 @@ def main():
                         )
     args = parser.parse_args()
 
-    if args.input_cuefile:
-        kwargs = {'filename': args.input_cuefile}
+    allfiles = input_paths_parser(target_list=args.input_fd,
+                                  recursive=args.recursive,
+                                  suffixes=('.cue', '.CUE')
+                                  )
+    filelist = set(allfiles[0] + allfiles[1])
+    maxitems = len(filelist)
+    for files in filelist:
+        kwargs = {'filename': files}
         kwargs['outputdir'] = args.outputdir
         kwargs['subfolders'] = args.subfolders
         kwargs['suffix'] = args.format_type
@@ -168,10 +189,12 @@ def main():
                 FFProbeError,
                 FFMpegError) as error:
             msgdebug(err=f"{error}")
-        else:
-            msgdebug(info="Finished!")
-    else:
-        parser.error("Requires an INPUTFILE, please provide it")
+        finally:
+            if not maxitems == 1:
+                msg('========================================')
+            maxitems -= 1
+
+    msgdebug(info="Finished!")
 
 
 if __name__ == '__main__':
