@@ -63,7 +63,10 @@ To splits the individual audio tracks into `wav` format
 and saves them in the 'my-awesome-tracklist' folder.   
 
 **Note** that if no outputdir option is specified, the output files will be written 
-to the default output folder (the same as inputfile).   
+to the default output folder (the same as inputfile).  
+
+For other options and description, read the examples on the 
+[wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)    
 
 ### Using Python
 
@@ -92,7 +95,7 @@ Get data tracks and FFmpeg args:
 For arguments meaning and more details, type `help(FFCueSplitter)`   
 
 For other options and description, read the examples on the 
-[wiki page](https://github.com/jeanslack/FFcuesplitter/wiki/Examples)
+[wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)   
 
 
 ## Installation
