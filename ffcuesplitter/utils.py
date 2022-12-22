@@ -4,7 +4,7 @@ Porpose: utils used by FFcuesplitter
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Dec 18 2022
+Rev: Dec 20 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -23,10 +23,55 @@ This file is part of FFcuesplitter.
     You should have received a copy of the GNU General Public License
     along with FFcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
 """
+import os
 import re
 import subprocess
 import platform
 import datetime
+
+
+def input_paths_parser(target_list,
+                       recursive=bool(False),
+                       suffixes=('.txt',)
+                       ):
+    """
+    Searches and catalogs file types with a given suffix
+    whitin a list of directories. Accepts a list of one
+    or more directories (files passed are rejected by default),
+    a boolean parameter for recursive mode, and a list of
+    one or more suffixes to search for.
+    Returns a tuple of two items of type list: filtered files
+    and rejected files.
+
+    """
+    fileswalk = {}
+    pathdirs = []
+    filtered = []
+    rejected = []  # add here if it's file
+
+    for f_or_d in target_list:
+        if os.path.isdir(f_or_d):
+            pathdirs.append(f_or_d)
+        else:
+            rejected.append(f_or_d)
+
+    for dirs in pathdirs:
+        if recursive is True:
+            for curdir, _, dirfiles in os.walk(dirs):
+                fileswalk[curdir] = list(dirfiles)
+
+            for path, name in fileswalk.items():
+                for cue in name:
+                    if os.path.splitext(cue)[1] in suffixes:
+                        filtered.append(os.path.join(path, cue))
+        else:
+            for path in pathdirs:
+                for cue in os.listdir(path):
+                    if os.path.splitext(cue)[1] in suffixes:
+                        filtered.append(os.path.join(path, cue))
+
+    return filtered, rejected
+# ------------------------------------------------------------------------
 
 
 def sanitize(string: str) -> str:

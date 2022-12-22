@@ -4,18 +4,20 @@ FFcuesplitter is a multi-platform CUE sheet splitter entirely based on FFmpeg.
 Splits big audio tracks and automatically embeds tags using the information 
 contained in the associated **"CUE"** sheet. It supports multiple CUE sheet 
 encodings and many input formats (due to FFmpeg), including APE format, without 
-need installing extra audio libs and packages. Can be used both 
-as a Python module (API) or in command line mode.   
+need installing extra audio libs and packages. It has the ability to accept both 
+files and directories as input while also working in recursive mode. Can be used 
+both as a Python module and from command line.   
 
 # Features
 
 - Supports many input formats.
 - Convert to Wav, Flac, Ogg, Mp3.
 - Ability to copy source codec and format without re-encoding.
+- Batch files processing for both files and directories.
 - Auto-tag from .cue file data.
 - Supports multiple .cue file encodings.
 - Works on Linux, MacOs, FreeBSD, Windows.
-- Can be used both as a Python module or in command line mode.
+- Can be used both as a Python module and in command line mode.
 
 ## Requires
 
@@ -28,38 +30,45 @@ as a Python module (API) or in command line mode.
 
 ## Usage
 
-### From Command Line
+### Using Command Line
 
 ```
-ffcuesplitter -i IMPUTFILE
-             [-h] 
-             [--version] 
-             [-f {wav,flac,mp3,ogg,copy}] 
-             [-o OUTPUTDIR]
-             [-s {artist+album,artist,album}]
-             [-ow {ask,never,always}] 
-             [--ffmpeg-cmd URL]
-             [--ffmpeg-loglevel {error,warning,info,verbose,debug}]
-             [--ffmpeg-add-params 'PARAMS ...'] 
-             [-p {tqdm,mymet,standard}]
-             [--ffprobe-cmd URL] 
-             [--dry]
+ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]   
+              [-r]   
+              [-f {wav,flac,mp3,ogg,copy}]   
+              [-o OUTPUTDIR]   
+              [-s {artist+album,artist,album}]   
+              [-ow {ask,never,always}]   
+              [--ffmpeg-cmd URL]   
+              [--ffmpeg-loglevel {error,warning,info,verbose,debug}]   
+              [--ffmpeg-add-params 'parameters']   
+              [-p {tqdm,standard}]   
+              [--ffprobe-cmd URL]   
+              [--dry]   
+              [-h]   
+              [--version]   
+
 
 ```
 
-#### Examples
+**Examples**   
 
-`ffcuesplitter -i 'inputfile.cue'`   
+`ffcuesplitter -i 'inputfile_1.cue' 'inputfile_2.cue' 'inputfile_3.cue'`   
 
-To split and convert several audio formats into the relative individual 
-`flac` format audio tracks.    
+Batch file processing to split and convert to default audio `flac` format.    
 
 `ffcuesplitter -i '/User/music/collection/inputfile.cue' -f wav -o 'my-awesome-tracklist'`   
 
 To splits the individual audio tracks into `wav` format 
 and saves them in the 'my-awesome-tracklist' folder.   
 
-### From Python Interpreter
+**Note** that if no outputdir option is specified, the output files will be written 
+to the default output folder (the same as inputfile).  
+
+For other options and description, read the examples on the 
+[wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)    
+
+### Using Python
 
 ```python
 >>> from ffcuesplitter.cuesplitter import FFCueSplitter
@@ -68,7 +77,7 @@ and saves them in the 'my-awesome-tracklist' folder.
 Splittings:   
 
 ```python
->>> split = FFCueSplitter(filename='/home/user/my_file.cue')
+>>> split = FFCueSplitter(filename='filename.cue')
 >>> split.open_cuefile()
 >>> split.do_operations()
 ```
@@ -76,26 +85,18 @@ Splittings:
 Get data tracks and FFmpeg args:   
 
 ```python
->>> data = FFCueSplitter('/home/user/other.cue', dry=True)
+>>> data = FFCueSplitter('filename.cue', dry=True)
 >>> data.open_cuefile()
 >>> data.audiotracks  # trackdata
 >>> data.cue.meta.data  # cd_info
 >>> data.ffmpeg_arguments()
 ```
 
-Only processing one track:   
+For arguments meaning and more details, type `help(FFCueSplitter)`   
 
-```python
->>> f = FFCueSplitter('/home/user/my_file.cue', progress_meter='tqdm')
->>> f.open_cuefile()
->>> f.kwargs['tempdir'] = '/tmp/mytempdir'
->>> f.ffmpeg_arguments()
->>> f.processing(myfile.arguments[2], myfile.seconds[2])  # track three
->>> f.move_files_to_outputdir()
-```
+For other options and description, read the examples on the 
+[wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)   
 
-More details are described in the `__doc__` strings of `FFCueSplitter` class or by typing 
-`help(FFCueSplitter)` in the Python console, or by reading the **ffcuesplitter man page**.
 
 ## Installation
 

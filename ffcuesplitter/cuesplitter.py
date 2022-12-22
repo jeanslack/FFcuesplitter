@@ -6,7 +6,7 @@ Porpose: FFmpeg based audio splitter for Cue sheet files
 Platform: MacOs, Gnu/Linux, FreeBSD
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Dec 18 2022
+Rev: Dec 22 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -50,25 +50,19 @@ class FFCueSplitter(FFMpeg):
             >>> from ffcuesplitter.cuesplitter import FFCueSplitter
 
         Splittings:
-            >>> split = FFCueSplitter('/home/user/my_file.cue')
+            >>> split = FFCueSplitter(filename)
             >>> split.open_cuefile()
             >>> split.do_operations()
 
         Get data tracks:
-            >>> data = FFCueSplitter('/home/user/other.cue', dry=True)
+            >>> data = FFCueSplitter(filename, dry=True)
             >>> data.open_cuefile()
             >>> data.audiotracks  # trackdata
             >>> data.cue.meta.data  # cd_info
             >>> data.ffmpeg_arguments()
 
-        Only processing the track three:
-            >>> myfile = FFCueSplitter('/home/user/my_file.cue',
-                                       progress_meter='tqdm')
-            >>> f.open_cuefile()
-            >>> f.kwargs['tempdir'] = '/tmp/mytempdir'
-            >>> f.ffmpeg_arguments()
-            >>> f.processing(myfile.arguments[2], myfile.seconds[2])
-            >>> f.move_files_to_outputdir()
+    For other options, read the examples on the wiki page:
+    https://github.com/jeanslack/FFcuesplitter/wiki/Examples
 
     For a full meaning of the arguments to pass to the instance, read
     the __init__ docstring of this class.
@@ -76,16 +70,16 @@ class FFCueSplitter(FFMpeg):
     """
     def __init__(self,
                  filename,
-                 outputdir=str('.'),
-                 subfolders=str(''),
-                 suffix=str('flac'),
-                 overwrite=str('ask'),
-                 ffmpeg_cmd=str('ffmpeg'),
-                 ffmpeg_loglevel=str('info'),
-                 ffprobe_cmd=str('ffprobe'),
-                 ffmpeg_add_params=str(''),
-                 progress_meter=str('standard'),
-                 dry=bool(False)
+                 outputdir: str = '.',
+                 subfolders: str = '',
+                 suffix: str = 'flac',
+                 overwrite: str = "ask",
+                 ffmpeg_cmd: str = 'ffmpeg',
+                 ffmpeg_loglevel: str = "info",
+                 ffprobe_cmd: str = 'ffprobe',
+                 ffmpeg_add_params: str = '',
+                 progress_meter: str = "standard",
+                 dry: bool = False,
                  ):
         """
         ------------------
@@ -93,7 +87,7 @@ class FFCueSplitter(FFMpeg):
         ------------------
 
         filename:
-                absolute or relative CUE sheet file
+                absolute or relative CUE sheet file ('filename.cue')
         outputdir:
                 absolute or relative pathname to output files
         subfolders:
@@ -144,12 +138,60 @@ class FFCueSplitter(FFMpeg):
         self.testpatch = None  # set for test cases only
     # ----------------------------------------------------------------#
 
+    def check_for_overwriting(self):
+        """
+        Checking options for overwriting files.
+        """
+        outputdir = self.kwargs['outputdir']
+        overwr = self.kwargs['overwrite']
+        tracks = self.audiotracks.copy()
+
+        if overwr == 'always':
+            msgdebug(info=("Overwrite existing file because "
+                           "you specified the 'always' option"))
+            return False
+
+        if overwr == 'never':
+            msgdebug(info=("Do not overwrite any files because "
+                           "you specified 'never' option"))
+            return True
+
+        for data in tracks:  # self.audiotracks
+            track = (f"{str(data['TRACK_NUM']).rjust(2, '0')} - "
+                     f"{data['TITLE']}.{self.kwargs['format']}")
+            pathfile = os.path.join(outputdir, track)
+
+            if os.path.exists(pathfile):
+                if overwr in ('n', 'N', 'y', 'Y', 'ask'):
+                    while True:
+                        msgdebug(warn=f"File already exists: "
+                                 f"'{os.path.join(outputdir, track)}'")
+                        overwr = input("Overwrite? [Y/n/always/never] > ")
+                        if overwr in ('Y', 'y', 'n', 'N', 'always', 'never'):
+                            break
+                        msgdebug(err=f"Invalid option '{overwr}'")
+                        continue
+                if overwr == 'never':
+                    msgdebug(info=("Do not overwrite any files because "
+                                   "you specified 'never' option"))
+                    return True
+
+            if overwr in ('n', 'N'):
+                del self.audiotracks[self.audiotracks.index(data)]
+
+            elif overwr in ('y', 'Y', 'always', 'never', 'ask'):
+                if overwr == 'always':
+                    msgdebug(info=("Overwrite existing file because "
+                                   "you specified the 'always' option"))
+                    return False
+        return False
+    # ----------------------------------------------------------------#
+
     def move_files_to_outputdir(self):
         """
         All files are processed in a /temp folder. After the split
         operation is complete, all tracks are moved from /temp folder
-        to output folder. Here evaluates what to do if files already
-        exists on output folder.
+        to output folder.
 
         Raises:
             FFCueSplitterError
@@ -158,36 +200,13 @@ class FFCueSplitter(FFMpeg):
 
         """
         outputdir = self.kwargs['outputdir']
-        overwr = self.kwargs['overwrite']
 
         for track in os.listdir(self.kwargs['tempdir']):
-            if os.path.exists(os.path.join(outputdir, track)):
-                if overwr in ('n', 'N', 'y', 'Y', 'ask'):
-                    while True:
-                        msgdebug(warn=f"File already exists: "
-                                 f"'{os.path.join(outputdir, track)}'")
-                        overwr = input("Overwrite [Y/n/always/never]? > ")
-                        if overwr in ('Y', 'y', 'n', 'N', 'always', 'never'):
-                            break
-                        msgdebug(err=f"Invalid option '{overwr}'")
-                        continue
-                if overwr == 'never':
-                    msgdebug(info=("Do not overwrite any files because "
-                                   "you specified 'never' option"))
-                    return None
-
-            if overwr in ('y', 'Y', 'always', 'never', 'ask'):
-                if overwr == 'always':
-                    msgdebug(info=("Overwrite existing file because "
-                                   "you specified the 'always' option"))
-                try:
-                    shutil.move(os.path.join(self.kwargs['tempdir'], track),
-                                os.path.join(outputdir, track))
-
-                except Exception as error:
-                    raise FFCueSplitterError(error) from error
-
-        return None
+            try:
+                shutil.move(os.path.join(self.kwargs['tempdir'], track),
+                            os.path.join(outputdir, track))
+            except Exception as error:
+                raise FFCueSplitterError(error) from error
     # ----------------------------------------------------------------#
 
     def do_operations(self):
@@ -199,6 +218,9 @@ class FFCueSplitter(FFMpeg):
         Returns:
             None
         """
+        if self.check_for_overwriting() is True or self.audiotracks == []:
+            return
+
         with tempfile.TemporaryDirectory(suffix=None,
                                          prefix='ffcuesplitter_',
                                          dir=None) as tmpdir:
@@ -290,6 +312,7 @@ class FFCueSplitter(FFMpeg):
         cd_info = self.cue.meta.data
         tracks = self.cue.tracks
         sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
+
         if self.kwargs['subfolders']:  # Artist&Album names sanitize
             self.set_subdirs(cd_info.get('PERFORMER', 'No Artist name'),
                              cd_info.get('ALBUM', 'No Album name'))
