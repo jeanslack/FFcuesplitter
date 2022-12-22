@@ -34,7 +34,7 @@ both as a Python module and from command line.
 
 ```
 ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]   
-			  [-r]   
+              [-r]   
               [-f {wav,flac,mp3,ogg,copy}]   
               [-o OUTPUTDIR]   
               [-s {artist+album,artist,album}]   
@@ -74,7 +74,7 @@ to the default output folder (the same as inputfile).
 Splittings:   
 
 ```python
->>> split = FFCueSplitter(filename='/home/user/my_file.cue')
+>>> split = FFCueSplitter(filename='filename.cue')
 >>> split.open_cuefile()
 >>> split.do_operations()
 ```
@@ -82,26 +82,18 @@ Splittings:
 Get data tracks and FFmpeg args:   
 
 ```python
->>> data = FFCueSplitter('/home/user/other.cue', dry=True)
+>>> data = FFCueSplitter('filename.cue', dry=True)
 >>> data.open_cuefile()
 >>> data.audiotracks  # trackdata
 >>> data.cue.meta.data  # cd_info
 >>> data.ffmpeg_arguments()
 ```
 
-Only processing one track:   
+For arguments meaning and more details, type `help(FFCueSplitter)`   
 
-```python
->>> f = FFCueSplitter('/home/user/my_file.cue', progress_meter='tqdm')
->>> f.open_cuefile()
->>> f.kwargs['tempdir'] = '/tmp/mytempdir'
->>> f.ffmpeg_arguments()
->>> f.processing(myfile.arguments[2], myfile.seconds[2])  # track three
->>> f.move_files_to_outputdir()
-```
+For other options and description, read the examples on the 
+[wiki page](https://github.com/jeanslack/FFcuesplitter/wiki/Examples)
 
-More details are described in the `__doc__` strings of `FFCueSplitter` class or by typing 
-`help(FFCueSplitter)` in the Python console, or by reading the **ffcuesplitter man page**.
 
 ## Installation
 

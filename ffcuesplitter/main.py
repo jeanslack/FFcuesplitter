@@ -189,8 +189,9 @@ def main():
                 FFProbeError,
                 FFMpegError) as error:
             msgdebug(err=f"{error}")
+
         finally:
-            if not maxitems == 1:
+            if maxitems != 1:
                 msg('========================================')
             maxitems -= 1
 
