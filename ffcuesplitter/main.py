@@ -160,9 +160,9 @@ def main():
                         )
     args = parser.parse_args()
 
-    allfiles = input_paths_parser(target_list=args.input_fd,
+    allfiles = input_paths_parser(target=args.input_fd,
+                                  suffix=('.cue', '.CUE'),
                                   recursive=args.recursive,
-                                  suffixes=('.cue', '.CUE')
                                   )
     filelist = set(allfiles[0] + allfiles[1])
     maxitems = len(filelist)
