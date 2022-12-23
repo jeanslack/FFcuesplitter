@@ -8,7 +8,7 @@ need installing extra audio libs and packages. It has the ability to accept both
 files and directories as input while also working in recursive mode. Can be used 
 both as a Python module and from command line.   
 
-# Features
+## Features
 
 - Supports many input formats.
 - Convert to Wav, Flac, Ogg, Mp3.

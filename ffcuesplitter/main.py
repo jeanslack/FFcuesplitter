@@ -33,7 +33,7 @@ from ffcuesplitter.info import (__appname__,
                                 )
 from ffcuesplitter.cuesplitter import FFCueSplitter
 from ffcuesplitter.str_utils import msgdebug, msg
-from ffcuesplitter.utils import input_paths_parser
+from ffcuesplitter.utils import file_cataloger
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
                                       FFProbeError,
@@ -160,11 +160,11 @@ def main():
                         )
     args = parser.parse_args()
 
-    allfiles = input_paths_parser(target=args.input_fd,
-                                  suffix=('.cue', '.CUE'),
-                                  recursive=args.recursive,
-                                  )
-    filelist = set(allfiles[0] + allfiles[1])
+    allfiles = file_cataloger(target=args.input_fd,
+                              suffix=('.cue', '.CUE'),
+                              recursive=args.recursive,
+                              )
+    filelist = set(allfiles['FILTERED'] + allfiles['REJECTED'])
     maxitems = len(filelist)
     for files in filelist:
         kwargs = {'filename': files}
