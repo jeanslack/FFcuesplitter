@@ -91,10 +91,10 @@ class FFCueSplitter(FFMpeg):
         outputdir:
                 absolute or relative pathname to output files
         subfolders:
-                auto-create sufolders, one of ("artist/album", "artist+album",
-                                               "artist", "album")
+                auto-create sufolders, one of ("artist+album", "artist",
+                                               "album")
         suffix:
-                output format, one of ("wav", "flac", "mp3", "ogg") .
+                output format, one of ("wav", "flac", "mp3", "ogg", "copy") .
         overwrite:
                 overwriting options, one of "ask", "never", "always".
         ffmpeg_cmd:

@@ -30,51 +30,61 @@ import platform
 import datetime
 
 
-def input_paths_parser(target_list,
-                       recursive=bool(False),
-                       suffixes=('.txt',)
-                       ):
+def file_cataloger(target: str = 'pathdir or list of',
+                   suffix: str = '.suffix or list of',
+                   recursive: bool = False) -> dict:
     """
-    Searches and catalogs file types with a given suffix
-    whitin a list of directories. Accepts a list of one
-    or more directories (files passed are rejected by default),
-    a boolean parameter for recursive mode, and a list of
-    one or more suffixes to search for.
-    Returns a tuple of two items of type list: filtered files
-    and rejected files.
+    Searches and catalogs file types with a given suffixes
+    whitin a list of directories. Accepts a string or a list
+    of one or more directories, a string or a list of one or
+    more suffixes to search for, and a boolean parameter for
+    recursive mode.
+    If files instead of directories are passed, they are
+    rejected by default but still returned in a `rejected`
+    list. Non-existent files and directories are not processed
+    at all.
+    Always returns a dictionary with two keys: `FILTERED` and `REJECTED`
+    and lists as values.
+    Assert
 
     """
+    target = tuple((target,)) if isinstance(target, str) else target
+    suffix = tuple((suffix,)) if isinstance(suffix, str) else suffix
     fileswalk = {}
-    pathdirs = []
+    onlydirs = []
     filtered = []
     rejected = []  # add here if it's file
 
-    for f_or_d in target_list:
-        if os.path.isdir(f_or_d):
-            pathdirs.append(f_or_d)
-        else:
-            rejected.append(f_or_d)
+    for f_or_d in target:
+        if os.path.exists(f_or_d):
+            if os.path.isdir(f_or_d):
+                onlydirs.append(f_or_d)
+            else:
+                rejected.append(f_or_d)  # files only
 
-    for dirs in pathdirs:
+    for dirs in onlydirs:
         if recursive is True:
-            for curdir, _, dirfiles in os.walk(dirs):
-                fileswalk[curdir] = list(dirfiles)
+            for root, _, files in os.walk(dirs):
+                fileswalk[root] = list(files)
 
             for path, name in fileswalk.items():
-                for cue in name:
-                    if os.path.splitext(cue)[1] in suffixes:
-                        filtered.append(os.path.join(path, cue))
+                for ext in name:
+                    if os.path.splitext(ext)[1] in suffix:
+                        found = os.path.join(path, ext)
+                        if found not in filtered:
+                            filtered.append(found)
         else:
-            for path in pathdirs:
-                for cue in os.listdir(path):
-                    if os.path.splitext(cue)[1] in suffixes:
-                        filtered.append(os.path.join(path, cue))
+            for ext in os.listdir(dirs):
+                if os.path.splitext(ext)[1] in suffix:
+                    found = os.path.join(dirs, ext)
+                    if found not in filtered:
+                        filtered.append(found)
 
-    return filtered, rejected
+    return dict(FILTERED=filtered, REJECTED=rejected)
 # ------------------------------------------------------------------------
 
 
-def sanitize(string: str) -> str:
+def sanitize(string: str = 'stringa') -> str:
     r"""
     Makes the passed string consistent and compatible
     with file systems of some operating systems.
@@ -87,6 +97,8 @@ def sanitize(string: str) -> str:
     Returns the new sanitized string
 
     """
+    msg = f"Only accepts <class 'str'> not {type(string)}"
+    assert isinstance(string, str), msg
     newstr = string.strip().strip('.')  # spaces and dots
 
     if platform.system() == 'Windows':
