@@ -1,7 +1,7 @@
 """
 Name: utils.py
 Porpose: utils used by FFcuesplitter
-Platform: MacOs, Gnu/Linux, FreeBSD
+Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Rev: Dec 20 2022

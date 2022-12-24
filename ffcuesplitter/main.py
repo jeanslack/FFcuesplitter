@@ -3,7 +3,7 @@ First release: January 16 2022
 
 Name: main.py
 Porpose: provides command line arguments for ffcuesplitter
-Platform: MacOs, Gnu/Linux, FreeBSD
+Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Rev: Dec 18 2022
@@ -94,7 +94,7 @@ def main():
                         required=False,
                         default='.'
                         )
-    parser.add_argument("-s", "--subfolders",
+    parser.add_argument("-c", "--collection",
                         choices=["artist+album", "artist", "album"],
                         help=("Create additional subfolders in the output "
                               "destination (see --output-dir). The "
@@ -169,7 +169,7 @@ def main():
     for files in filelist:
         kwargs = {'filename': files}
         kwargs['outputdir'] = args.outputdir
-        kwargs['subfolders'] = args.subfolders
+        kwargs['collection'] = args.collection
         kwargs['suffix'] = args.format_type
         kwargs['overwrite'] = args.overwrite
         kwargs['ffmpeg_cmd'] = args.ffmpeg_cmd

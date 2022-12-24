@@ -1,7 +1,7 @@
 """
 Name: exceptions.py
 Porpose: defines class Exceptions for ffcuesplitter
-Platform: MacOs, Gnu/Linux, FreeBSD
+Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Rev: February 03 2022

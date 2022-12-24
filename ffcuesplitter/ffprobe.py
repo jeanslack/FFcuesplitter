@@ -3,7 +3,7 @@
 Name: ffprobe.py
 Porpose: simple cross-platform wrap for ffprobe
 Compatibility: Python3
-Platform: all platforms
+Platform: all
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
 Copyright: (c) 2022/2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3

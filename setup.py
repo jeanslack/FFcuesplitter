@@ -6,7 +6,7 @@ First release: Jan 20 2022
 Name: setup.py
 Porpose: building ffcuesplitter sources and package
 USAGE: python3 setup.py sdist bdist_wheel
-Platform: Gnu/Linux-Unix-MacOs
+Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Rev: Feb 02 2022

@@ -5,10 +5,10 @@ First release: January 16 2022
 ########################################################
 Name: ffcuesplitter
 Porpose: launcher for ffcuesplitter
-Platform: MacOs, Gnu/Linux, FreeBSD, MS-Windows
+Platform: all platforms
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: February 03 2022
+Rev: December 24 2022
 """
 
 if __name__ == "__main__":
