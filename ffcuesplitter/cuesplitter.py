@@ -3,7 +3,7 @@ First release: January 16 2022
 
 Name: cuesplitter.py
 Porpose: FFmpeg based audio splitter for Cue sheet files
-Platform: MacOs, Gnu/Linux, FreeBSD
+Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Rev: Dec 22 2022
@@ -71,7 +71,7 @@ class FFCueSplitter(FFMpeg):
     def __init__(self,
                  filename,
                  outputdir: str = '.',
-                 subfolders: str = '',
+                 collection: str = '',
                  suffix: str = 'flac',
                  overwrite: str = "ask",
                  ffmpeg_cmd: str = 'ffmpeg',
@@ -90,9 +90,9 @@ class FFCueSplitter(FFMpeg):
                 absolute or relative CUE sheet file ('filename.cue')
         outputdir:
                 absolute or relative pathname to output files
-        subfolders:
-                auto-create sufolders, one of ("artist+album", "artist",
-                                               "album")
+        collection:
+                auto-create additional sub-folders,
+                one of ("artist+album", "artist", "album")
         suffix:
                 output format, one of ("wav", "flac", "mp3", "ogg", "copy") .
         overwrite:
@@ -119,7 +119,7 @@ class FFCueSplitter(FFMpeg):
             self.kwargs['outputdir'] = self.kwargs['dirname']
         else:
             self.kwargs['outputdir'] = os.path.abspath(outputdir)
-        self.kwargs['subfolders'] = subfolders
+        self.kwargs['collection'] = collection
         self.kwargs['format'] = suffix
         self.kwargs['overwrite'] = overwrite
         self.kwargs['ffmpeg_cmd'] = ffmpeg_cmd
@@ -313,7 +313,7 @@ class FFCueSplitter(FFMpeg):
         tracks = self.cue.tracks
         sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
 
-        if self.kwargs['subfolders']:  # Artist&Album names sanitize
+        if self.kwargs['collection']:  # Artist&Album names sanitize
             self.set_subdirs(cd_info.get('PERFORMER', 'No Artist name'),
                              cd_info.get('ALBUM', 'No Album name'))
 
@@ -358,21 +358,21 @@ class FFCueSplitter(FFMpeg):
         """
         subdirs = None
 
-        if self.kwargs['subfolders'] == 'artist+album':
+        if self.kwargs['collection'] == 'artist+album':
             subdirs = os.path.join(sanitize(performer), sanitize(album))
 
-        elif self.kwargs['subfolders'] == 'artist':
+        elif self.kwargs['collection'] == 'artist':
             subdirs = f"{sanitize(performer)}"
 
-        elif self.kwargs['subfolders'] == 'album':
+        elif self.kwargs['collection'] == 'album':
             subdirs = f"{sanitize(album)}"
 
         if subdirs is not None:
             self.kwargs['outputdir'] = os.path.join(self.kwargs['outputdir'],
                                                     subdirs)
         else:
-            raise FFCueSplitterError(f"Invalid subfolders arguments: "
-                                     f"'{self.kwargs['subfolders']}'")
+            raise FFCueSplitterError(f"Invalid collection arguments: "
+                                     f"'{self.kwargs['collection']}'")
     # ----------------------------------------------------------------#
 
     def check_cuefile(self):
