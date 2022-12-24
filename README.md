@@ -37,7 +37,7 @@ ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
               [-r]   
               [-f {wav,flac,mp3,ogg,copy}]   
               [-o OUTPUTDIR]   
-              [-s {artist+album,artist,album}]   
+              [-c {artist+album,artist,album}]   
               [-ow {ask,never,always}]   
               [--ffmpeg-cmd URL]   
               [--ffmpeg-loglevel {error,warning,info,verbose,debug}]   
@@ -47,8 +47,6 @@ ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
               [--dry]   
               [-h]   
               [--version]   
-
-
 ```
 
 **Examples**   
@@ -57,16 +55,12 @@ ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
 
 Batch file processing to split and convert to default audio `flac` format.    
 
-`ffcuesplitter -i '/User/music/collection/inputfile.cue' -f wav -o 'my-awesome-tracklist'`   
+`ffcuesplitter -i '/User/music/collection/inputfile.cue' -f ogg -o 'my-awesome-tracklist'`   
 
-To splits the individual audio tracks into `wav` format 
+To splits the individual audio tracks into `ogg` format 
 and saves them in the 'my-awesome-tracklist' folder.   
 
-**Note** that if no outputdir option is specified, the output files will be written 
-to the default output folder (the same as inputfile).  
-
-For other options and description, read the examples on the 
-[wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)    
+For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)   
 
 ### Using Python
 
@@ -94,9 +88,7 @@ Get data tracks and FFmpeg args:
 
 For arguments meaning and more details, type `help(FFCueSplitter)`   
 
-For other options and description, read the examples on the 
-[wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)   
-
+For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)   
 
 ## Installation
 
