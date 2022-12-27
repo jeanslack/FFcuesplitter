@@ -11,9 +11,10 @@ both as a Python module and from command line.
 ## Features
 
 - Supports many input formats.
-- Convert to Wav, Flac, Ogg, Mp3.
+- Convert to Wav, Flac, Ogg, Mp3, + copy.
 - Ability to copy source codec and format without re-encoding.
-- Batch files processing for both files and directories.
+- Batch file processing for both filenames and dirnames with switchable recursive mode.
+- Optionally auto-generate audio collection folders (Artist/Album/TrackNumber - Title)
 - Auto-tag from .cue file data.
 - Supports multiple .cue file encodings.
 - Works on Linux, MacOs, FreeBSD, Windows.
@@ -60,7 +61,7 @@ Batch file processing to split and convert to default audio `flac` format.
 To splits the individual audio tracks into `ogg` format
 and saves them in the 'my-awesome-tracklist' folder.   
 
-For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)   
+**For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**   
 
 ### Using Python
 
@@ -88,7 +89,7 @@ Get data tracks and FFmpeg args:
 
 For arguments meaning and more details, type `help(FFCueSplitter)`   
 
-For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)   
+**For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**   
 
 ## Installation
 
