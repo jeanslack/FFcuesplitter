@@ -72,7 +72,7 @@ class FFCueSplitter(FFMpeg):
                  filename,
                  outputdir: str = '.',
                  collection: str = '',
-                 suffix: str = 'flac',
+                 outputformat: str = 'flac',
                  overwrite: str = "ask",
                  ffmpeg_cmd: str = 'ffmpeg',
                  ffmpeg_loglevel: str = "info",
@@ -93,7 +93,7 @@ class FFCueSplitter(FFMpeg):
         collection:
                 auto-create additional sub-folders,
                 one of ("artist+album", "artist", "album")
-        suffix:
+        outputformat:
                 output format, one of ("wav", "flac", "mp3", "ogg", "copy") .
         overwrite:
                 overwriting options, one of "ask", "never", "always".
@@ -120,7 +120,7 @@ class FFCueSplitter(FFMpeg):
         else:
             self.kwargs['outputdir'] = os.path.abspath(outputdir)
         self.kwargs['collection'] = collection
-        self.kwargs['format'] = suffix
+        self.kwargs['format'] = outputformat
         self.kwargs['overwrite'] = overwrite
         self.kwargs['ffmpeg_cmd'] = ffmpeg_cmd
         self.kwargs['ffmpeg_loglevel'] = ffmpeg_loglevel
@@ -220,12 +220,6 @@ class FFCueSplitter(FFMpeg):
         """
         if self.check_for_overwriting() is True or self.audiotracks == []:
             return
-
-        try:  # make required folders or sub-folders
-            os.makedirs(self.kwargs['outputdir'],
-                        mode=0o777, exist_ok=True)
-        except Exception as error:
-            raise FFCueSplitterError(error) from error
 
         with tempfile.TemporaryDirectory(suffix=None,
                                          prefix='ffcuesplitter_',

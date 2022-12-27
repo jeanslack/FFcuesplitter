@@ -30,6 +30,106 @@ import platform
 import datetime
 
 
+def sanitize(string: str = 'stringa') -> str:
+    r"""
+    Makes the passed string consistent and compatible
+    with file systems of some operating systems.
+
+    All OS:
+    Remove all leading/trailing spaces and dots.
+
+    On Windows it removes the following illegal chars: " * : < > ? / \ |
+    On Unix it remove slash char: /
+    Returns the new sanitized string
+
+    """
+    msg = f"Only accepts <class 'str'> not {type(string)}"
+    assert isinstance(string, str), msg
+    newstr = string.strip().strip('.')  # spaces and dots
+
+    if platform.system() == 'Windows':
+        return re.sub(r"[\"\*\:\<\>\?\/\|\\]", '', newstr)
+
+    return newstr.replace('/', '')
+# ------------------------------------------------------------------------
+
+
+def pairwise(iterable):
+    """
+    Return a zip object from iterable.
+    This function is used by run method.
+    ----
+    USAGE:
+
+    after splitting ffmpeg's progress strings such as:
+    >>> output = ("frame= 1178 fps=155 q=29.0 size=    2072kB "
+                  "time=00:00:39.02 bitrate= 435.0kbits/s speed=5.15x  ")
+    in a list as:
+
+    >>> iterable = [a for a in "=".join(output.split()).split('=') if a]
+    >>> iterable  # get list like this:
+    >>> ['frame', '1178', 'fps', '155', 'q', '29.0', 'size', '2072kB',
+         'time', '00:00:39.02', 'bitrate', '435.0kbits/s', speed',
+         '5.15x']
+
+    >>> for x, y in pairwise(iterable):
+            x,y
+
+    <https://stackoverflow.com/questions/5389507/iterating-over-every-
+    two-elements-in-a-list>
+
+    """
+    itobj = iter(iterable)  # list_iterator object
+    return zip(itobj, itobj)  # zip object pairs from list iterable object
+# ------------------------------------------------------------------------
+
+
+def frames_to_seconds(frames):
+    """
+    Converts frames (10407600) to seconds (236.0) and then
+    converts them to a time format string (0:03:56) using datetime.
+    """
+    secs = frames / 44100
+    return str(datetime.timedelta(seconds=secs))
+# ------------------------------------------------------------------------
+
+
+def makeoutputdirs(outputdir):
+    """
+    Makes the subfolders specified in the outpudir argument
+    """
+    try:
+        os.makedirs(outputdir,
+                    mode=0o777,
+                    exist_ok=True
+                    )
+    except Exception as error:
+        raise ValueError(error) from error
+# ------------------------------------------------------------------------
+
+
+class Popen(subprocess.Popen):
+    """
+    Inherit subprocess.Popen class to set _startupinfo.
+    This avoids displaying a console window on MS-Windows
+    using GUI's .
+    """
+    if platform.system() == 'Windows':
+        _startupinfo = subprocess.STARTUPINFO()
+        _startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    else:
+        _startupinfo = None
+
+    def __init__(self, *args, **kwargs):
+        """Constructor
+        """
+        super().__init__(*args, **kwargs, startupinfo=self._startupinfo)
+
+    # def communicate_or_kill(self, *args, **kwargs):
+        # return process_communicate_or_kill(self, *args, **kwargs)
+# ------------------------------------------------------------------------
+
+
 class FileFinder:
     """
     Finds and collect files based on one or more suffixes in
@@ -129,90 +229,4 @@ class FileFinder:
                     DISCARDED=self.rejected,
                     INEXISTENT=self.nonexistent
                     )
-# ------------------------------------------------------------------------
-
-
-def sanitize(string: str = 'stringa') -> str:
-    r"""
-    Makes the passed string consistent and compatible
-    with file systems of some operating systems.
-
-    All OS:
-    Remove all leading/trailing spaces and dots.
-
-    On Windows it removes the following illegal chars: " * : < > ? / \ |
-    On Unix it remove slash char: /
-    Returns the new sanitized string
-
-    """
-    msg = f"Only accepts <class 'str'> not {type(string)}"
-    assert isinstance(string, str), msg
-    newstr = string.strip().strip('.')  # spaces and dots
-
-    if platform.system() == 'Windows':
-        return re.sub(r"[\"\*\:\<\>\?\/\|\\]", '', newstr)
-
-    return newstr.replace('/', '')
-# ------------------------------------------------------------------------
-
-
-def pairwise(iterable):
-    """
-    Return a zip object from iterable.
-    This function is used by run method.
-    ----
-    USAGE:
-
-    after splitting ffmpeg's progress strings such as:
-    >>> output = ("frame= 1178 fps=155 q=29.0 size=    2072kB "
-                  "time=00:00:39.02 bitrate= 435.0kbits/s speed=5.15x  ")
-    in a list as:
-
-    >>> iterable = [a for a in "=".join(output.split()).split('=') if a]
-    >>> iterable  # get list like this:
-    >>> ['frame', '1178', 'fps', '155', 'q', '29.0', 'size', '2072kB',
-         'time', '00:00:39.02', 'bitrate', '435.0kbits/s', speed',
-         '5.15x']
-
-    >>> for x, y in pairwise(iterable):
-            x,y
-
-    <https://stackoverflow.com/questions/5389507/iterating-over-every-
-    two-elements-in-a-list>
-
-    """
-    itobj = iter(iterable)  # list_iterator object
-    return zip(itobj, itobj)  # zip object pairs from list iterable object
-# ------------------------------------------------------------------------
-
-
-def frames_to_seconds(frames):
-    """
-    Converts frames (10407600) to seconds (236.0) and then
-    converts them to a time format string (0:03:56) using datetime.
-    """
-    secs = frames / 44100
-    return str(datetime.timedelta(seconds=secs))
-# ------------------------------------------------------------------------
-
-
-class Popen(subprocess.Popen):
-    """
-    Inherit subprocess.Popen class to set _startupinfo.
-    This avoids displaying a console window on MS-Windows
-    using GUI's .
-    """
-    if platform.system() == 'Windows':
-        _startupinfo = subprocess.STARTUPINFO()
-        _startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-    else:
-        _startupinfo = None
-
-    def __init__(self, *args, **kwargs):
-        """Constructor
-        """
-        super().__init__(*args, **kwargs, startupinfo=self._startupinfo)
-
-    # def communicate_or_kill(self, *args, **kwargs):
-        # return process_communicate_or_kill(self, *args, **kwargs)
 # ------------------------------------------------------------------------

@@ -183,7 +183,7 @@ def main():
         kwargs = {'filename': files}
         kwargs['outputdir'] = args.outputdir
         kwargs['collection'] = args.collection
-        kwargs['suffix'] = args.format_type
+        kwargs['outputformat'] = args.format_type
         kwargs['overwrite'] = args.overwrite
         kwargs['ffmpeg_cmd'] = args.ffmpeg_cmd
         kwargs['ffmpeg_loglevel'] = args.ffmpeg_loglevel

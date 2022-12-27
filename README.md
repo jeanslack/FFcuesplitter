@@ -62,6 +62,7 @@ To splits the individual audio tracks into `ogg` format
 and saves them in the 'my-awesome-tracklist' folder.   
 
 **For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**   
+***
 
 ### Using Python
 
@@ -90,6 +91,7 @@ Get data tracks and FFmpeg args:
 For arguments meaning and more details, type `help(FFCueSplitter)`   
 
 **For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**   
+***
 
 ## Installation
 

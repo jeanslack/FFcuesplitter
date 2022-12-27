@@ -33,7 +33,7 @@ import platform
 from tqdm import tqdm
 from ffcuesplitter.exceptions import FFMpegError
 from ffcuesplitter.str_utils import msg
-from ffcuesplitter.utils import Popen
+from ffcuesplitter.utils import makeoutputdirs, Popen
 
 if not platform.system() == 'Windows':
     import shlex
@@ -128,8 +128,11 @@ class FFMpeg:
 
     def processing(self, arg, secs):
         """
-        Redirect to required processing
+        Make required directory tree for output files
+        and Redirect to required processing.
         """
+        makeoutputdirs(self.kwargs['outputdir'])
+
         if self.kwargs['progress_meter'] == 'tqdm':
             cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
