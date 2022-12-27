@@ -6,7 +6,6 @@ Rev: Jan.22.2022
 """
 import os
 import sys
-import os.path
 import unittest
 
 
@@ -49,7 +48,6 @@ class ParserCueSheetTestCase(unittest.TestCase):
         with self.assertRaises(InvalidFileError):
             check = FFCueSplitter(**{**self.args, **fname})
             check.open_cuefile(testpatch=True)
-
 
     def test_tracks_with_iso_file_encoding(self):
         """

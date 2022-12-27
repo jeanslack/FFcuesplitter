@@ -7,7 +7,7 @@ Platform: all platforms
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
 Copyright: (c) 2022/2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Dec.14.2022
+Rev: Dec.27.2022
 Code checker: flake8, pylint
 ########################################################
 
@@ -33,7 +33,7 @@ import platform
 from tqdm import tqdm
 from ffcuesplitter.exceptions import FFMpegError
 from ffcuesplitter.str_utils import msg
-from ffcuesplitter.utils import Popen
+from ffcuesplitter.utils import makeoutputdirs, Popen
 
 if not platform.system() == 'Windows':
     import shlex
@@ -128,8 +128,11 @@ class FFMpeg:
 
     def processing(self, arg, secs):
         """
-        Redirect to required processing
+        Make required directory tree for output files
+        and Redirect to required processing.
         """
+        makeoutputdirs(self.kwargs['outputdir'])
+
         if self.kwargs['progress_meter'] == 'tqdm':
             cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
@@ -151,7 +154,7 @@ class FFMpeg:
         for each loop. Also writes a log file to the same
         destination folder as the .cue file .
 
-        Usage for get seconds elapsed:
+        Usage for get elapsed seconds:
          progbar = tqdm(total=round(seconds), unit="s", dynamic_ncols=True)
          progbar.clear()
          previous_s = 0
@@ -171,10 +174,12 @@ class FFMpeg:
                        dynamic_ncols=True
                        )
         progbar.clear()
+        sep = (f'\nFFcuesplitter Command: {cmd}\n'
+               f'=======================================================\n\n')
 
         try:
-            with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
-                log.write(f'\nCOMMAND: {cmd}')
+            with open(self.kwargs['logtofile'], "a", encoding='utf-8') as log:
+                log.write(sep)
                 with Popen(cmd,
                            stdout=subprocess.PIPE,
                            stderr=log,
@@ -216,8 +221,10 @@ class FFMpeg:
         Returns:
             None
         """
-        with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
-            log.write(f'COMMAND: {cmd}')
+        sep = (f'\nFFcuesplitter Command: {cmd}\n'
+               f'=======================================================\n\n')
+        with open(self.kwargs['logtofile'], "a", encoding='utf-8') as log:
+            log.write(sep)
         try:
             subprocess.run(cmd, check=True, shell=False, encoding='utf8',)
 
@@ -228,4 +235,4 @@ class FFMpeg:
             raise FFMpegError(f"ffmpeg FAILED: {err}") from err
 
         except KeyboardInterrupt:
-            sys.exit("\n[KeyboardInterrupt]")
+            sys.exit("\n[KeyboardInterrupt] FFmpeg process terminated.")

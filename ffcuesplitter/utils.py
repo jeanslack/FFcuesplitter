@@ -4,7 +4,7 @@ Porpose: utils used by FFcuesplitter
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Dec 20 2022
+Rev: Dec 27 2022
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -28,60 +28,6 @@ import re
 import subprocess
 import platform
 import datetime
-
-
-def file_cataloger(target: str = 'pathdir or list of',
-                   suffix: str = '.suffix or list of',
-                   recursive: bool = False) -> dict:
-    """
-    Searches and catalogs file types with a given suffixes
-    whitin a list of directories. Accepts a string or a list
-    of one or more directories, a string or a list of one or
-    more suffixes to search for, and a boolean parameter for
-    recursive mode.
-    If files instead of directories are passed, they are
-    rejected by default but still returned in a `rejected`
-    list. Non-existent files and directories are not processed
-    at all.
-    Always returns a dictionary with two keys: `FILTERED` and `REJECTED`
-    and lists as values.
-    Assert
-
-    """
-    target = tuple((target,)) if isinstance(target, str) else target
-    suffix = tuple((suffix,)) if isinstance(suffix, str) else suffix
-    fileswalk = {}
-    onlydirs = []
-    filtered = []
-    rejected = []  # add here if it's file
-
-    for f_or_d in target:
-        if os.path.exists(f_or_d):
-            if os.path.isdir(f_or_d):
-                onlydirs.append(f_or_d)
-            else:
-                rejected.append(f_or_d)  # files only
-
-    for dirs in onlydirs:
-        if recursive is True:
-            for root, _, files in os.walk(dirs):
-                fileswalk[root] = list(files)
-
-            for path, name in fileswalk.items():
-                for ext in name:
-                    if os.path.splitext(ext)[1] in suffix:
-                        found = os.path.join(path, ext)
-                        if found not in filtered:
-                            filtered.append(found)
-        else:
-            for ext in os.listdir(dirs):
-                if os.path.splitext(ext)[1] in suffix:
-                    found = os.path.join(dirs, ext)
-                    if found not in filtered:
-                        filtered.append(found)
-
-    return dict(FILTERED=filtered, REJECTED=rejected)
-# ------------------------------------------------------------------------
 
 
 def sanitize(string: str = 'stringa') -> str:
@@ -148,6 +94,20 @@ def frames_to_seconds(frames):
 # ------------------------------------------------------------------------
 
 
+def makeoutputdirs(outputdir):
+    """
+    Makes the subfolders specified in the outpudir argument
+    """
+    try:
+        os.makedirs(outputdir,
+                    mode=0o777,
+                    exist_ok=True
+                    )
+    except Exception as error:
+        raise ValueError(error) from error
+# ------------------------------------------------------------------------
+
+
 class Popen(subprocess.Popen):
     """
     Inherit subprocess.Popen class to set _startupinfo.
@@ -167,4 +127,106 @@ class Popen(subprocess.Popen):
 
     # def communicate_or_kill(self, *args, **kwargs):
         # return process_communicate_or_kill(self, *args, **kwargs)
+# ------------------------------------------------------------------------
+
+
+class FileFinder:
+    """
+    Finds and collect files based on one or more suffixes in
+    a given pathnames list. Features methods for recursive and
+    non-recursive searching.
+
+    Constructor:
+
+        ff = FileFinder(target=str('pathnames'))
+        or
+        ff = FileFinder(target=list('pathnames',))
+
+    Available methods:
+
+        - find_files(suffix=str or list of ('.suffix',))
+        - find_files_recursively(suffix=str or list of ('.suffix',))
+
+    Always returns a dictionary with three keys:
+    `FOUND`, `DISCARDED`, `INEXISTENT` with lists as values.
+
+    If filenames are given instead of dirnames, they will be
+    returned with the `DISCARDED` key. If non-existent filenames
+    or dirnames are given, they will be returned with the
+    `INEXISTENT` key. All files found will be returned with
+    the FOUND key.
+
+    """
+    def __init__(self, target: str = ''):
+        """
+        target: Expects a str('pathdir') or a list of ('pathdirs',)
+
+        """
+        self.filtered = None
+        self.rejected = None  # add here only if it's file
+        self.nonexistent = None
+        self.target = tuple((target,)) if isinstance(target, str) else target
+    # -------------------------------------------------------------#
+
+    def find_files_recursively(self, suffix: str = '') -> dict:
+        """
+        find files in recursive mode.
+        suffix: Expects a str(.suffix) or a list of (.suffixes,)
+        Returns: dict
+
+        """
+        self.filtered = []
+        self.rejected = []  # add here only if it's file
+        self.nonexistent = []
+        suffix = tuple((suffix,)) if isinstance(suffix, str) else suffix
+
+        fileswalk = {}
+        for dirs in self.target:
+            if os.path.exists(dirs):
+                if os.path.isdir(dirs):
+                    for root, alldirs, allfiles in os.walk(dirs):
+                        # to disable some `for` variables put underscore _
+                        fileswalk[root] = list(alldirs + allfiles)
+                else:
+                    self.rejected.append(dirs)  # only existing files
+            else:
+                self.nonexistent.append(dirs)  # all non-existing files/dirs
+        for path, name in fileswalk.items():
+            for files in name:
+                if os.path.splitext(files)[1] in suffix:
+                    self.filtered.append(os.path.join(path, files))
+
+        return dict(FOUND=self.filtered,
+                    DISCARDED=self.rejected,
+                    INEXISTENT=self.nonexistent
+                    )
+    # -------------------------------------------------------------#
+
+    def find_files(self, suffix: str = '') -> dict:
+        """
+        find files in non-recursive mode.
+        suffix: Expects a str(.suffix) or a list of (.suffixes,)
+        Returns: dict
+
+        """
+        self.filtered = []
+        self.rejected = []  # add here only if it's file
+        self.nonexistent = []
+        suffix = tuple((suffix,)) if isinstance(suffix, str) else suffix
+
+        for dirs in self.target:
+            if os.path.exists(dirs):
+                if os.path.isdir(dirs):
+                    for files in os.listdir(dirs):
+                        if os.path.splitext(files)[1] in suffix:
+                            self.filtered.append(os.path.join(dirs, files))
+                else:
+                    self.rejected.append(dirs)  # only existing files
+            else:
+                self.nonexistent.append(dirs)  # all non-existing files/dirs
+
+        return dict(FOUND=self.filtered,
+                    DISCARDED=self.rejected,
+                    INEXISTENT=self.nonexistent
+                    )
 # ------------------------------------------------------------------------
