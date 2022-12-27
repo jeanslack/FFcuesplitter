@@ -6,7 +6,7 @@ Porpose: provides command line arguments for ffcuesplitter
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Dec 18 2022
+Rev: Dec 27 2022
 Code checker: flake8, pylint
 ####################################################################
 
@@ -29,16 +29,18 @@ import argparse
 from ffcuesplitter.info import (__appname__,
                                 __description__,
                                 __version__,
-                                __release__
+                                __release__,
                                 )
 from ffcuesplitter.cuesplitter import FFCueSplitter
-from ffcuesplitter.str_utils import msgdebug, msg
-from ffcuesplitter.utils import file_cataloger
+from ffcuesplitter.str_utils import (msgdebug,
+                                     msg,
+                                     )
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
                                       FFProbeError,
                                       FFMpegError,
                                       )
+from ffcuesplitter.utils import FileFinder
 
 
 def main():
@@ -60,8 +62,9 @@ def main():
                         metavar='FILENAMES DIRNAMES',
                         help=("It accepts both files and directories: Path "
                               "names can be absolute or relative; Multiple "
-                              "files/directories must be separated by one or "
-                              "more spaces between them. See also recursive "
+                              "path filenames or path dirnames must be "
+                              "separated by one or more spaces between them. "
+                              "See also recursive "
                               "mode (-r, --recursive)"),
                         nargs='+',
                         action="store",
@@ -160,12 +163,22 @@ def main():
                         )
     args = parser.parse_args()
 
-    allfiles = file_cataloger(target=args.input_fd,
-                              suffix=('.cue', '.CUE'),
-                              recursive=args.recursive,
-                              )
-    filelist = set(allfiles['FILTERED'] + allfiles['REJECTED'])
+    find = FileFinder(args.input_fd)  # get file collection
+    if args.recursive is True:
+        allfiles = find.find_files_recursively(suffix=('.cue', '.CUE'))
+
+    elif args.recursive is False:
+        allfiles = find.find_files(suffix=('.cue', '.CUE'))
+
+    filelist = set(allfiles['FOUND'] +
+                   allfiles['DISCARDED'] +
+                   allfiles['INEXISTENT']
+                   )
+    if not filelist:
+        msgdebug(warn="No files found.")
+
     maxitems = len(filelist)
+    msg('')
     for files in filelist:
         kwargs = {'filename': files}
         kwargs['outputdir'] = args.outputdir

@@ -128,7 +128,7 @@ class FFCueSplitter(FFMpeg):
         self.kwargs['ffmpeg_add_params'] = ffmpeg_add_params
         self.kwargs['progress_meter'] = progress_meter
         self.kwargs['dry'] = dry
-        self.kwargs['logtofile'] = os.path.join(self.kwargs['dirname'],
+        self.kwargs['logtofile'] = os.path.join(self.kwargs['outputdir'],
                                                 'ffcuesplitter.log')
         self.kwargs['tempdir'] = '.'
         self.audiotracks = None
@@ -221,6 +221,12 @@ class FFCueSplitter(FFMpeg):
         if self.check_for_overwriting() is True or self.audiotracks == []:
             return
 
+        try:  # make required folders or sub-folders
+            os.makedirs(self.kwargs['outputdir'],
+                        mode=0o777, exist_ok=True)
+        except Exception as error:
+            raise FFCueSplitterError(error) from error
+
         with tempfile.TemporaryDirectory(suffix=None,
                                          prefix='ffcuesplitter_',
                                          dir=None) as tmpdir:
@@ -245,14 +251,9 @@ class FFCueSplitter(FFMpeg):
             msg('\n')
             msgdebug(info="...done exctracting")
             msgdebug(info="Move files to: ",
-                     tail=(f"\033[34m"
+                     tail=(f"\033[37m"
                            f"'{os.path.abspath(self.kwargs['outputdir'])}'"
                            f"\033[0m"))
-            try:
-                os.makedirs(self.kwargs['outputdir'],
-                            mode=0o777, exist_ok=True)
-            except Exception as error:
-                raise FFCueSplitterError(error) from error
 
             self.move_files_to_outputdir()
     # ----------------------------------------------------------------#
@@ -370,6 +371,8 @@ class FFCueSplitter(FFMpeg):
         if subdirs is not None:
             self.kwargs['outputdir'] = os.path.join(self.kwargs['outputdir'],
                                                     subdirs)
+            self.kwargs['logtofile'] = os.path.join(self.kwargs['outputdir'],
+                                                    'ffcuesplitter.log')
         else:
             raise FFCueSplitterError(f"Invalid collection arguments: "
                                      f"'{self.kwargs['collection']}'")
@@ -391,6 +394,8 @@ class FFCueSplitter(FFMpeg):
         """
         Read cue file and start file parsing via deflacue package
         """
+        msgdebug(info=f"Source: '{self.kwargs['filename']}'")
+
         if testpatch:
             self.testpatch = True
 

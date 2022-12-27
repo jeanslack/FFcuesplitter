@@ -1,4 +1,16 @@
 +--------------------------------+
+December 27 2022  Version 1.0.15 Beta
++--------------------------------+
+
+- changed `-s` `--subfolders` to `-c` `--collection` .
+- Update man page.
+- Update README.md .
+- Made wiki for FFcuesplitter command line and using API from Python.
+- Replaced `file_cataloger` def with `FileFinder` class + code refactoring.
+- Improved `Log to File`: Now logs to each file destination.
+- New FFcuesplitter wiki: <https://github.com/jeanslack/FFcuesplitter/wiki>
+
++--------------------------------+
 December 20 2022  Version 1.0.12 Beta
 +--------------------------------+
 
