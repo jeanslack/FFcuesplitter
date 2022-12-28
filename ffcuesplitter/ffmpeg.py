@@ -118,7 +118,7 @@ class FFMpeg:
             cmd += f" {self.kwargs['ffmpeg_add_params']}"
             cmd += ' -y'
             num = str(track['TRACK_NUM']).rjust(2, '0')
-            name = f'{num} - {track["TITLE"]}.{suffix}'
+            name = f'{num}. {track["PERFORMER"]} - {track["TITLE"]}.{suffix}'
             cmd += f' "{os.path.join(self.kwargs["tempdir"], name)}"'
             self.arguments.append(cmd)
             self.seconds.append(track['DURATION'])

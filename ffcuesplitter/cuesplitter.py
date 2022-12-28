@@ -157,7 +157,7 @@ class FFCueSplitter(FFMpeg):
             return True
 
         for data in tracks:  # self.audiotracks
-            track = (f"{str(data['TRACK_NUM']).rjust(2, '0')} - "
+            track = (f"{str(data['TRACK_NUM']).rjust(2, '0')}. {data['PERFORMER']} - "
                      f"{data['TITLE']}.{self.kwargs['format']}")
             pathfile = os.path.join(outputdir, track)
 
