@@ -2,7 +2,9 @@
 December 28 2022  Version 1.0.16 Beta
 +--------------------------------+
 
-- Fix utils.sanitize
+- Fixes utils.sanitize
+- Improve README.md
+- Improve message debugs
 
 +--------------------------------+
 December 27 2022  Version 1.0.15 Beta
