@@ -43,14 +43,15 @@ def sanitize(string: str = 'stringa') -> str:
     Returns the new sanitized string
 
     """
-    msg = f"Only accepts <class 'str'> not {type(string)}"
-    assert isinstance(string, str), msg
-    newstr = string.strip().strip('.')  # spaces and dots
+    if not isinstance(string, str):
+        raise TypeError("Expects Type string only")
 
     if platform.system() == 'Windows':
-        return re.sub(r"[\"\*\:\<\>\?\/\|\\]", '', newstr)
+        newstr = re.sub(r"[\"\*\:\<\>\?\/\|\\]", '', newstr)
+    else:
+        newstr.replace('/', '')
 
-    return newstr.replace('/', '')
+    return newstr.strip().strip('.')  # spaces and dots
 # ------------------------------------------------------------------------
 
 
