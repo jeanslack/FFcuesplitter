@@ -228,9 +228,9 @@ class FFCueSplitter(FFMpeg):
             self.ffmpeg_arguments()
 
             msgdebug(info=(f"Temporary Target: '{self.kwargs['tempdir']}'"))
-            count = 0
             msgdebug(info="Extracting audio tracks (type Ctrl+c to stop):")
 
+            count = 0
             for args, secs, title in zip(self.arguments,
                                          self.seconds,
                                          self.audiotracks):
@@ -309,8 +309,8 @@ class FFCueSplitter(FFMpeg):
         sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
 
         if self.kwargs['collection']:  # Artist&Album names sanitize
-            self.set_subdirs(cd_info.get('PERFORMER', 'No Artist name'),
-                             cd_info.get('ALBUM', 'No Album name'))
+            self.set_subdirs(cd_info.get('PERFORMER', 'Unknown Artist'),
+                             cd_info.get('ALBUM', 'Unknown Album'))
 
         for track in enumerate(tracks):
             track_file = track[1].file.path
@@ -322,8 +322,8 @@ class FFCueSplitter(FFMpeg):
                 if str(track_file) in sourcenames:
                     sourcenames.pop(str(track_file))
                     if not sourcenames:
-                        raise FFCueSplitterError('No audio source files '
-                                                 'found!')
+                        raise FFCueSplitterError('No other audio source '
+                                                 'files found here!')
                 continue
 
             filename = (f"{sanitize(track[1].title)}")  # title names sanitize
@@ -388,7 +388,7 @@ class FFCueSplitter(FFMpeg):
         """
         Read cue file and start file parsing via deflacue package
         """
-        msgdebug(info=f"Source: '{self.kwargs['filename']}'")
+        msgdebug(info=f"CUE sheet: '{self.kwargs['filename']}'")
 
         if testpatch:
             self.testpatch = True

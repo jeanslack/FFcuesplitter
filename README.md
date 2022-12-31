@@ -11,12 +11,14 @@ both as a Python module and from command line.
 ## Features
 
 - Supports many input formats.
-- Convert to Wav, Flac, Ogg, Mp3, + copy.
+- Convert to Wav, Flac, Ogg, Mp3 formats.
 - Ability to copy source codec and format without re-encoding.
-- Batch file processing for both filenames and dirnames with switchable recursive mode.
+- Batch mode processing is also available.
+- Accepts both multiple CUE file names and multiple folder path names.
+- Ability to activate the recursive option to search for CUE files in all subfolders.
 - Optionally auto-generate audio collection folders (Artist/Album/TrackNumber - Title)
-- Auto-tag from .cue file data.
-- Supports multiple .cue file encodings.
+- Auto-tag from CUE file data.
+- Features automatic character set detection for CUE files (via chardet).
 - Works on Linux, MacOs, FreeBSD, Windows.
 - Can be used both as a Python module and in command line mode.
 
