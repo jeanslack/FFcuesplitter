@@ -4,6 +4,7 @@ Porpose: utils used by FFcuesplitter
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
+Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 Rev: Dec 27 2022
 Code checker: flake8 and pylint
 ####################################################################
@@ -30,28 +31,31 @@ import platform
 import datetime
 
 
-def sanitize(string: str = 'stringa') -> str:
+def sanitize(string: str = 'string') -> str:
     r"""
     Makes the passed string consistent and compatible
-    with file systems of some operating systems.
+    with the OS file system.
 
-    All OS:
-    Remove all leading/trailing spaces and dots.
+    - On Windows, removes the following illegal chars: " * : < > ? / \ |
+      and replaces slash (/) character with hyphen (-).
+    - On other operating systems, it replaces slash (/) character
+      with hyphen (-).
+    - On all operating systems, removes leading/trailing spaces
+      and dots (.).
 
-    On Windows it removes the following illegal chars: " * : < > ? / \ |
-    On Unix it remove slash char: /
-    Returns the new sanitized string
+    Returns the new sanitized string.
 
     """
     if not isinstance(string, str):
         raise TypeError("Expects Type string only")
 
     if platform.system() == 'Windows':
-        newstr = re.sub(r"[\"\*\:\<\>\?\/\|\\]", '', newstr)
+        string = re.sub(r"[\"\*\:\<\>\?\|\\]", '', string)
+        string = string.replace('/', '-')
     else:
-        newstr.replace('/', '')
+        string = string.replace('/', '-')
 
-    return newstr.strip().strip('.')  # spaces and dots
+    return string.strip().strip('.')  # removes spaces and dots
 # ------------------------------------------------------------------------
 
 

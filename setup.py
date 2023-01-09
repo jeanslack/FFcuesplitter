@@ -9,6 +9,7 @@ USAGE: python3 setup.py sdist bdist_wheel
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
+Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 Rev: Feb 02 2022
 Code checker: flake8, pylint
 ####################################################################
