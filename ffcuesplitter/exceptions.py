@@ -4,6 +4,7 @@ Porpose: defines class Exceptions for ffcuesplitter
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
+Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 Rev: February 03 2022
 Code checker: flake8 and pylint
 ####################################################################

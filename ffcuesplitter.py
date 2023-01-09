@@ -8,6 +8,7 @@ Porpose: launcher for ffcuesplitter
 Platform: all platforms
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
+Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 Rev: December 24 2022
 """
 

@@ -101,7 +101,7 @@ For arguments meaning and more details, type `help(FFCueSplitter)`
 
 ## License and Copyright
 
-Copyright © 2022 Gianluca Pernigotto   
+Copyright (C) 2023 Gianluca Pernigotto   
 Author and Developer: Gianluca Pernigotto   
 Mail: <jeanlucperni@gmail.com>   
 License: GPL3 (see LICENSE file in the docs folder)   
