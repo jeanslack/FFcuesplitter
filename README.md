@@ -18,7 +18,7 @@ both as a Python module and from command line.
 - Ability to activate the recursive option to search for CUE files in all subfolders.
 - Optionally auto-generate audio collection folders (Artist/Album/TrackNumber - Title)
 - Auto-tag from CUE file data.
-- Features automatic character set detection for CUE files (via chardet).
+- Features automatic character set detection for CUE files (via [chardet](https://pypi.org/project/chardet/)).
 - Works on Linux, MacOs, FreeBSD, Windows.
 - Can be used both as a Python module and in command line mode.
 
@@ -104,6 +104,6 @@ For arguments meaning and more details, type `help(FFCueSplitter)`
 Copyright (C) 2023 Gianluca Pernigotto   
 Author and Developer: Gianluca Pernigotto   
 Mail: <jeanlucperni@gmail.com>   
-License: GPL3 (see LICENSE file in the docs folder)   
+License: GPL3 (see LICENSE file in the source folder)   
 
 
