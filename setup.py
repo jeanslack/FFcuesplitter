@@ -10,7 +10,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Feb 02 2022
+Rev: Jan 11 2023
 Code checker: flake8, pylint
 ####################################################################
 
@@ -58,10 +58,11 @@ CLASSIFIERS = [
             'Operating System :: MacOS :: MacOS X',
             'Operating System :: POSIX :: Linux',
             'Programming Language :: Python :: 3',
-            'Programming Language :: Python :: 3.6',
             'Programming Language :: Python :: 3.7',
             'Programming Language :: Python :: 3.8',
             'Programming Language :: Python :: 3.9',
+            'Programming Language :: Python :: 3.10',
+            'Programming Language :: Python :: 3.11',
             'Topic :: Multimedia :: Sound/Audio :: Conversion',
             'Topic :: Utilities',
                 ]
