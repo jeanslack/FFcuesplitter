@@ -36,7 +36,7 @@ class ParserCueSheetTestCase(unittest.TestCase):
         Method called to prepare the test fixture
         """
         self.args = {'outputdir': os.path.dirname(FILECUE_ISO),
-                     'suffix': OUTFORMAT,
+                     'outputformat': OUTFORMAT,
                      'overwrite': OVERWRITE}
 
     def test_invalid_file(self):
@@ -88,7 +88,7 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         Method called to prepare the test fixture
         """
         self.args = {'outputdir': os.path.dirname(FILECUE_ISO),
-                     'suffix': OUTFORMAT,
+                     'outputformat': OUTFORMAT,
                      'overwrite': OVERWRITE,
                      'dry': True
                      }
