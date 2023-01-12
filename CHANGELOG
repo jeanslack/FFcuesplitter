@@ -1,4 +1,12 @@
 +--------------------------------+
+January 11 2023  Version 1.0.18 Beta
++--------------------------------+
+
+- Fixes Python compatibility on setup.py.
+- Fixes tests case.
+- Checks action with GitHub Python application
+
++--------------------------------+
 January 09 2023  Version 1.0.17 Beta
 +--------------------------------+
 
