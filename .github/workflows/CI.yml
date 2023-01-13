@@ -32,9 +32,9 @@ jobs:
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --show-source --statistics exclude=tests,debian,docs,.git,.github,__pycache__,build,dist,man
+        flake8 . --count --show-source --statistics --exclude=tests,debian,docs,.git,.github,__pycache__,build,dist,man
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=15 --max-line-length=79 ignore=W503 --statistics exclude=tests,debian,docs,.git,.github,__pycache__,build,dist,man
+        flake8 . --count --exit-zero --max-complexity=15 --max-line-length=79 ignore=W503 --statistics --exclude=tests,debian,docs,.git,.github,__pycache__,build,dist,man
     - name: Test with pytest
       run: |
         run: |
