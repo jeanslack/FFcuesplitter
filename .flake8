@@ -1,6 +1,5 @@
 [flake8]
-exclude = develop/tools/generate_INNO_setup.py,
-          tests,
+exclude = tests,
           debian,
           docs,
           .git,
