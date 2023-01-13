@@ -27,7 +27,7 @@ both as a Python module and from command line.
 
 ## Requires
 
-- Python >=3.6
+- Python >=3.7
 - [deflacue](https://pypi.org/project/deflacue/)
 - [chardet](https://pypi.org/project/chardet/)
 - [tqdm](https://pypi.org/project/tqdm/#description)
