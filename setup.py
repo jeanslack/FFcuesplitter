@@ -12,7 +12,6 @@ license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 Rev: Jan 11 2023
 Code checker: flake8, pylint
-####################################################################
 
 This file is part of FFcuesplitter.
 
@@ -38,7 +37,7 @@ from ffcuesplitter.info import (__version__,
                                 __contact__,
                                 __packagename__,
                                 __description__,
-                                __descriptionfull__
+                                # __descriptionfull__
                                 )
 
 INST_REQ = ["chardet>=4.0.0", "tqdm>=4.38.0", "deflacue>=2.0.1"]
@@ -47,24 +46,24 @@ SETUP_REQ = ["setuptools>=47.1.1",
              "twine>=3.1.1"
              ]
 
-CLASSIFIERS = [
-            'Development Status :: 4 - Beta',
-            'Environment :: Console',
-            'Intended Audience :: End Users/Desktop',
-            'Intended Audience :: Developers',
-            'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-            'Natural Language :: English',
-            'Operating System :: Microsoft :: Windows',
-            'Operating System :: MacOS :: MacOS X',
-            'Operating System :: POSIX :: Linux',
-            'Programming Language :: Python :: 3',
-            'Programming Language :: Python :: 3.7',
-            'Programming Language :: Python :: 3.8',
-            'Programming Language :: Python :: 3.9',
-            'Programming Language :: Python :: 3.10',
-            'Topic :: Multimedia :: Sound/Audio :: Conversion',
-            'Topic :: Utilities',
-                ]
+CLASSIFIERS = ['Development Status :: 4 - Beta',
+               'Environment :: Console',
+               'Intended Audience :: End Users/Desktop',
+               'Intended Audience :: Developers',
+               ('License :: OSI Approved :: GNU General Public '
+                'License v3 (GPLv3)'),
+               'Natural Language :: English',
+               'Operating System :: Microsoft :: Windows',
+               'Operating System :: MacOS :: MacOS X',
+               'Operating System :: POSIX :: Linux',
+               'Programming Language :: Python :: 3',
+               'Programming Language :: Python :: 3.7',
+               'Programming Language :: Python :: 3.8',
+               'Programming Language :: Python :: 3.9',
+               'Programming Language :: Python :: 3.10',
+               'Topic :: Multimedia :: Sound/Audio :: Conversion',
+               'Topic :: Utilities',
+               ]
 
 # get the package data
 DATA_FILES = [('share/man/man1', ['man/ffcuesplitter.1.gz'])]

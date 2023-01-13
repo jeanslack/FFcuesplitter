@@ -280,13 +280,13 @@ class FFCueSplitter(FFMpeg):
         time = []
         for idx in enumerate(tracks):
             if idx[0] != len(tracks) - 1:  # minus last
-                trk = (tracks[idx[0] + 1]['START'] -
-                       tracks[idx[0]]['START']) / (44100)
+                trk = (tracks[idx[0] + 1]['START']
+                       - tracks[idx[0]]['START']) / (44100)
                 time.append(trk)
 
         if not time:
-            last = (float(probe['format']['duration']) -
-                    tracks[0]['START'] / 44100)
+            last = (float(probe['format']['duration'])
+                    - tracks[0]['START'] / 44100)
         else:
             last = float(probe['format']['duration']) - sum(time)
         time.append(last)

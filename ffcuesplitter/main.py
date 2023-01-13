@@ -171,9 +171,9 @@ def main():
     elif args.recursive is False:
         allfiles = find.find_files(suffix=('.cue', '.CUE'))
 
-    filelist = set(allfiles['FOUND'] +
-                   allfiles['DISCARDED'] +
-                   allfiles['INEXISTENT']
+    filelist = set(allfiles['FOUND']
+                   + allfiles['DISCARDED']
+                   + allfiles['INEXISTENT']
                    )
     if not filelist:
         msgdebug(warn="No files found.")

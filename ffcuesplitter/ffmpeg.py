@@ -96,8 +96,8 @@ class FFMpeg:
             metadata = {'ARTIST': track.get('PERFORMER', ''),
                         'ALBUM': track.get('ALBUM', ''),
                         'TITLE': track.get('TITLE', ''),
-                        'TRACK': (str(track['TRACK_NUM']) + '/' +
-                                  str(len(self.audiotracks))),
+                        'TRACK': (str(track['TRACK_NUM'])
+                                  + '/' + str(len(self.audiotracks))),
                         'DISCNUMBER': track.get('DISCNUMBER', ''),
                         'GENRE': track.get('GENRE', ''),
                         'DATE': track.get('DATE', ''),

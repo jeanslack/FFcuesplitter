@@ -1,0 +1,20 @@
+[flake8]
+exclude = develop/tools/generate_INNO_setup.py,
+          tests,
+          debian,
+          docs,
+          .git,
+          .github
+          __pycache__,
+          build,
+          dist,
+          man
+#per-file-ignores=videomass/gui_app.py:F401
+count = True
+#select=E9,F63,F7,F82
+max-line-length = 79
+show-source = True
+statistics = True
+max-complexity = 15
+ignore = W503
+extend-ignore =
