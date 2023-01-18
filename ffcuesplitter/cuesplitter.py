@@ -95,7 +95,7 @@ class FFCueSplitter(FFMpeg):
                 auto-create additional sub-folders,
                 one of ("artist+album", "artist", "album")
         outputformat:
-                output format, one of ("wav", "flac", "mp3", "ogg", "copy") .
+                output format, one of ("wav", "flac", "mp3", "ogg", "opus", "copy") .
         overwrite:
                 overwriting options, one of "ask", "never", "always".
         ffmpeg_cmd:
