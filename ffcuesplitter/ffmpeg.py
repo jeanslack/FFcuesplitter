@@ -43,11 +43,13 @@ class FFMpeg:
     """
     FFMpeg is a parent base class interface for FFCueSplitter.
     It represents FFmpeg command and arguments with their
-    sub-processing.
+    sub-processing. Note: Opus sample rate is always 48kHz for
+    fullband audio.
     """
     DATACODECS = {'wav': 'pcm_s16le -ar 44100',
                   'flac': 'flac -ar 44100',
                   'ogg': 'libvorbis -ar 44100',
+                  'opus': 'libopus',
                   'mp3': 'libmp3lame -ar 44100',
                   }
 

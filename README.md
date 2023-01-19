@@ -14,7 +14,7 @@ both as a Python module and from command line.
 ## Features
 
 - Supports many input formats.
-- Convert to Wav, Flac, Ogg, Mp3 formats.
+- Convert to Wav, Flac, Ogg, Opus, and Mp3 formats.
 - Ability to copy source codec and format without re-encoding.
 - Batch mode processing is also available.
 - Accepts both multiple CUE file names and multiple folder path names.
@@ -41,7 +41,7 @@ both as a Python module and from command line.
 ```
 ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
               [-r]
-              [-f {wav,flac,mp3,ogg,copy}]
+              [-f {wav,flac,mp3,ogg,opus,copy}]
               [-o OUTPUTDIR]
               [-c {artist+album,artist,album}]
               [-ow {ask,never,always}]
