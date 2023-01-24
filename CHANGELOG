@@ -1,9 +1,11 @@
 +--------------------------------+
-January 19 2023  Version 1.0.19 Beta (unreleased)
+January 24 2023  Version 1.0.19 Beta
 +--------------------------------+
+
 - Added opus codec/format, thanks to @tsweet (Tim Sweet)
 - Update man page
 - Update wiki
+- Fixed typos on printed strings.
 
 +--------------------------------+
 January 11 2023  Version 1.0.18 Beta

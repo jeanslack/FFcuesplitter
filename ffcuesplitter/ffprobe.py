@@ -50,22 +50,22 @@ def from_kwargs_to_args(kwargs):
 
 def ffprobe(filename, cmd='ffprobe', **kwargs):
     """
-    Run ffprobe on the specified file and return a
-    JSON representation of the output.
+    Run ffprobe subprocess on the specified file.
 
     Raises:
-        :class:`ffcuesplitter.FFProbeError`: if ffprobe
-        returns a non-zero exit code;
-        `ffcuesplitter.FFProbeError` from `OSError`,
-        `FileNotFoundError` if a generic error.
-
+        `FFProbeError` from `FileNotFoundError` or from `OSError`.
+        `FFProbeError` if non-zero exit code from `proc.returncode`.
+    Return:
+        A JSON representation of the ffprobe output.
     Usage:
-        ffprobe(filename,
-                cmd='/usr/bin oi/ffprobe',
-                loglevel='error',
-                hide_banner=None,
-                etc,
-                )
+        >>> from ffcuesplitter.ffprobe import ffprobe
+        >>> probe = ffprobe(filename,
+                            cmd='/usr/bin/ffprobe',
+                            loglevel='error',
+                            hide_banner=None,
+                            kwargs,
+                            )
+
     """
     args = (f'"{cmd}" -show_format -show_streams -of json '
             f'{" ".join(from_kwargs_to_args(kwargs))} '

@@ -5,7 +5,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Dec 27 2022
+Rev: Jan 24 2023
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -37,11 +37,10 @@ def sanitize(string: str = 'string') -> str:
     with the OS file system.
 
     - On Windows, removes the following illegal chars: " * : < > ? / \ |
-      and replaces slash (/) character with hyphen (-).
-    - On other operating systems, it replaces slash (/) character
-      with hyphen (-).
-    - On all operating systems, removes leading/trailing spaces
-      and dots (.).
+
+    - On all operating systems, it replaces slash (/) character
+      with hyphen (-) and removes leading/trailing spaces
+      and dots (.)
 
     Returns the new sanitized string.
 
@@ -51,9 +50,7 @@ def sanitize(string: str = 'string') -> str:
 
     if platform.system() == 'Windows':
         string = re.sub(r"[\"\*\:\<\>\?\|\\]", '', string)
-        string = string.replace('/', '-')
-    else:
-        string = string.replace('/', '-')
+    string = string.replace('/', '-')
 
     return string.strip().strip('.')  # removes spaces and dots
 # ------------------------------------------------------------------------
@@ -101,7 +98,7 @@ def frames_to_seconds(frames):
 
 def makeoutputdirs(outputdir):
     """
-    Makes the subfolders specified in the outpudir argument
+    Makes the specified subfolders in the outpudir
     """
     try:
         os.makedirs(outputdir,
@@ -115,7 +112,7 @@ def makeoutputdirs(outputdir):
 
 class Popen(subprocess.Popen):
     """
-    Inherit subprocess.Popen class to set _startupinfo.
+    Inherit `subprocess.Popen` class to set `_startupinfo`.
     This avoids displaying a console window on MS-Windows
     using GUI's .
     """
@@ -190,7 +187,6 @@ class FileFinder:
             if os.path.exists(dirs):
                 if os.path.isdir(dirs):
                     for root, alldirs, allfiles in os.walk(dirs):
-                        # to disable some `for` variables put underscore _
                         fileswalk[root] = list(alldirs + allfiles)
                 else:
                     self.rejected.append(dirs)  # only existing files

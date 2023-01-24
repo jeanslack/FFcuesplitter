@@ -98,17 +98,17 @@ class FFCueSplitter(FFMpeg):
                 output format, one of
                 ("wav", "flac", "mp3", "ogg", "opus", "copy") .
         overwrite:
-                overwriting options, one of "ask", "never", "always".
+                overwriting options, one of ("ask", "never", "always").
         ffmpeg_cmd:
                 an absolute path command of ffmpeg
         ffmpeg_loglevel:
-                one of "error", "warning", "info", "verbose", "debug" .
+                one of ("error", "warning", "info", "verbose", "debug") .
         ffprobe_cmd:
                 an absolute path command of ffprobe.
         ffmpeg_add_params:
                 additionals parameters of FFmpeg.
         progress_meter:
-                one of 'tqdm', 'standard', default is 'standard'.
+                one of ('tqdm', 'standard'), default is 'standard'.
         dry:
                 with `True`, perform the dry run with no changes
                 done to filesystem.
@@ -318,14 +318,14 @@ class FFCueSplitter(FFMpeg):
             track_file = track[1].file.path
 
             if not track_file.exists():
-                msgdebug(warn=(f'Source file `{track_file}` is not '
-                               f'found. Track is skipped.'))
+                msgdebug(warn=(f'Not found: `{track_file}`. '
+                               f'Track is skipped.'))
 
                 if str(track_file) in sourcenames:
                     sourcenames.pop(str(track_file))
                     if not sourcenames:
-                        raise FFCueSplitterError('No other audio source '
-                                                 'files found here!')
+                        raise FFCueSplitterError('No other audio tracks '
+                                                 'found here.')
                 continue
 
             filename = (f"{sanitize(track[1].title)}")  # title names sanitize
