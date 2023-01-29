@@ -33,7 +33,6 @@ from ffcuesplitter.info import (__appname__,
                                 __release__,
                                 )
 from ffcuesplitter.str_utils import (msgdebug,
-                                     msg,
                                      msgend,
                                      msgcolor,
                                      )
@@ -193,7 +192,7 @@ def main():
         kwargs['outputdir'] = args.outputdir
         kwargs['collection'] = args.collection
         kwargs['outputformat'] = args.format_type
-        #kwargs['overwrite'] = args.overwrite
+        kwargs['overwrite'] = args.overwrite
         kwargs['ffmpeg_cmd'] = args.ffmpeg_cmd
         kwargs['ffmpeg_loglevel'] = args.ffmpeg_loglevel
         kwargs['ffmpeg_add_params'] = args.ffmpeg_add_params
@@ -202,11 +201,9 @@ def main():
         kwargs['dry'] = args.dry
         kwargs['prg_loglevel'] = args.prg_loglevel.upper()
 
-        if args.prg_loglevel != 'debug':
-            msgcolor(green='FFcuesplitter: ',
-                     tail=f"Processing: '{kwargs['filename']}'")
+        msgcolor(green='FFcuesplitter: ',
+                 tail=f"Processing: '{kwargs['filename']}'")
         try:
-            kwargs['overwrite'] = args.overwrite
             split = FileSystemOperations(**kwargs)
             split.working_temporary_context()
 

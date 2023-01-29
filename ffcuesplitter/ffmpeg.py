@@ -81,7 +81,7 @@ class FFMpeg:
         for each audio track.
 
         Returns:
-            dict(cmdargs)
+            dict(recipes)
         """
         data = []
 
@@ -119,12 +119,12 @@ class FFMpeg:
             args = (cmd, {'duration': track['DURATION'], 'titletrack': name})
             data.append(args)
 
-        return {'cmdargs': data}
+        return {'recipes': data}
     # --------------------------------------------------------------#
 
-    def processing(self, arg, secs):
+    def command_runner(self, arg, secs):
         """
-        Redirect to required processing. Note: tqdm command args
+        Redirect to required runner. Note: tqdm command args
         is slightly different from standard command args because
         tqdm adds `-progress pipe:1 -nostats -nostdin` to arguments,
         see `meters` on `commandargs`
@@ -133,17 +133,17 @@ class FFMpeg:
             cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
                 return cmd
-            self.processing_with_tqdm_progress(cmd, secs)
+            self.run_ffmpeg_command_with_progress(cmd, secs)
 
         elif self.kwargs['progress_meter'] == 'standard':
             cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
                 return cmd
-            self.processing_with_standard_progress(cmd)
+            self.run_ffmpeg_command(cmd)
         return None
     # --------------------------------------------------------------#
 
-    def processing_with_tqdm_progress(self, cmd, seconds):
+    def run_ffmpeg_command_with_progress(self, cmd, seconds):
         """
         FFmpeg sub-processing showing a tqdm progress meter
         for each loop. Also writes a log file to the same
@@ -209,7 +209,7 @@ class FFMpeg:
         progbar.close()
     # --------------------------------------------------------------#
 
-    def processing_with_standard_progress(self, cmd):
+    def run_ffmpeg_command(self, cmd):
         """
         FFmpeg sub-processing with stderr output to console.
         The output depending on the ffmpeg loglevel option.

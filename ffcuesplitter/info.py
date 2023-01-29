@@ -1,6 +1,6 @@
 """
 Name: info.py
-Porpose: useful information strings
+Porpose: program information strings
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
@@ -27,8 +27,8 @@ __contact__ = '<jeanlucperni@gmail.com>'
 __maintainer__ = "Gianluca Pernigotto - Jeanslack"
 __maintainer_contact__ = "jeanlucperni@gmail.com"
 __copyleft__ = '2023'
-__version__ = '1.0.19'
-__release__ = 'January 24 2023'
+__version__ = '1.0.20'
+__release__ = 'January 29 2023'
 __appname__ = "FFcuesplitter"
 __packagename__ = "ffcuesplitter"
 __license__ = "GPL3 (Gnu Public License)"

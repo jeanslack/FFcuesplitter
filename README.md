@@ -51,6 +51,7 @@ ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
               [-p {tqdm,standard}]
               [--ffprobe-cmd URL]
               [--dry]
+              [--prg-loglevel]
               [-h]
               [--version]
 ```
@@ -75,22 +76,14 @@ and saves them in the 'my-awesome-tracklist' folder.
 >>> from ffcuesplitter.cuesplitter import FFCueSplitter
 ```
 
-Splittings:   
-
-```python
->>> split = FFCueSplitter(filename='filename.cue')
->>> split.open_cuefile()
->>> split.do_operations()
-```
-
 Get data tracks and FFmpeg args:   
 
 ```python
->>> data = FFCueSplitter('filename.cue', dry=True)
->>> data.open_cuefile()
->>> data.audiotracks  # trackdata
->>> data.cue.meta.data  # cd_info
->>> data.ffmpeg_arguments()
+>>> cuef = FFCueSplitter("tests/Three Samples_ASCII.cue", dry=True)
+>>> cuef.open_cuefile()  # first of all you need to open the cue file
+>>> cuef.audiotracks  # get all tracks data
+>>> cuef.cue.meta.data  # CD info
+>>> cuef.commandargs()  # get related FFmpeg recipes
 ```
 
 For arguments meaning and more details, type `help(FFCueSplitter)`   

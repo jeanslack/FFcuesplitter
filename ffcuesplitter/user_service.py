@@ -2,7 +2,7 @@
 First release: January 28 2023
 
 Name: user_service.py
-Porpose: Temporary context and file check overwriting interface.
+Porpose: Services for the end user.
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
@@ -56,20 +56,16 @@ class FileSystemOperations(FFCueSplitter):
                  prg_loglevel: str = 'info',
                  ):
         """
-        overwrite:
-                overwriting options, one of ("ask", "never", "always").
-
-        For a full meaning of the arguments to pass to the
-        instance, see `FFCueSplitter` class of `operations` module.
+        For a full meaning of the arguments to pass
+        to the instance, see the super class docs.
         """
 
         super().__init__(filename, outputdir, collection,
-                         outputformat, ffmpeg_cmd, ffmpeg_loglevel,
-                         ffprobe_cmd, ffmpeg_add_params,
-                         progress_meter, dry, prg_loglevel,
+                         outputformat, overwrite, ffmpeg_cmd,
+                         ffmpeg_loglevel, ffprobe_cmd,
+                         ffmpeg_add_params, progress_meter,
+                         dry, prg_loglevel,
                          )
-        self.kwargs['overwrite'] = overwrite
-        #self.kwargs['tempdir'] = '.'
 
         self.open_cuefile()
     # ----------------------------------------------------------------#
@@ -156,8 +152,8 @@ class FileSystemOperations(FFCueSplitter):
         """
         if self.kwargs['dry'] is True:
             self.kwargs['tempdir'] = self.kwargs['outputdir']
-            cmds = self.commandargs()
-            for args in cmds['cmdargs']:
+            recipes = self.commandargs()
+            for args in recipes['recipes']:
                 msg = f'{args[0]}\n'
                 logging.info(msg)
             return
@@ -169,20 +165,20 @@ class FileSystemOperations(FFCueSplitter):
                                          prefix='ffcuesplitter_',
                                          dir=None) as tmpdir:
             self.kwargs['tempdir'] = tmpdir
-            cmds = self.commandargs()
+            recipes = self.commandargs()
 
             logging.info("Temporary Target: '%s'", self.kwargs['tempdir'])
             logging.info("Extracting audio tracks (type Ctrl+c to stop):")
 
             count = 0
-            lengh = len(cmds['cmdargs'])
-            for args in cmds['cmdargs']:
+            lengh = len(recipes['recipes'])
+            for args in recipes['recipes']:
                 count += 1
                 msg = (f'TRACK {count}/{lengh} >> '
                        f'"{args[1]["titletrack"]}" ...')
                 logging.info(msg)
 
-                self.processing(args[0], args[1]['duration'])
+                self.command_runner(args[0], args[1]['duration'])
             # msg('\n')
             logging.info("...done exctracting")
             logging.info("Move files to: '%s'",

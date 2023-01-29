@@ -47,18 +47,11 @@ class FFCueSplitter(FFMpeg):
 
     Usage:
             >>> from ffcuesplitter.cuesplitter import FFCueSplitter
-
-        Splittings:
-            >>> split = FFCueSplitter(filename)
-            >>> split.open_cuefile()
-            >>> split.do_operations()
-
-        Get data tracks:
-            >>> data = FFCueSplitter(filename, dry=True)
-            >>> data.open_cuefile()
-            >>> data.audiotracks  # trackdata
-            >>> data.cue.meta.data  # cd_info
-            >>> data.commandargs()
+            >>> cuef = FFCueSplitter(cuefile, dry=True)
+            >>> cuef.open_cuefile()
+            >>> cuef.audiotracks  # get all tracks data
+            >>> cuef.cue.meta.data  # CD info
+            >>> cuef.commandargs()  # get related FFmpeg recipes
 
     For other options, read the examples on the wiki page:
     https://github.com/jeanslack/FFcuesplitter/wiki/Examples
@@ -72,6 +65,7 @@ class FFCueSplitter(FFMpeg):
                  outputdir: str = '.',
                  collection: str = '',
                  outputformat: str = 'flac',
+                 overwrite: str = "ask",
                  ffmpeg_cmd: str = 'ffmpeg',
                  ffmpeg_loglevel: str = "info",
                  ffprobe_cmd: str = 'ffprobe',
@@ -95,6 +89,8 @@ class FFCueSplitter(FFMpeg):
         outputformat:
                 output format, one of
                 ("wav", "flac", "mp3", "ogg", "opus", "copy") .
+        overwrite:
+                overwriting options, one of ("ask", "never", "always").
         ffmpeg_cmd:
                 an absolute path command of ffmpeg
         ffmpeg_loglevel:
@@ -129,6 +125,7 @@ class FFCueSplitter(FFMpeg):
             self.kwargs['outputdir'] = os.path.abspath(outputdir)
         self.kwargs['collection'] = collection
         self.kwargs['format'] = outputformat
+        self.kwargs['overwrite'] = overwrite
         self.kwargs['ffmpeg_cmd'] = ffmpeg_cmd
         self.kwargs['ffmpeg_loglevel'] = ffmpeg_loglevel
         self.kwargs['ffprobe_cmd'] = ffprobe_cmd

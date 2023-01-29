@@ -10,7 +10,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Jan 11 2023
+Rev: Jan 29 2023
 Code checker: flake8, pylint
 
 This file is part of FFcuesplitter.
@@ -46,7 +46,7 @@ SETUP_REQ = ["setuptools>=47.1.1",
              "twine>=3.1.1"
              ]
 
-CLASSIFIERS = ['Development Status :: 4 - Beta',
+CLASSIFIERS = ['Development Status :: 5 - Production/Stable',
                'Environment :: Console',
                'Intended Audience :: End Users/Desktop',
                'Intended Audience :: Developers',
@@ -55,7 +55,7 @@ CLASSIFIERS = ['Development Status :: 4 - Beta',
                'Natural Language :: English',
                'Operating System :: Microsoft :: Windows',
                'Operating System :: MacOS :: MacOS X',
-               'Operating System :: POSIX :: Linux',
+               'Operating System :: POSIX :: Linux :: BSD',
                'Programming Language :: Python :: 3',
                'Programming Language :: Python :: 3.7',
                'Programming Language :: Python :: 3.8',
