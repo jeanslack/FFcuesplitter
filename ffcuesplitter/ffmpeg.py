@@ -28,11 +28,9 @@ This file is part of FFcuesplitter.
 """
 import subprocess
 import os
-import sys
 import platform
 from tqdm import tqdm
 from ffcuesplitter.exceptions import FFMpegError
-from ffcuesplitter.str_utils import msg
 from ffcuesplitter.utils import makeoutputdirs, Popen
 
 if not platform.system() == 'Windows':
@@ -41,7 +39,7 @@ if not platform.system() == 'Windows':
 
 class FFMpeg:
     """
-    FFMpeg is a parent base class interface for FFCueSplitter.
+    FFMpeg is the base class interface for FFCueSplitter.
     It represents FFmpeg command and arguments with their
     sub-processing. Note: Opus sample rate is always 48kHz for
     fullband audio.
@@ -59,8 +57,6 @@ class FFMpeg:
         """
         self.kwargs = kwargs
         self.audiotracks = kwargs
-        self.seconds = None
-        self.arguments = None
         self.osplat = platform.system()
         self.outsuffix = None
     # -------------------------------------------------------------#
@@ -72,7 +68,6 @@ class FFMpeg:
         if self.kwargs['format'] == 'copy':
             self.outsuffix = os.path.splitext(sourcef)[1].replace('.', '')
             codec = '-c copy'
-
         else:
             self.outsuffix = self.kwargs['format']
             codec = f'-c:a {FFMpeg.DATACODECS[self.kwargs["format"]]}'
@@ -80,16 +75,15 @@ class FFMpeg:
         return codec, self.outsuffix
     # -------------------------------------------------------------#
 
-    def ffmpeg_arguments(self):
+    def commandargs(self):
         """
         Builds `FFmpeg` arguments and calculates time seconds
         for each audio track.
 
         Returns:
-            dict(arguments:[...], seconds:[...])
+            dict(cmdargs)
         """
-        self.arguments = []
-        self.seconds = []
+        data = []
 
         meters = {'tqdm': '-progress pipe:1 -nostats -nostdin', 'standard': ''}
 
@@ -122,32 +116,31 @@ class FFMpeg:
             num = str(track['TRACK_NUM']).rjust(2, '0')
             name = f'{num} - {track["TITLE"]}.{suffix}'
             cmd += f' "{os.path.join(self.kwargs["tempdir"], name)}"'
-            self.arguments.append(cmd)
-            self.seconds.append(track['DURATION'])
+            args = (cmd, {'duration': track['DURATION'], 'titletrack': name})
+            data.append(args)
 
-        return {'arguments': self.arguments, 'seconds': self.seconds}
+        return {'cmdargs': data}
     # --------------------------------------------------------------#
 
     def processing(self, arg, secs):
         """
-        Make required directory tree for output files
-        and Redirect to required processing.
+        Redirect to required processing. Note: tqdm command args
+        is slightly different from standard command args because
+        tqdm adds `-progress pipe:1 -nostats -nostdin` to arguments,
+        see `meters` on `commandargs`
         """
-        makeoutputdirs(self.kwargs['outputdir'])
-
         if self.kwargs['progress_meter'] == 'tqdm':
             cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
-                msg(cmd)  # stdout cmd in dry mode
-                return
+                return cmd
             self.processing_with_tqdm_progress(cmd, secs)
 
         elif self.kwargs['progress_meter'] == 'standard':
             cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
-                msg(cmd)  # stdout cmd in dry mode
-                return
+                return cmd
             self.processing_with_standard_progress(cmd)
+        return None
     # --------------------------------------------------------------#
 
     def processing_with_tqdm_progress(self, cmd, seconds):
@@ -171,6 +164,7 @@ class FFMpeg:
         Returns:
             None
         """
+        makeoutputdirs(self.kwargs['outputdir'])  # Make dirs for output files
         progbar = tqdm(total=100,
                        unit="s",
                        dynamic_ncols=True
@@ -180,7 +174,7 @@ class FFMpeg:
                f'=======================================================\n\n')
 
         try:
-            with open(self.kwargs['logtofile'], "a", encoding='utf-8') as log:
+            with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
                 log.write(sep)
                 with Popen(cmd,
                            stdout=subprocess.PIPE,
@@ -205,11 +199,12 @@ class FFMpeg:
             progbar.close()
             raise FFMpegError(excepterr) from excepterr
 
-        except KeyboardInterrupt:
+        except KeyboardInterrupt as err:
             # proc.kill()
             progbar.close()
             proc.terminate()
-            sys.exit("\n[KeyboardInterrupt] FFmpeg process terminated.")
+            msg = "[KeyboardInterrupt] FFmpeg process failed."
+            raise FFMpegError(msg) from err
 
         progbar.close()
     # --------------------------------------------------------------#
@@ -223,9 +218,10 @@ class FFMpeg:
         Returns:
             None
         """
+        makeoutputdirs(self.kwargs['outputdir'])  # Make dirs for output files
         sep = (f'\nFFcuesplitter Command: {cmd}\n'
                f'=======================================================\n\n')
-        with open(self.kwargs['logtofile'], "a", encoding='utf-8') as log:
+        with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
             log.write(sep)
         try:
             subprocess.run(cmd, check=True, shell=False, encoding='utf8',)
@@ -236,5 +232,6 @@ class FFMpeg:
         except subprocess.CalledProcessError as err:
             raise FFMpegError(f"ffmpeg FAILED: {err}") from err
 
-        except KeyboardInterrupt:
-            sys.exit("\n[KeyboardInterrupt] FFmpeg process terminated.")
+        except KeyboardInterrupt as err:
+            msg = "[KeyboardInterrupt] FFmpeg process failed."
+            raise FFMpegError(msg) from err

@@ -1,7 +1,11 @@
 
-- Consider using `logger` for messages (?)
 
 
-
+- check tests.py.
+- checks API interface.
+- make API docs.
+- describe the substantial difference between the command given
+with the 'qtms' parameter and the one with the 'standard' parameter.
+- check the current code with ffcuesplitter GUI as well.
 
 

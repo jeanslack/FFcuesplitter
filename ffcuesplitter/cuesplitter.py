@@ -27,13 +27,9 @@ This file is part of FFcuesplitter.
     along with FFcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
-import shutil
-import tempfile
+import logging
 import chardet
 from deflacue.deflacue import CueParser
-from ffcuesplitter.str_utils import (msgdebug,
-                                     msg,
-                                     )
 from ffcuesplitter.utils import sanitize
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
@@ -44,8 +40,10 @@ from ffcuesplitter.ffmpeg import FFMpeg
 
 class FFCueSplitter(FFMpeg):
     """
-    This class implements an interface for retrieve the required
-    data to accurately split audio CD images using FFmpeg.
+    This is a subclass derived from the `FFMpeg` base
+    class, it implements an interface to fetch the
+    required data and accurately split audio tracks
+    from CD image using FFmpeg.
 
     Usage:
             >>> from ffcuesplitter.cuesplitter import FFCueSplitter
@@ -60,7 +58,7 @@ class FFCueSplitter(FFMpeg):
             >>> data.open_cuefile()
             >>> data.audiotracks  # trackdata
             >>> data.cue.meta.data  # cd_info
-            >>> data.ffmpeg_arguments()
+            >>> data.commandargs()
 
     For other options, read the examples on the wiki page:
     https://github.com/jeanslack/FFcuesplitter/wiki/Examples
@@ -74,13 +72,13 @@ class FFCueSplitter(FFMpeg):
                  outputdir: str = '.',
                  collection: str = '',
                  outputformat: str = 'flac',
-                 overwrite: str = "ask",
                  ffmpeg_cmd: str = 'ffmpeg',
                  ffmpeg_loglevel: str = "info",
                  ffprobe_cmd: str = 'ffprobe',
                  ffmpeg_add_params: str = '',
                  progress_meter: str = "standard",
                  dry: bool = False,
+                 prg_loglevel: str = 'info',
                  ):
         """
         ------------------
@@ -97,8 +95,6 @@ class FFCueSplitter(FFMpeg):
         outputformat:
                 output format, one of
                 ("wav", "flac", "mp3", "ogg", "opus", "copy") .
-        overwrite:
-                overwriting options, one of ("ask", "never", "always").
         ffmpeg_cmd:
                 an absolute path command of ffmpeg
         ffmpeg_loglevel:
@@ -112,7 +108,17 @@ class FFCueSplitter(FFMpeg):
         dry:
                 with `True`, perform the dry run with no changes
                 done to filesystem.
+        prg_loglevel:
+                Set the program loglevel, one of
+                ("debug", "info", "warning", "error"), default is `info`
         """
+        numeric_level = getattr(logging, prg_loglevel.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError(f'Invalid log level: {prg_loglevel}')
+
+        logging.basicConfig(format='%(levelname)s: %(message)s',
+                            level=numeric_level,
+                            )
         super().__init__()
 
         self.kwargs = {'filename': os.path.abspath(filename)}
@@ -123,7 +129,6 @@ class FFCueSplitter(FFMpeg):
             self.kwargs['outputdir'] = os.path.abspath(outputdir)
         self.kwargs['collection'] = collection
         self.kwargs['format'] = outputformat
-        self.kwargs['overwrite'] = overwrite
         self.kwargs['ffmpeg_cmd'] = ffmpeg_cmd
         self.kwargs['ffmpeg_loglevel'] = ffmpeg_loglevel
         self.kwargs['ffprobe_cmd'] = ffprobe_cmd
@@ -140,134 +145,15 @@ class FFCueSplitter(FFMpeg):
         self.testpatch = None  # set for test cases only
     # ----------------------------------------------------------------#
 
-    def check_for_overwriting(self):
-        """
-        Checking options for overwriting files.
-        """
-        outputdir = self.kwargs['outputdir']
-        overwr = self.kwargs['overwrite']
-        tracks = self.audiotracks.copy()
-
-        if overwr == 'always':
-            msgdebug(info=("Overwrite existing file because "
-                           "you specified the 'always' option"))
-            return False
-
-        if overwr == 'never':
-            msgdebug(info=("Do not overwrite any files because "
-                           "you specified 'never' option"))
-            return True
-
-        for data in tracks:  # self.audiotracks
-            track = (f"{str(data['TRACK_NUM']).rjust(2, '0')} - "
-                     f"{data['TITLE']}.{self.kwargs['format']}")
-            pathfile = os.path.join(outputdir, track)
-
-            if os.path.exists(pathfile):
-                if overwr in ('n', 'N', 'y', 'Y', 'ask'):
-                    while True:
-                        msgdebug(warn=f"File already exists: "
-                                 f"'{os.path.join(outputdir, track)}'")
-                        overwr = input("Overwrite? [Y/n/always/never] > ")
-                        if overwr in ('Y', 'y', 'n', 'N', 'always', 'never'):
-                            break
-                        msgdebug(err=f"Invalid option '{overwr}'")
-                        continue
-                if overwr == 'never':
-                    msgdebug(info=("Do not overwrite any files because "
-                                   "you specified 'never' option"))
-                    return True
-
-            if overwr in ('n', 'N'):
-                del self.audiotracks[self.audiotracks.index(data)]
-
-            elif overwr in ('y', 'Y', 'always', 'never', 'ask'):
-                if overwr == 'always':
-                    msgdebug(info=("Overwrite existing file because "
-                                   "you specified the 'always' option"))
-                    return False
-        return False
-    # ----------------------------------------------------------------#
-
-    def move_files_to_outputdir(self):
-        """
-        All files are processed in a /temp folder. After the split
-        operation is complete, all tracks are moved from /temp folder
-        to output folder.
-
-        Raises:
-            FFCueSplitterError
-        Returns:
-            None
-
-        """
-        outputdir = self.kwargs['outputdir']
-
-        for track in os.listdir(self.kwargs['tempdir']):
-            try:
-                shutil.move(os.path.join(self.kwargs['tempdir'], track),
-                            os.path.join(outputdir, track))
-            except Exception as error:
-                raise FFCueSplitterError(error) from error
-    # ----------------------------------------------------------------#
-
-    def do_operations(self):
-        """
-        Automates the work in a temporary context using tempfile.
-
-        Raises:
-            FFCueSplitterError
-        Returns:
-            None
-        """
-        if self.check_for_overwriting() is True or self.audiotracks == []:
-            return
-
-        with tempfile.TemporaryDirectory(suffix=None,
-                                         prefix='ffcuesplitter_',
-                                         dir=None) as tmpdir:
-            self.kwargs['tempdir'] = tmpdir
-            self.ffmpeg_arguments()
-
-            msgdebug(info=(f"Temporary Target: '{self.kwargs['tempdir']}'"))
-            msgdebug(info="Extracting audio tracks (type Ctrl+c to stop):")
-
-            count = 0
-            for args, secs, title in zip(self.arguments,
-                                         self.seconds,
-                                         self.audiotracks):
-                count += 1
-                msg(f'\nTRACK {count}/{len(self.audiotracks)} '
-                    f'>> "{title["TITLE"]}.{self.outsuffix}" ...')
-                self.processing(args, secs)
-
-            if self.kwargs['dry'] is True:
-                return
-
-            msg('\n')
-            msgdebug(info="...done exctracting")
-            msgdebug(info="Move files to: ",
-                     tail=(f"\033[37m"
-                           f"'{os.path.abspath(self.kwargs['outputdir'])}'"
-                           f"\033[0m"))
-
-            self.move_files_to_outputdir()
-    # ----------------------------------------------------------------#
-
     def get_track_duration(self, tracks):
         """
-        Gets total duration of the source audio tracks for chunks
-        calculation on the progress meter during ffmpeg executions.
-        Given a total duration calculates the remains duration
-        for the last track as well.
+        Gets tracks duration for chunks calculation.
 
-        This method is called by `cuefile_parser` method, Do not
-        call this method directly.
+        This method is called by `deflacue_object_handler` method,
+        Do not call this method directly.
 
-        Raises:
-            FFCueSplitterError
         Returns:
-            tracks (list), all track data taken from the cue file.
+            An updated tracks list data taken from the cue file.
         """
         if self.testpatch:
             probe = {'format': {'duration': 6.000000}}
@@ -318,8 +204,8 @@ class FFCueSplitter(FFMpeg):
             track_file = track[1].file.path
 
             if not track_file.exists():
-                msgdebug(warn=(f'Not found: `{track_file}`. '
-                               f'Track is skipped.'))
+                logging.warning('Not found: `%s`. '
+                                'Track is skipped.', track_file)
 
                 if str(track_file) in sourcenames:
                     sourcenames.pop(str(track_file))
@@ -348,9 +234,11 @@ class FFCueSplitter(FFMpeg):
 
     def set_subdirs(self, performer, album):
         """
-        Set sub-folders with artist and album names.
-        This method reset the attribute `self.kwargs['outputdir']`
-        adding the new folders sanitized to output destination.
+        Set possible sub-folders with artist and album names.
+        If needed, this method reset the attribute
+        `self.kwargs['outputdir']` adding the new dirs sanitized
+        to output destination.
+
         Raise FFCueSplitterError otherwise
         """
         subdirs = None
@@ -370,7 +258,7 @@ class FFCueSplitter(FFMpeg):
             self.kwargs['logtofile'] = os.path.join(self.kwargs['outputdir'],
                                                     'ffcuesplitter.log')
         else:
-            raise FFCueSplitterError(f"Invalid collection arguments: "
+            raise FFCueSplitterError(f"Invalid argument: "
                                      f"'{self.kwargs['collection']}'")
     # ----------------------------------------------------------------#
 
@@ -388,9 +276,10 @@ class FFCueSplitter(FFMpeg):
 
     def open_cuefile(self, testpatch=None):
         """
-        Read cue file and start file parsing via deflacue package
+        Gets cue file bytes for character set encoding
+        then starts file parsing via deflacue.
         """
-        msgdebug(info=f"CUE sheet: '{self.kwargs['filename']}'")
+        logging.debug("Processing: '%s'", self.kwargs['filename'])
 
         if testpatch:
             self.testpatch = True

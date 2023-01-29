@@ -14,7 +14,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(PATH)))
 
 try:
     from ffcuesplitter.cuesplitter import FFCueSplitter
-
     from ffcuesplitter.exceptions import InvalidFileError
 
 except ImportError as error:

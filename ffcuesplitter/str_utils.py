@@ -52,9 +52,9 @@ def msgend(done=None, abort=None):
     Print status messages at the end of the tasks
     """
     if done:
-        print("\033[1m..Finished!\033[0m\n")
+        print("\033[32;1mFinished!\033[0m\n")
     elif abort:
-        print("\033[1m..Abort!\033[0m\n")
+        print("\033[31;1mAbort!\033[0m\n")
 
 
 def msg(message):

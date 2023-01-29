@@ -1,4 +1,12 @@
 +--------------------------------+
+January 28 2023  Version 1.0.20
++--------------------------------+
+
+- Added logging
+- Refactoring of classes, methods and functions.
+- Improved API using Python programs.
+
++--------------------------------+
 January 24 2023  Version 1.0.19 Beta
 +--------------------------------+
 

@@ -7,7 +7,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Dec 27 2022
+Rev: Jan 28 2022
 Code checker: flake8, pylint
 ####################################################################
 
@@ -32,16 +32,19 @@ from ffcuesplitter.info import (__appname__,
                                 __version__,
                                 __release__,
                                 )
-from ffcuesplitter.cuesplitter import FFCueSplitter
 from ffcuesplitter.str_utils import (msgdebug,
                                      msg,
+                                     msgend,
+                                     msgcolor,
                                      )
+from ffcuesplitter.user_service import (FileSystemOperations,
+                                        FileFinder,
+                                        )
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
                                       FFProbeError,
                                       FFMpegError,
                                       )
-from ffcuesplitter.utils import FileFinder
 
 
 def main():
@@ -162,6 +165,12 @@ def main():
                               "filesystem. Only show what would be done."),
                         required=False,
                         )
+    parser.add_argument('--prg-loglevel',
+                        help='Set the program loglevel, default is `info`',
+                        choices=["debug", "info", "warning", "error"],
+                        required=False,
+                        default='info'
+                        )
     args = parser.parse_args()
 
     find = FileFinder(args.input_fd)  # get file collection
@@ -176,40 +185,41 @@ def main():
                    + allfiles['INEXISTENT']
                    )
     if not filelist:
-        msgdebug(warn="No files found.")
+        msgdebug(err="No files found.")
+        return None
 
-    maxitems = len(filelist)
-    msg('')
     for files in filelist:
         kwargs = {'filename': files}
         kwargs['outputdir'] = args.outputdir
         kwargs['collection'] = args.collection
         kwargs['outputformat'] = args.format_type
-        kwargs['overwrite'] = args.overwrite
+        #kwargs['overwrite'] = args.overwrite
         kwargs['ffmpeg_cmd'] = args.ffmpeg_cmd
         kwargs['ffmpeg_loglevel'] = args.ffmpeg_loglevel
         kwargs['ffmpeg_add_params'] = args.ffmpeg_add_params
         kwargs['ffprobe_cmd'] = args.ffprobe_cmd
         kwargs['progress_meter'] = args.progress_meter
         kwargs['dry'] = args.dry
+        kwargs['prg_loglevel'] = args.prg_loglevel.upper()
 
+        if args.prg_loglevel != 'debug':
+            msgcolor(green='FFcuesplitter: ',
+                     tail=f"Processing: '{kwargs['filename']}'")
         try:
-            split = FFCueSplitter(**kwargs)
-            split.open_cuefile()
-            split.do_operations()
+            kwargs['overwrite'] = args.overwrite
+            split = FileSystemOperations(**kwargs)
+            split.working_temporary_context()
 
         except (InvalidFileError,
                 FFCueSplitterError,
                 FFProbeError,
-                FFMpegError) as error:
+                FFMpegError,
+                ) as error:
             msgdebug(err=f"{error}")
+            return None
 
-        finally:
-            if maxitems != 1:
-                msg('========================================')
-            maxitems -= 1
-
-    msgdebug(info="Finished!")
+    msgend(done="Finished!")
+    return None
 
 
 if __name__ == '__main__':
