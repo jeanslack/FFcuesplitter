@@ -94,5 +94,3 @@ Copyright (C) 2023 Gianluca Pernigotto
 Author and Developer: Gianluca Pernigotto   
 Mail: <jeanlucperni@gmail.com>   
 License: GPL3 (see LICENSE file in the source folder)   
-
-

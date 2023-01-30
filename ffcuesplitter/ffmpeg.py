@@ -128,8 +128,7 @@ class FFMpeg:
         is slightly different from standard command args because
         tqdm adds `-progress pipe:1 -nostats -nostdin` to arguments,
         see `meters` on `commandargs`.
-        Note, this method makes sure to return if the `dry`
-        parameter is true.
+        This method must return if the `dry` keyword arg is true.
 
         """
         if self.kwargs['progress_meter'] == 'tqdm':
