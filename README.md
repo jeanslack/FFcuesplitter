@@ -79,11 +79,11 @@ and saves them in the 'my-awesome-tracklist' folder.
 Get data tracks and FFmpeg args:   
 
 ```python
->>> cuef = FFCueSplitter("tests/Three Samples_ASCII.cue", dry=True)
->>> cuef.open_cuefile()  # first of all you need to open the cue file
->>> cuef.audiotracks  # get all tracks data
->>> cuef.cue.meta.data  # CD info
->>> cuef.commandargs()  # get related FFmpeg recipes
+>>> tsplit = FFCueSplitter("tests/Three Samples_ASCII.cue", dry=True)
+>>> tsplit.open_cuefile()  # first of all you need to open the cue file
+>>> tsplit.audiotracks  # get all tracks data
+>>> tsplit.cue.meta.data  # CD info
+>>> tsplit.commandargs()  # get related FFmpeg recipes
 ```
 
 For arguments meaning and more details, type `help(FFCueSplitter)`   

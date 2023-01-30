@@ -127,7 +127,10 @@ class FFMpeg:
         Redirect to required runner. Note: tqdm command args
         is slightly different from standard command args because
         tqdm adds `-progress pipe:1 -nostats -nostdin` to arguments,
-        see `meters` on `commandargs`
+        see `meters` on `commandargs`.
+        Note, this method makes sure to return if the `dry`
+        parameter is true.
+
         """
         if self.kwargs['progress_meter'] == 'tqdm':
             cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
@@ -174,7 +177,7 @@ class FFMpeg:
                f'=======================================================\n\n')
 
         try:
-            with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
+            with open(self.kwargs['logtofile'], "a", encoding='utf-8') as log:
                 log.write(sep)
                 with Popen(cmd,
                            stdout=subprocess.PIPE,
@@ -221,7 +224,7 @@ class FFMpeg:
         makeoutputdirs(self.kwargs['outputdir'])  # Make dirs for output files
         sep = (f'\nFFcuesplitter Command: {cmd}\n'
                f'=======================================================\n\n')
-        with open(self.kwargs['logtofile'], "w", encoding='utf-8') as log:
+        with open(self.kwargs['logtofile'], "a", encoding='utf-8') as log:
             log.write(sep)
         try:
             subprocess.run(cmd, check=True, shell=False, encoding='utf8',)

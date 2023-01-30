@@ -142,6 +142,20 @@ class FFCueSplitter(FFMpeg):
         self.testpatch = None  # set for test cases only
     # ----------------------------------------------------------------#
 
+    def clear_logfile(self):
+        """
+        Clear the log file before rewriting incoming new text
+        """
+        if os.path.exists(self.kwargs['logtofile']):
+            if os.path.isfile(self.kwargs['logtofile']):
+                with open(self.kwargs['logtofile'],
+                          "w",
+                          encoding='utf-8',
+                          ):
+                    logging.debug("Log file clearing: '%s'",
+                                  self.kwargs['logtofile'])
+    # ----------------------------------------------------------------#
+
     def get_track_duration(self, tracks):
         """
         Gets tracks duration for chunks calculation.
@@ -196,6 +210,7 @@ class FFCueSplitter(FFMpeg):
         if self.kwargs['collection']:  # Artist&Album names sanitize
             self.set_subdirs(cd_info.get('PERFORMER', 'Unknown Artist'),
                              cd_info.get('ALBUM', 'Unknown Album'))
+        self.clear_logfile()  # erases previous log file data
 
         for track in enumerate(tracks):
             track_file = track[1].file.path
@@ -207,8 +222,7 @@ class FFCueSplitter(FFMpeg):
                 if str(track_file) in sourcenames:
                     sourcenames.pop(str(track_file))
                     if not sourcenames:
-                        raise FFCueSplitterError('No other audio tracks '
-                                                 'found here.')
+                        raise FFCueSplitterError('No audio files found!')
                 continue
 
             filename = (f"{sanitize(track[1].title)}")  # title names sanitize

@@ -38,8 +38,23 @@ class FileSystemOperations(FFCueSplitter):
     """
     This is a subclass derived from the `FFCueSplitter` class.
     It implements a convenient interface for file system
-    operations, such as writing files in a temporary context
-    and overwrite checking functionality for file destinations.
+    operations, such as overwrite checking functionality for
+    file destinations, writing files in a temporary context,
+    move files from temporary directory to output directory.
+    There is also a specific method for dry mode.
+
+    USAGE:
+        >>> from ffcuesplitter.user_service import FileSystemOperations
+        >>> split = FileSystemOperations(**kwargs)
+        >>> if kwargs['dry']:
+        >>>     split.dry_run_mode()
+        >>> else:
+        >>>     overw = split.check_for_overwriting()
+        >>>     if not overw:
+        >>>         split.work_on_temporary_directory()
+
+    For a better understanding of the details, see also `main()`
+    function of the `main` module on `ffcuesplitter` package.
     """
     def __init__(self,
                  filename,
@@ -68,6 +83,17 @@ class FileSystemOperations(FFCueSplitter):
                          )
 
         self.open_cuefile()
+    # ----------------------------------------------------------------#
+
+    def dry_run_mode(self):
+        """
+        lists recipes in dry run mode.
+        """
+        self.kwargs['tempdir'] = self.kwargs['outputdir']
+        recipes = self.commandargs()
+        for args in recipes['recipes']:
+            msg = f'{args[0]}\n'
+            logging.info(msg)
     # ----------------------------------------------------------------#
 
     def check_for_overwriting(self):
@@ -131,6 +157,8 @@ class FileSystemOperations(FFCueSplitter):
             None
 
         """
+        logging.info("Move files to: '%s'",
+                     os.path.abspath(self.kwargs['outputdir']))
         outputdir = self.kwargs['outputdir']
 
         for track in os.listdir(self.kwargs['tempdir']):
@@ -141,7 +169,7 @@ class FileSystemOperations(FFCueSplitter):
                 raise FFCueSplitterError(error) from error
     # ----------------------------------------------------------------#
 
-    def working_temporary_context(self):
+    def work_on_temporary_directory(self):
         """
         Automates the work in a temporary context using tempfile.
 
@@ -149,17 +177,10 @@ class FileSystemOperations(FFCueSplitter):
             FFCueSplitterError
         Returns:
             None
-        """
-        if self.kwargs['dry'] is True:
-            self.kwargs['tempdir'] = self.kwargs['outputdir']
-            recipes = self.commandargs()
-            for args in recipes['recipes']:
-                msg = f'{args[0]}\n'
-                logging.info(msg)
-            return
 
-        if self.check_for_overwriting() is True or self.audiotracks == []:
-            return
+        """
+        if not self.audiotracks:
+            raise FFCueSplitterError('No audio tracks')
 
         with tempfile.TemporaryDirectory(suffix=None,
                                          prefix='ffcuesplitter_',
@@ -179,11 +200,9 @@ class FileSystemOperations(FFCueSplitter):
                 logging.info(msg)
 
                 self.command_runner(args[0], args[1]['duration'])
-            # msg('\n')
-            logging.info("...done exctracting")
-            logging.info("Move files to: '%s'",
-                         os.path.abspath(self.kwargs['outputdir']))
 
+            logging.info("...done exctracting")
+            # You must move the files from within the temporary context
             self.move_files_to_outputdir()
 # ------------------------------------------------------------------------
 

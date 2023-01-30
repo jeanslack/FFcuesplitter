@@ -205,7 +205,12 @@ def main():
                  tail=f"Processing: '{kwargs['filename']}'")
         try:
             split = FileSystemOperations(**kwargs)
-            split.working_temporary_context()
+            if kwargs['dry']:
+                split.dry_run_mode()
+            else:
+                overwr = split.check_for_overwriting()
+                if not overwr:
+                    split.work_on_temporary_directory()
 
         except (InvalidFileError,
                 FFCueSplitterError,
