@@ -5,7 +5,7 @@ Porpose: module for cosmetic output console in ANSI sequences
 Writer: Gianluca Pernigoto <jeanlucperni@gmail.com>
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Jan 10 2022
+Rev: Jan 29 2023
 Code checker: flake8, pylint
 """
 
@@ -52,9 +52,9 @@ def msgend(done=None, abort=None):
     Print status messages at the end of the tasks
     """
     if done:
-        print("\033[1m..Finished!\033[0m\n")
+        print("\033[32;1mFinished!\033[0m\n")
     elif abort:
-        print("\033[1m..Abort!\033[0m\n")
+        print("\033[31;1mAbort!\033[0m\n")
 
 
 def msg(message):

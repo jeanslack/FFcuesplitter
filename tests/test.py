@@ -2,7 +2,7 @@
 
 """
 Porpose: Contains test cases for the splitcue object.
-Rev: Jan.22.2022
+Rev: Jan.29.2023
 """
 import os
 import sys
@@ -14,7 +14,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(PATH)))
 
 try:
     from ffcuesplitter.cuesplitter import FFCueSplitter
-
     from ffcuesplitter.exceptions import InvalidFileError
 
 except ImportError as error:
@@ -95,14 +94,20 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
 
     def test_ffmpeg_arguments(self):
         """
-        test argument strings
+        test argument strings and titletrack names
         """
         fname = {'filename': FILECUE_ASCII}
         split = FFCueSplitter(**{**self.args, **fname})
         split.open_cuefile(testpatch=True)
         split.kwargs['tempdir'] = os.path.abspath('.')
-        data = split.ffmpeg_arguments()
-        self.assertEqual(data['arguments'][2].split()[0], '"ffmpeg"')
+        data = split.commandargs()
+        self.assertEqual(data['recipes'][0][0].split()[0], '"ffmpeg"')
+        self.assertEqual(data['recipes'][0][1]['titletrack'],
+                         '01 - 300 Hz.flac')
+        self.assertEqual(data['recipes'][1][1]['titletrack'],
+                         '02 - 400 Hz.flac')
+        self.assertEqual(data['recipes'][2][1]['titletrack'],
+                         '03 - 500 Hz.flac')
 
     def test_track_durations(self):
         """
@@ -112,9 +117,10 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         split = FFCueSplitter(**{**self.args, **fname})
         split.open_cuefile(testpatch=True)
         split.kwargs['tempdir'] = os.path.abspath('.')
-        data = split.ffmpeg_arguments()
-
-        self.assertEqual(data['seconds'], [2.0, 2.0, 2.0])
+        data = split.commandargs()
+        self.assertEqual(data['recipes'][0][1]['duration'], 2.0)
+        self.assertEqual(data['recipes'][1][1]['duration'], 2.0)
+        self.assertEqual(data['recipes'][2][1]['duration'], 2.0)
 
 
 def main():
