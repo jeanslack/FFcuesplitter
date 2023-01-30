@@ -46,7 +46,7 @@ class FileSystemOperations(FFCueSplitter):
     USAGE:
         >>> from ffcuesplitter.user_service import FileSystemOperations
         >>> split = FileSystemOperations(**kwargs)
-        >>> if kwargs['dry']:
+        >>> if split.kwargs['dry']:
         >>>     split.dry_run_mode()
         >>> else:
         >>>     overw = split.check_for_overwriting()
@@ -55,6 +55,9 @@ class FileSystemOperations(FFCueSplitter):
 
     For a better understanding of the details, see also `main()`
     function of the `main` module on `ffcuesplitter` package.
+
+    For more options, visit the wiki page at:
+    https://github.com/jeanslack/FFcuesplitter/wiki/Usage-from-Python
     """
     def __init__(self,
                  filename,

@@ -47,14 +47,14 @@ class FFCueSplitter(FFMpeg):
 
     Usage:
             >>> from ffcuesplitter.cuesplitter import FFCueSplitter
-            >>> cuef = FFCueSplitter(cuefile, dry=True)
-            >>> cuef.open_cuefile()
-            >>> cuef.audiotracks  # get all tracks data
-            >>> cuef.cue.meta.data  # CD info
-            >>> cuef.commandargs()  # get related FFmpeg recipes
+            >>> getdata = FFCueSplitter(cuefile, dry=True)
+            >>> getdata.open_cuefile()
+            >>> getdata.audiotracks  # get all tracks data
+            >>> getdata.cue.meta.data  # CD info
+            >>> getdata.commandargs()  # get related FFmpeg recipes
 
-    For other options, read the examples on the wiki page:
-    https://github.com/jeanslack/FFcuesplitter/wiki/Examples
+    For more options, visit the wiki page at:
+    https://github.com/jeanslack/FFcuesplitter/wiki/Usage-from-Python
 
     For a full meaning of the arguments to pass to the instance, read
     the __init__ docstring of this class or type `help(FFCueSplitter)`.
