@@ -57,7 +57,7 @@ class FFCueSplitter(FFMpeg):
     https://github.com/jeanslack/FFcuesplitter/wiki/Examples
 
     For a full meaning of the arguments to pass to the instance, read
-    the __init__ docstring of this class.
+    the __init__ docstring of this class or type `help(FFCueSplitter)`.
 
     """
     def __init__(self,

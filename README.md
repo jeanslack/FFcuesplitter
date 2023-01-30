@@ -62,10 +62,10 @@ ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
 
 Batch file processing to split and convert to default audio `flac` format.   
 
-`ffcuesplitter -i '/User/music/collection/inputfile.cue' -f ogg -o 'my-awesome-tracklist'`   
+`ffcuesplitter -i '/User/music/collection/inputfile.cue' -f ogg -o 'my_awesome_tracklist'`   
 
-To splits the individual audio tracks into `ogg` format
-and saves them in the 'my-awesome-tracklist' folder.   
+To splits the individual audio tracks into `ogg` format 
+and saves them in the `my_awesome_tracklist` folder.   
 
 **For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**   
 ***
@@ -74,19 +74,12 @@ and saves them in the 'my-awesome-tracklist' folder.
 
 ```python
 >>> from ffcuesplitter.cuesplitter import FFCueSplitter
-```
-
-Get data tracks and FFmpeg args:   
-
-```python
 >>> tsplit = FFCueSplitter("tests/Three Samples_ASCII.cue", dry=True)
->>> tsplit.open_cuefile()  # first of all you need to open the cue file
->>> tsplit.audiotracks  # get all tracks data
->>> tsplit.cue.meta.data  # CD info
->>> tsplit.commandargs()  # get related FFmpeg recipes
+>>> tsplit.open_cuefile()  # you need to open the cue file first.
+>>> tsplit.audiotracks  # get audio tracks list taken from the cue file.
+>>> tsplit.cue.meta.data  # get CD info.
+>>> tsplit.commandargs()  # get FFmpeg command/arguments recipes.
 ```
-
-For arguments meaning and more details, type `help(FFCueSplitter)`   
 
 **For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**   
 ***
