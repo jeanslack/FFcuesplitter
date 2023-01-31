@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 """
-Porpose: Contains test cases for the splitcue object.
+Porpose: Contains test cases for the FFCueSplitter object.
 Rev: Jan.29.2023
 """
 import os

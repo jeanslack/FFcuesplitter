@@ -165,8 +165,9 @@ def main():
                         required=False,
                         )
     parser.add_argument('--prg-loglevel',
-                        help='Set the program loglevel, default is `info`',
-                        choices=["debug", "info", "warning", "error"],
+                        help=("Set the program logging level of tracking "
+                              "events to console, default is `info`"),
+                        choices=["error", "warning", "info", "debug"],
                         required=False,
                         default='info'
                         )

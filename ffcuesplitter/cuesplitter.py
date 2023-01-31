@@ -105,8 +105,9 @@ class FFCueSplitter(FFMpeg):
                 with `True`, perform the dry run with no changes
                 done to filesystem.
         prg_loglevel:
-                Set the program loglevel, one of
-                ("debug", "info", "warning", "error"), default is `info`
+                Set the logging level of tracking events to console,
+                one of ("error", "warning", "info", "debug"),
+                default is `info`.
         """
         numeric_level = getattr(logging, prg_loglevel.upper(), None)
         if not isinstance(numeric_level, int):

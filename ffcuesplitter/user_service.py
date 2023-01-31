@@ -75,7 +75,7 @@ class FileSystemOperations(FFCueSplitter):
                  ):
         """
         For a full meaning of the arguments to pass
-        to the instance, see the super class docs.
+        to the instance, see the super class doc strings.
         """
 
         super().__init__(filename, outputdir, collection,

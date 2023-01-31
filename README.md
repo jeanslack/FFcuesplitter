@@ -51,7 +51,7 @@ ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
               [-p {tqdm,standard}]
               [--ffprobe-cmd URL]
               [--dry]
-              [--prg-loglevel]
+              [--prg-loglevel {error,warning,info,debug}]
               [-h]
               [--version]
 ```

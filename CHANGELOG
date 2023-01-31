@@ -1,14 +1,13 @@
 +--------------------------------+
-January 28 2023  Version 1.0.20
+January 31 2023  Version 1.0.20
 +--------------------------------+
 
-- Added logging module to event logging system.
+- Uses logging to tracking events to console.
 - Refactoring of classes, methods and functions.
 - Improved API using Python programs.
-- The use of the API has been redefined (see the docs for more info)
 - Improved CLI.
 - Update man page.
-- Update all documentation.
+- Update all documentation and wiki pages.
 
 +--------------------------------+
 January 24 2023  Version 1.0.19 Beta

@@ -28,6 +28,7 @@ This file is part of FFcuesplitter.
 """
 import subprocess
 import os
+import logging
 import platform
 from tqdm import tqdm
 from ffcuesplitter.exceptions import FFMpegError
@@ -166,7 +167,7 @@ class FFMpeg:
         Returns:
             None
         """
-        makeoutputdirs(self.kwargs['outputdir'])  # Make dirs for output files
+        makeoutputdirs(self.kwargs['outputdir'])  # Make dirs for files dest.
         progbar = tqdm(total=100,
                        unit="s",
                        dynamic_ncols=True
@@ -192,10 +193,11 @@ class FFMpeg:
                             progbar.update(round(percent) - progbar.n)
 
                     if proc.wait():  # error
+                        logging.error("Popen proc.wait() Exit status %s",
+                                      proc.wait())
                         progbar.close()
-                        raise FFMpegError(f"ffmpeg FAILED: See log details: "
-                                          f"'{self.kwargs['logtofile']}'"
-                                          f"\nExit status: {proc.wait()}")
+                        raise FFMpegError(f"ffmpeg FAILED, See log details: "
+                                          f"'{self.kwargs['logtofile']}'")
 
         except (OSError, FileNotFoundError) as excepterr:
             progbar.close()
