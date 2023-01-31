@@ -90,7 +90,7 @@ and saves them in the `my_awesome_tracklist` directory.
 
 ## License and Copyright
 
-Copyright (C) 2023 Gianluca Pernigotto
-Author and Developer: Gianluca Pernigotto
-Mail: <jeanlucperni@gmail.com>
-License: GPL3 (see LICENSE file in the source directory)
+Copyright (C) 2023 Gianluca Pernigotto   
+Author and Developer: Gianluca Pernigotto   
+Mail: <jeanlucperni@gmail.com>   
+License: GPL3 (see LICENSE file in the source directory)   
