@@ -9,17 +9,17 @@ contained in the associated **"CUE"** sheet. It supports multiple CUE sheet
 encodings and many input formats (due to FFmpeg), including APE format, without
 need installing extra audio libs and packages. It has the ability to accept both
 files and directories as input while also working in recursive mode. Can be used
-both as a Python module and from command line.   
+both as a Python module and from command line.
 
 ## Features
 
-- Supports many input formats.
+- Supports many input formats, due to FFmpeg.
 - Convert to Wav, Flac, Ogg, Opus, and Mp3 formats.
 - Ability to copy source codec and format without re-encoding.
 - Batch mode processing is also available.
-- Accepts both multiple CUE file names and multiple folder path names.
-- Ability to activate the recursive option to search for CUE files in all subfolders.
-- Optionally auto-generate audio collection folders (Artist/Album/TrackNumber - Title)
+- Accepts both files and directories.
+- Ability to perform recursive searches.
+- Ability to generate audio collection directories (Artist/Album/TrackNumber - Title)
 - Auto-tag from CUE file data.
 - Features automatic character set detection for CUE files (via [chardet](https://pypi.org/project/chardet/)).
 - Works on Linux, MacOs, FreeBSD, Windows.
@@ -56,18 +56,18 @@ ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
               [--version]
 ```
 
-**Examples**   
+**Examples**
 
-`ffcuesplitter -i 'inputfile_1.cue' 'inputfile_2.cue' 'inputfile_3.cue'`   
+`ffcuesplitter -i 'inputfile_1.cue' 'inputfile_2.cue' 'inputfile_3.cue'`
 
-Batch file processing to split and convert to default audio `flac` format.   
+Batch file processing to split and convert to default audio `flac` format.
 
-`ffcuesplitter -i '/User/music/collection/inputfile.cue' -f ogg -o 'my_awesome_tracklist'`   
+`ffcuesplitter -i '/User/music/collection/inputfile.cue' -f ogg -o 'my_awesome_tracklist'`
 
-To splits the individual audio tracks into `ogg` format 
-and saves them in the `my_awesome_tracklist` folder.   
+To splits the individual audio tracks into `ogg` format
+and saves them in the `my_awesome_tracklist` directory.
 
-**For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**   
+**For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**
 ***
 
 ### Using Python
@@ -81,16 +81,16 @@ and saves them in the `my_awesome_tracklist` folder.
 >>> getdata.commandargs()  # get FFmpeg command/arguments recipes.
 ```
 
-**For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**   
+**For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**
 ***
 
 ## Installation
 
-`python3 -m pip install ffcuesplitter`   
+`python3 -m pip install ffcuesplitter`
 
 ## License and Copyright
 
-Copyright (C) 2023 Gianluca Pernigotto   
-Author and Developer: Gianluca Pernigotto   
-Mail: <jeanlucperni@gmail.com>   
-License: GPL3 (see LICENSE file in the source folder)   
+Copyright (C) 2023 Gianluca Pernigotto
+Author and Developer: Gianluca Pernigotto
+Mail: <jeanlucperni@gmail.com>
+License: GPL3 (see LICENSE file in the source directory)

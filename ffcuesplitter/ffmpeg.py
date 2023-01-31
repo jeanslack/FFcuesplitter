@@ -149,8 +149,8 @@ class FFMpeg:
     def run_ffmpeg_command_with_progress(self, cmd, seconds):
         """
         FFmpeg sub-processing showing a tqdm progress meter
-        for each loop. Also writes a log file to the same
-        destination folder as the .cue file .
+        for each loop. Also writes a log file to the output
+        destination directory.
 
         Usage for get elapsed seconds:
          progbar = tqdm(total=round(seconds), unit="s", dynamic_ncols=True)

@@ -150,9 +150,9 @@ class FileSystemOperations(FFCueSplitter):
 
     def move_files_to_outputdir(self):
         """
-        All files are processed in a /temp folder. After the split
-        operation is complete, all tracks are moved from /temp folder
-        to output folder.
+        All files are processed in a /temp dir. After the split
+        operation is complete, all tracks are moved from /temp dir
+        to output dir.
 
         Raises:
             FFCueSplitterError

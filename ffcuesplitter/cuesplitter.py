@@ -84,7 +84,7 @@ class FFCueSplitter(FFMpeg):
         outputdir:
                 absolute or relative pathname to output files
         collection:
-                auto-create additional sub-folders,
+                auto-create additional sub-dirs,
                 one of ("artist+album", "artist", "album")
         outputformat:
                 output format, one of
@@ -246,10 +246,11 @@ class FFCueSplitter(FFMpeg):
 
     def set_subdirs(self, performer, album):
         """
-        Set possible sub-folders with artist and album names.
-        If needed, this method reset the attribute
-        `self.kwargs['outputdir']` adding the new dirs sanitized
-        to output destination.
+        Set artist/album-name as possible sub-directories
+        for audio collections. This method overwrites
+        `self.kwargs['outputdir']` and `self.kwargs['logtofile']`
+        attributes joining the sanitized audio collection names
+        to the files destination directory.
 
         Raise FFCueSplitterError otherwise
         """

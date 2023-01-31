@@ -92,47 +92,38 @@ def main():
                         action="store",
                         dest="outputdir",
                         help=("Absolute or relative destination path for "
-                              "output files. If a specified destination "
-                              "folder does not exist, it will be created. "
-                              "If no outputdir option is specified, the "
-                              "output files will be written to the default "
-                              "output folder (the same as inputfile)."),
+                              "output files. Default is '.', the same as "
+                              "inputfile)."),
                         required=False,
                         default='.'
                         )
     parser.add_argument("-c", "--collection",
                         choices=["artist+album", "artist", "album"],
-                        help=("Create additional subfolders in the output "
-                              "destination (see --output-dir). The "
-                              "`artist+album` argument "
-                              "creates two subfolders with the artist and "
-                              "album names; `artist` creates a subfolder with "
-                              "the artist's name; `album` creates a subfolder "
-                              "with the album name. In these subfolders the "
-                              "final tracks will be saved."),
+                        help=("Create additional sub-dirctories for audio "
+                              "collection."),
                         required=False,
                         default=''
                         )
     parser.add_argument("-ow", "--overwrite",
                         choices=["ask", "never", "always"],
                         dest="overwrite",
-                        help=("Overwrite files on destination if they "
-                              "exist, Default is `ask` before overwriting."),
+                        help=("Preferences on overwriting files in the audio "
+                              "track destination. Default is `ask` before "
+                              "overwriting."),
                         required=False,
                         default='ask'
                         )
     parser.add_argument("--ffmpeg-cmd",
                         metavar='URL',
                         help=("Specify an absolute ffmpeg path command, "
-                              "e.g. '/usr/bin/ffmpeg', Default is `ffmpeg`."),
+                              "e.g. '/usr/bin/ffmpeg'. Default is `ffmpeg`."),
                         required=False,
                         default='ffmpeg'
                         )
     parser.add_argument("--ffmpeg-loglevel",
                         choices=["error", "warning", "info",
                                  "verbose", "debug"],
-                        help=("Specify a ffmpeg loglevel, "
-                              "Default is `info`."),
+                        help=("ffmpeg loglevel. Default is `info`."),
                         required=False,
                         default='info'
                         )
@@ -145,8 +136,7 @@ def main():
                         default=''
                         )
     parser.add_argument("-p", "--progress-meter",
-                        help=("Progress bar mode. This takes effect during "
-                              "FFmpeg process loops. Default is `tqdm`."),
+                        help=("Progress bar mode. Default is `tqdm`."),
                         choices=["tqdm", "standard"],
                         required=False,
                         default='tqdm'

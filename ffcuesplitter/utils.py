@@ -98,7 +98,7 @@ def frames_to_seconds(frames):
 
 def makeoutputdirs(outputdir):
     """
-    Makes the specified subfolders in the outpudir
+    Makes the specified sub-dirctories in the outputdir
     """
     try:
         os.makedirs(outputdir,
