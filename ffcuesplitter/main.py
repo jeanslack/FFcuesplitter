@@ -93,7 +93,7 @@ def main():
                         dest="outputdir",
                         help=("Absolute or relative destination path for "
                               "output files. Default is '.', the same as "
-                              "inputfile)."),
+                              "inputfile."),
                         required=False,
                         default='.'
                         )
