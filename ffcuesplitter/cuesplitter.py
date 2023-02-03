@@ -7,7 +7,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Dec 22 2022
+Rev: Feb 02 2023
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -28,6 +28,7 @@ This file is part of FFcuesplitter.
 """
 import os
 import logging
+from dataclasses import dataclass, asdict
 import chardet
 from deflacue.deflacue import CueParser
 from ffcuesplitter.utils import sanitize
@@ -38,6 +39,30 @@ from ffcuesplitter.ffprobe import ffprobe
 from ffcuesplitter.ffmpeg import FFMpeg
 
 
+@dataclass
+class DataArgs:
+    """
+    Object to get ffcuesplitter arguments
+    """
+    filename: str
+    outputdir: str = '.'
+    collection: str = ''
+    outputformat: str = 'flac'
+    overwrite: str = "ask"
+    ffmpeg_cmd: str = 'ffmpeg'
+    ffmpeg_loglevel: str = "info"
+    ffprobe_cmd: str = 'ffprobe'
+    ffmpeg_add_params: str = ''
+    progress_meter: str = "standard"
+    dry: bool = False
+    prg_loglevel: str = 'info'
+    testpatch: bool = False  # `True` for test cases else `False`
+
+    def asdict(self) -> dict:
+        """return dict object"""
+        return asdict(self)
+
+
 class FFCueSplitter(FFMpeg):
     """
     This is a subclass derived from the `FFMpeg` base
@@ -46,12 +71,16 @@ class FFCueSplitter(FFMpeg):
     from CD image using FFmpeg.
 
     Usage:
-            >>> from ffcuesplitter.cuesplitter import FFCueSplitter
-            >>> getdata = FFCueSplitter(cuefile, dry=True)
-            >>> getdata.open_cuefile()
-            >>> getdata.audiotracks  # get all tracks data
-            >>> getdata.cue.meta.data  # CD info
-            >>> getdata.commandargs()  # get related FFmpeg recipes
+        >>> from ffcuesplitter.cuesplitter import FFCueSplitter, DataArgs
+        >>> argsdata = DataArgs(cuefile, dry=True)
+        >>> getdata = FFCueSplitter(**argsdata.asdict())
+        >>> tracks = getdata.audiotracks
+        >>> getdata.commandargs(tracks)
+
+        Get more data:
+
+        >>> getdata.cue.meta.data  # CD info
+        >>> getdata.probedata  # the ffprobe data of sources audio files
 
     For more options, visit the wiki page at:
     https://github.com/jeanslack/FFcuesplitter/wiki/Usage-from-Python
@@ -60,20 +89,7 @@ class FFCueSplitter(FFMpeg):
     the __init__ docstring of this class or type `help(FFCueSplitter)`.
 
     """
-    def __init__(self,
-                 filename,
-                 outputdir: str = '.',
-                 collection: str = '',
-                 outputformat: str = 'flac',
-                 overwrite: str = "ask",
-                 ffmpeg_cmd: str = 'ffmpeg',
-                 ffmpeg_loglevel: str = "info",
-                 ffprobe_cmd: str = 'ffprobe',
-                 ffmpeg_add_params: str = '',
-                 progress_meter: str = "standard",
-                 dry: bool = False,
-                 prg_loglevel: str = 'info',
-                 ):
+    def __init__(self, **kwargs):
         """
         ------------------
         Arguments meaning:
@@ -108,31 +124,26 @@ class FFCueSplitter(FFMpeg):
                 Set the logging level of tracking events to console,
                 one of ("error", "warning", "info", "debug"),
                 default is `info`.
+        testpatch:
+                Used for test cases only (do not use for normal tasks)
         """
-        numeric_level = getattr(logging, prg_loglevel.upper(), None)
-        if not isinstance(numeric_level, int):
-            raise ValueError(f'Invalid log level: {prg_loglevel}')
-
-        logging.basicConfig(format='%(levelname)s: %(message)s',
-                            level=numeric_level,
-                            )
         super().__init__()
 
-        self.kwargs = {'filename': os.path.abspath(filename)}
+        self.kwargs = kwargs
+
+        loglevel = self.kwargs['prg_loglevel']
+        nlev = getattr(logging, loglevel.upper(), None)
+        if not isinstance(nlev, int):
+            raise ValueError(f'Invalid log level: {loglevel}')
+        logging.basicConfig(format='%(levelname)s: %(message)s', level=nlev)
+
+        self.kwargs['filename'] = os.path.abspath(self.kwargs['filename'])
         self.kwargs['dirname'] = os.path.dirname(self.kwargs['filename'])
+        outputdir = self.kwargs['outputdir']
         if outputdir == '.':
             self.kwargs['outputdir'] = self.kwargs['dirname']
         else:
             self.kwargs['outputdir'] = os.path.abspath(outputdir)
-        self.kwargs['collection'] = collection
-        self.kwargs['format'] = outputformat
-        self.kwargs['overwrite'] = overwrite
-        self.kwargs['ffmpeg_cmd'] = ffmpeg_cmd
-        self.kwargs['ffmpeg_loglevel'] = ffmpeg_loglevel
-        self.kwargs['ffprobe_cmd'] = ffprobe_cmd
-        self.kwargs['ffmpeg_add_params'] = ffmpeg_add_params
-        self.kwargs['progress_meter'] = progress_meter
-        self.kwargs['dry'] = dry
         self.kwargs['logtofile'] = os.path.join(self.kwargs['outputdir'],
                                                 'ffcuesplitter.log')
         self.kwargs['tempdir'] = '.'
@@ -140,12 +151,13 @@ class FFCueSplitter(FFMpeg):
         self.probedata = []
         self.cue_encoding = None  # data chardet
         self.cue = None
-        self.testpatch = None  # set for test cases only
+
+        self.open_cuefile()  # requires to open cue file first
     # ----------------------------------------------------------------#
 
     def clear_logfile(self):
         """
-        Clear the log file before rewriting incoming new text
+        Clear the log file before writing it back
         """
         if os.path.exists(self.kwargs['logtofile']):
             if os.path.isfile(self.kwargs['logtofile']):
@@ -157,47 +169,47 @@ class FFCueSplitter(FFMpeg):
                                   self.kwargs['logtofile'])
     # ----------------------------------------------------------------#
 
-    def get_track_duration(self, tracks):
+    def get_track_durations(self, audiotracks):
         """
-        Gets tracks duration for chunks calculation.
-
-        This method is called by `deflacue_object_handler` method,
-        Do not call this method directly.
+        Gets audio track durations for chunks calcs.
+        This method is called by `deflacue_object_handler` method.
 
         Returns:
-            An updated tracks list data taken from the cue file.
+            list with an updated dict with Key DURATION for each track.
+
         """
-        if self.testpatch:
+        if self.kwargs['testpatch']:
             probe = {'format': {'duration': 6.000000}}
         else:
-            filename = tracks[0].get('FILE')
+            filename = audiotracks[0].get('FILE')
             cmd = self.kwargs['ffprobe_cmd']
             kwargs = {'loglevel': 'error', 'hide_banner': None}
             probe = ffprobe(filename, cmd=cmd, **kwargs)
             self.probedata.append(probe)
 
-        time = []
-        for idx in enumerate(tracks):
-            if idx[0] != len(tracks) - 1:  # minus last
-                trk = (tracks[idx[0] + 1]['START']
-                       - tracks[idx[0]]['START']) / (44100)
-                time.append(trk)
+        durations = []
+        for idx in enumerate(audiotracks):
+            if idx[0] != len(audiotracks) - 1:  # minus last
+                trk = (audiotracks[idx[0] + 1]['START']
+                       - audiotracks[idx[0]]['START']) / (44100)
+                durations.append(trk)
 
-        if not time:
+        if not durations:
             last = (float(probe['format']['duration'])
-                    - tracks[0]['START'] / 44100)
+                    - audiotracks[0]['START'] / 44100)
         else:
-            last = float(probe['format']['duration']) - sum(time)
-        time.append(last)
-        for keydur, remain in zip(tracks, time):
+            last = float(probe['format']['duration']) - sum(durations)
+        durations.append(last)
+
+        for keydur, remain in zip(audiotracks, durations):
             keydur['DURATION'] = remain
 
-        return tracks
+        return audiotracks
     # ----------------------------------------------------------------#
 
     def deflacue_object_handler(self):
         """
-        Handles `deflacue.CueParser` data.
+        Handles `CueParser` data from deflacue.
         Raises:
             FFCueSplitterError: if no source audio file found
         Returns:
@@ -208,7 +220,7 @@ class FFCueSplitter(FFMpeg):
         tracks = self.cue.tracks
         sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
 
-        if self.kwargs['collection']:  # Artist&Album names sanitize
+        if self.kwargs['collection']:  # Artist&Album names to sanitize
             self.set_subdirs(cd_info.get('PERFORMER', 'Unknown Artist'),
                              cd_info.get('ALBUM', 'Unknown Album'))
         self.clear_logfile()  # erases previous log file data
@@ -226,7 +238,7 @@ class FFCueSplitter(FFMpeg):
                         raise FFCueSplitterError('No audio files found!')
                 continue
 
-            filename = (f"{sanitize(track[1].title)}")  # title names sanitize
+            filename = (f"{sanitize(track[1].title)}")  # titles to sanitize
 
             data = {'FILE': str(track_file), **cd_info, **track[1].data}
             data['TITLE'] = filename
@@ -239,7 +251,7 @@ class FFCueSplitter(FFMpeg):
                 sourcenames[f'{data["FILE"]}'].append(data)
 
         for val in sourcenames.values():
-            self.audiotracks += self.get_track_duration(val)
+            self.audiotracks += self.get_track_durations(val)
 
         return self.audiotracks
     # ----------------------------------------------------------------#
@@ -265,7 +277,7 @@ class FFCueSplitter(FFMpeg):
         elif self.kwargs['collection'] == 'album':
             subdirs = f"{sanitize(album)}"
 
-        if subdirs is not None:
+        if subdirs:
             self.kwargs['outputdir'] = os.path.join(self.kwargs['outputdir'],
                                                     subdirs)
             self.kwargs['logtofile'] = os.path.join(self.kwargs['outputdir'],
@@ -287,16 +299,12 @@ class FFCueSplitter(FFMpeg):
                                    f"'{self.kwargs['filename']}'")
     # ----------------------------------------------------------------#
 
-    def open_cuefile(self, testpatch=None):
+    def open_cuefile(self):
         """
         Gets cue file bytes for character set encoding
         then starts file parsing via deflacue.
         """
         logging.debug("Processing: '%s'", self.kwargs['filename'])
-
-        if testpatch:
-            self.testpatch = True
-
         self.check_cuefile()
         curdir = os.getcwd()
         os.chdir(self.kwargs['dirname'])

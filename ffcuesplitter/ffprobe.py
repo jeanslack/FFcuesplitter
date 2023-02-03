@@ -63,9 +63,8 @@ def ffprobe(filename, cmd='ffprobe', **kwargs):
                             cmd='/usr/bin/ffprobe',
                             loglevel='error',
                             hide_banner=None,
-                            kwargs,
+                            **kwargs,
                             )
-
     """
     args = (f'"{cmd}" -show_format -show_streams -of json '
             f'{" ".join(from_kwargs_to_args(kwargs))} '

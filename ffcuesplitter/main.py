@@ -7,7 +7,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Jan 28 2022
+Rev: Feb 02 2023
 Code checker: flake8, pylint
 ####################################################################
 
@@ -36,6 +36,7 @@ from ffcuesplitter.str_utils import (msgdebug,
                                      msgend,
                                      msgcolor,
                                      )
+from ffcuesplitter.cuesplitter import DataArgs
 from ffcuesplitter.user_service import (FileSystemOperations,
                                         FileFinder,
                                         )
@@ -68,7 +69,7 @@ def main():
                               "path filenames or path dirnames must be "
                               "separated by one or more spaces between them. "
                               "See also recursive "
-                              "mode (-r, --recursive)"),
+                              "option (-r, --recursive)"),
                         nargs='+',
                         action="store",
                         required=True,
@@ -107,8 +108,8 @@ def main():
     parser.add_argument("-ow", "--overwrite",
                         choices=["ask", "never", "always"],
                         dest="overwrite",
-                        help=("Preferences on overwriting files in the audio "
-                              "track destination. Default is `ask` before "
+                        help=("Preferences on overwriting files in the "
+                              "destination path. Default is `ask` before "
                               "overwriting."),
                         required=False,
                         default='ask'
@@ -130,7 +131,7 @@ def main():
     parser.add_argument("--ffmpeg-add-params",
                         metavar="'parameters'",
                         help=("Additionals ffmpeg parameters, as 'codec "
-                              "quality', etc. Note, all additional "
+                              "quality, bitrate, etc'. Note that additional "
                               "parameters must be quoted."),
                         required=False,
                         default=''
@@ -195,7 +196,8 @@ def main():
         msgcolor(green='FFcuesplitter: ',
                  tail=f"Processing: '{kwargs['filename']}'")
         try:
-            split = FileSystemOperations(**kwargs)
+            argsdata = DataArgs(**kwargs)
+            split = FileSystemOperations(**argsdata.asdict())
             if kwargs['dry']:
                 split.dry_run_mode()
             else:

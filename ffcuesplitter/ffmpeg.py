@@ -7,7 +7,7 @@ Platform: all platforms
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Dec.27.2022
+Rev: Feb 02 2023
 Code checker: flake8, pylint
 ########################################################
 
@@ -57,8 +57,6 @@ class FFMpeg:
         Constructor
         """
         self.kwargs = kwargs
-        self.audiotracks = kwargs
-        self.osplat = platform.system()
         self.outsuffix = None
     # -------------------------------------------------------------#
 
@@ -66,20 +64,22 @@ class FFMpeg:
         """
         Returns codec arg based on given format
         """
-        if self.kwargs['format'] == 'copy':
+        if self.kwargs['outputformat'] == 'copy':
             self.outsuffix = os.path.splitext(sourcef)[1].replace('.', '')
             codec = '-c copy'
         else:
-            self.outsuffix = self.kwargs['format']
-            codec = f'-c:a {FFMpeg.DATACODECS[self.kwargs["format"]]}'
+            self.outsuffix = self.kwargs['outputformat']
+            codec = f'-c:a {FFMpeg.DATACODECS[self.kwargs["outputformat"]]}'
 
         return codec, self.outsuffix
     # -------------------------------------------------------------#
 
-    def commandargs(self):
+    def commandargs(self, audiotracks: (list, tuple)) -> dict:
         """
         Builds `FFmpeg` arguments and calculates time seconds
         for each audio track.
+
+        It expects a list type object.
 
         Returns:
             dict(recipes)
@@ -88,13 +88,13 @@ class FFMpeg:
 
         meters = {'tqdm': '-progress pipe:1 -nostats -nostdin', 'standard': ''}
 
-        for track in self.audiotracks:
+        for track in audiotracks:
             codec, suffix = self.codec_setup(track["FILE"])
             metadata = {'ARTIST': track.get('PERFORMER', ''),
                         'ALBUM': track.get('ALBUM', ''),
                         'TITLE': track.get('TITLE', ''),
                         'TRACK': (str(track['TRACK_NUM'])
-                                  + '/' + str(len(self.audiotracks))),
+                                  + '/' + str(len(audiotracks))),
                         'DISCNUMBER': track.get('DISCNUMBER', ''),
                         'GENRE': track.get('GENRE', ''),
                         'DATE': track.get('DATE', ''),
@@ -133,13 +133,13 @@ class FFMpeg:
 
         """
         if self.kwargs['progress_meter'] == 'tqdm':
-            cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
+            cmd = arg if platform.system() == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
                 return cmd
             self.run_ffmpeg_command_with_progress(cmd, secs)
 
         elif self.kwargs['progress_meter'] == 'standard':
-            cmd = arg if self.osplat == 'Windows' else shlex.split(arg)
+            cmd = arg if platform.system() == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
                 return cmd
             self.run_ffmpeg_command(cmd)

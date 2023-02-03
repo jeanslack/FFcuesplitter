@@ -73,12 +73,17 @@ and saves them in the `my_awesome_tracklist` directory.
 ### Using Python
 
 ```python
->>> from ffcuesplitter.cuesplitter import FFCueSplitter
->>> getdata = FFCueSplitter("tests/Three Samples_ASCII.cue", dry=True)
->>> getdata.open_cuefile()  # you need to open the cue file first.
->>> getdata.audiotracks  # get processed audio tracks list taken from the cue file.
+>>> from ffcuesplitter.cuesplitter import FFCueSplitter, DataArgs
+>>> argsdata = DataArgs("tests/Three Samples_ASCII.cue", dry=True)
+>>> getdata = FFCueSplitter(**argsdata.asdict())
+>>> tracks = getdata.audiotracks  # get all tracks data
+>>> getdata.commandargs(tracks)  # get FFmpeg command/arguments recipes.
+```
+#### Getting additionals data
+
+```python
+>>> getdata.probedata  # ffprobe data of the sources audio files.
 >>> getdata.cue.meta.data  # get CD info.
->>> getdata.commandargs()  # get FFmpeg command/arguments recipes.
 ```
 
 **For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**
