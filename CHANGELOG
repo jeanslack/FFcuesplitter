@@ -1,11 +1,12 @@
 +--------------------------------+
-February 03 2023  Version 1.0.21
+February 04 2023  Version 1.0.21
 +--------------------------------+
 
 - Refactored code.
 - Start using dataclasses
 - Argument passing is done through DataArgs class.
 - Improved methods calls for FFCueSplitter class.
+- update README usage and wiki page.
 
 +--------------------------------+
 January 31 2023  Version 1.0.20

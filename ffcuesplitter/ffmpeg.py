@@ -148,7 +148,7 @@ class FFMpeg:
 
     def run_ffmpeg_command_with_progress(self, cmd, seconds):
         """
-        FFmpeg sub-processing showing a tqdm progress meter
+        Run FFmpeg sub-processing showing a tqdm progress meter
         for each loop. Also writes a log file to the output
         destination directory.
 
@@ -215,7 +215,7 @@ class FFMpeg:
 
     def run_ffmpeg_command(self, cmd):
         """
-        FFmpeg sub-processing with stderr output to console.
+        Run FFmpeg sub-processing with stderr output to console.
         The output depending on the ffmpeg loglevel option.
         Raises:
             FFMpegError

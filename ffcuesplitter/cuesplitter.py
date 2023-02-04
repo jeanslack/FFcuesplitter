@@ -42,7 +42,7 @@ from ffcuesplitter.ffmpeg import FFMpeg
 @dataclass
 class DataArgs:
     """
-    Object to get ffcuesplitter arguments
+    Object to pass and get `ffcuesplitter` arguments
     """
     filename: str
     outputdir: str = '.'
@@ -150,7 +150,7 @@ class FFCueSplitter(FFMpeg):
         self.audiotracks = None
         self.probedata = []
         self.cue_encoding = None  # data chardet
-        self.cue = None
+        self.cue = None  # data deflacue
 
         self.open_cuefile()  # requires to open cue file first
     # ----------------------------------------------------------------#
@@ -175,7 +175,8 @@ class FFCueSplitter(FFMpeg):
         This method is called by `deflacue_object_handler` method.
 
         Returns:
-            list with an updated dict with Key DURATION for each track.
+            An updated audiotracks object with the new DURATION
+            keys for each track.
 
         """
         if self.kwargs['testpatch']:
