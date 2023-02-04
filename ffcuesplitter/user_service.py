@@ -7,7 +7,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Jan 28 2023
+Rev: Feb 02 2023
 Code checker: flake8, pylint
 ####################################################################
 
@@ -45,7 +45,9 @@ class FileSystemOperations(FFCueSplitter):
 
     USAGE:
         >>> from ffcuesplitter.user_service import FileSystemOperations
-        >>> split = FileSystemOperations(**kwargs)
+        >>> from ffcuesplitter.cuesplitter import DataArgs
+        >>> argsdata = DataArgs(cuefile, dry=True)
+        >>> split = FileSystemOperations(**argsdata.asdict())
         >>> if split.kwargs['dry']:
         >>>     split.dry_run_mode()
         >>> else:
@@ -59,33 +61,6 @@ class FileSystemOperations(FFCueSplitter):
     For more options, visit the wiki page at:
     https://github.com/jeanslack/FFcuesplitter/wiki/Usage-from-Python
     """
-    def __init__(self,
-                 filename,
-                 outputdir: str = '.',
-                 collection: str = '',
-                 outputformat: str = 'flac',
-                 overwrite: str = "ask",
-                 ffmpeg_cmd: str = 'ffmpeg',
-                 ffmpeg_loglevel: str = "info",
-                 ffprobe_cmd: str = 'ffprobe',
-                 ffmpeg_add_params: str = '',
-                 progress_meter: str = "standard",
-                 dry: bool = False,
-                 prg_loglevel: str = 'info',
-                 ):
-        """
-        For a full meaning of the arguments to pass
-        to the instance, see the super class doc strings.
-        """
-
-        super().__init__(filename, outputdir, collection,
-                         outputformat, overwrite, ffmpeg_cmd,
-                         ffmpeg_loglevel, ffprobe_cmd,
-                         ffmpeg_add_params, progress_meter,
-                         dry, prg_loglevel,
-                         )
-
-        self.open_cuefile()
     # ----------------------------------------------------------------#
 
     def dry_run_mode(self):
@@ -93,7 +68,7 @@ class FileSystemOperations(FFCueSplitter):
         lists recipes in dry run mode.
         """
         self.kwargs['tempdir'] = self.kwargs['outputdir']
-        recipes = self.commandargs()
+        recipes = self.commandargs(self.audiotracks)
         for args in recipes['recipes']:
             msg = f'{args[0]}\n'
             logging.info(msg)
@@ -119,7 +94,7 @@ class FileSystemOperations(FFCueSplitter):
 
         for data in tracks:  # self.audiotracks
             track = (f"{str(data['TRACK_NUM']).rjust(2, '0')} - "
-                     f"{data['TITLE']}.{self.kwargs['format']}")
+                     f"{data['TITLE']}.{self.kwargs['outputformat']}")
             pathfile = os.path.join(outputdir, track)
 
             if os.path.exists(pathfile):
@@ -127,7 +102,8 @@ class FileSystemOperations(FFCueSplitter):
                     while True:
                         logging.warning("File already exists: '%s'",
                                         os.path.join(outputdir, track))
-                        overwr = input("Overwrite? [Y/n/always/never] > ")
+                        overwr = input("\033[33;1mOverwrite? "
+                                       "[Y/n/always/never]\033[0m > ")
                         if overwr in ('Y', 'y', 'n', 'N', 'always', 'never'):
                             break
                         logging.error("Invalid option '%s'", overwr)
@@ -189,7 +165,7 @@ class FileSystemOperations(FFCueSplitter):
                                          prefix='ffcuesplitter_',
                                          dir=None) as tmpdir:
             self.kwargs['tempdir'] = tmpdir
-            recipes = self.commandargs()
+            recipes = self.commandargs(self.audiotracks)
 
             logging.info("Temporary Target: '%s'", self.kwargs['tempdir'])
             logging.info("Extracting audio tracks (type Ctrl+c to stop):")

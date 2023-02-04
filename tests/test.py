@@ -2,7 +2,7 @@
 
 """
 Porpose: Contains test cases for the FFCueSplitter object.
-Rev: Jan.29.2023
+Rev: Feb 02 2023
 """
 import os
 import sys
@@ -13,7 +13,7 @@ PATH = os.path.realpath(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(os.path.dirname(PATH)))
 
 try:
-    from ffcuesplitter.cuesplitter import FFCueSplitter
+    from ffcuesplitter.cuesplitter import FFCueSplitter, DataArgs
     from ffcuesplitter.exceptions import InvalidFileError
 
 except ImportError as error:
@@ -36,7 +36,9 @@ class ParserCueSheetTestCase(unittest.TestCase):
         """
         self.args = {'outputdir': os.path.dirname(FILECUE_ISO),
                      'outputformat': OUTFORMAT,
-                     'overwrite': OVERWRITE}
+                     'overwrite': OVERWRITE,
+                     'testpatch': True,
+                     }
 
     def test_invalid_file(self):
         """
@@ -45,16 +47,16 @@ class ParserCueSheetTestCase(unittest.TestCase):
         fname = {'filename': '/invalid/file.cue'}
 
         with self.assertRaises(InvalidFileError):
-            check = FFCueSplitter(**{**self.args, **fname})
-            check.open_cuefile(testpatch=True)
+            argsdata = DataArgs(**{**self.args, **fname})
+            FFCueSplitter(**argsdata.asdict())
 
     def test_tracks_with_iso_file_encoding(self):
         """
         test cuefile parsing with ISO-8859-1 encoding
         """
         fname = {'filename': FILECUE_ISO}
-        split = FFCueSplitter(**{**self.args, **fname})
-        split.open_cuefile(testpatch=True)
+        argsdata = DataArgs(**{**self.args, **fname})
+        split = FFCueSplitter(**argsdata.asdict())
         tracks = split.audiotracks
 
         self.assertEqual(tracks[0]['FILE'], 'Three Samples.flac')
@@ -68,8 +70,8 @@ class ParserCueSheetTestCase(unittest.TestCase):
         test cuefile parsing with ASCII encoding
         """
         fname = {'filename': FILECUE_ASCII}
-        split = FFCueSplitter(**{**self.args, **fname})
-        split.open_cuefile(testpatch=True)
+        argsdata = DataArgs(**{**self.args, **fname})
+        split = FFCueSplitter(**argsdata.asdict())
         tracks = split.audiotracks
 
         self.assertEqual(tracks[0]['START'], 0)
@@ -89,7 +91,8 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         self.args = {'outputdir': os.path.dirname(FILECUE_ISO),
                      'outputformat': OUTFORMAT,
                      'overwrite': OVERWRITE,
-                     'dry': True
+                     'dry': True,
+                     'testpatch': True,
                      }
 
     def test_ffmpeg_arguments(self):
@@ -97,10 +100,11 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         test argument strings and titletrack names
         """
         fname = {'filename': FILECUE_ASCII}
-        split = FFCueSplitter(**{**self.args, **fname})
-        split.open_cuefile(testpatch=True)
+        argsdata = DataArgs(**{**self.args, **fname})
+        split = FFCueSplitter(**argsdata.asdict())
         split.kwargs['tempdir'] = os.path.abspath('.')
-        data = split.commandargs()
+        tracks = split.audiotracks
+        data = split.commandargs(tracks)
         self.assertEqual(data['recipes'][0][0].split()[0], '"ffmpeg"')
         self.assertEqual(data['recipes'][0][1]['titletrack'],
                          '01 - 300 Hz.flac')
@@ -114,10 +118,11 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         test durations of the tracks in seconds
         """
         fname = {'filename': FILECUE_ASCII}
-        split = FFCueSplitter(**{**self.args, **fname})
-        split.open_cuefile(testpatch=True)
+        argsdata = DataArgs(**{**self.args, **fname})
+        split = FFCueSplitter(**argsdata.asdict())
         split.kwargs['tempdir'] = os.path.abspath('.')
-        data = split.commandargs()
+        tracks = split.audiotracks
+        data = split.commandargs(tracks)
         self.assertEqual(data['recipes'][0][1]['duration'], 2.0)
         self.assertEqual(data['recipes'][1][1]['duration'], 2.0)
         self.assertEqual(data['recipes'][2][1]['duration'], 2.0)
