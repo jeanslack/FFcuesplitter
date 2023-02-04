@@ -67,8 +67,8 @@ class FFCueSplitter(FFMpeg):
     """
     This is a subclass derived from the `FFMpeg` base
     class, it implements an interface to fetch the
-    required data and accurately split audio tracks
-    from CD image using FFmpeg.
+    required data to accurately split audio tracks
+    from a CD image using FFmpeg.
 
     Usage:
         >>> from ffcuesplitter.cuesplitter import FFCueSplitter, DataArgs
@@ -77,7 +77,7 @@ class FFCueSplitter(FFMpeg):
         >>> tracks = getdata.audiotracks
         >>> getdata.commandargs(tracks)
 
-        Get more data:
+        Get additional data:
 
         >>> getdata.cue.meta.data  # CD info
         >>> getdata.probedata  # the ffprobe data of sources audio files
