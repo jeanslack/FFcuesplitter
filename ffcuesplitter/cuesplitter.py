@@ -7,7 +7,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Feb 02 2023
+Rev: Feb 06 2023
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -56,7 +56,7 @@ class DataArgs:
     progress_meter: str = "standard"
     dry: bool = False
     prg_loglevel: str = 'info'
-    testpatch: bool = False  # `True` for test cases else `False`
+    testpatch: bool = False  # must be `True` only using test cases
 
     def asdict(self) -> dict:
         """return dict object"""
@@ -71,9 +71,8 @@ class FFCueSplitter(FFMpeg):
     from a CD image using FFmpeg.
 
     Usage:
-        >>> from ffcuesplitter.cuesplitter import FFCueSplitter, DataArgs
-        >>> argsdata = DataArgs(cuefile, dry=True)
-        >>> getdata = FFCueSplitter(**argsdata.asdict())
+        >>> from ffcuesplitter.cuesplitter import FFCueSplitter
+        >>> getdata = FFCueSplitter(**kwargs)
         >>> tracks = getdata.audiotracks
         >>> getdata.commandargs(tracks)
 
@@ -85,7 +84,7 @@ class FFCueSplitter(FFMpeg):
     For more options, visit the wiki page at:
     https://github.com/jeanslack/FFcuesplitter/wiki/Usage-from-Python
 
-    For a full meaning of the arguments to pass to the instance, read
+    For a full meaning of the key arguments to pass to the instance, read
     the __init__ docstring of this class or type `help(FFCueSplitter)`.
 
     """
@@ -96,21 +95,21 @@ class FFCueSplitter(FFMpeg):
         ------------------
 
         filename:
-                absolute or relative CUE sheet file ('filename.cue')
+                absolute or relative CUE sheet file ('filename.cue').
         outputdir:
-                absolute or relative pathname to output files
+                absolute or relative pathname to output files.
         collection:
                 auto-create additional sub-dirs,
-                one of ("artist+album", "artist", "album")
+                one of ("artist+album", "artist", "album").
         outputformat:
                 output format, one of
-                ("wav", "flac", "mp3", "ogg", "opus", "copy") .
+                ("wav", "flac", "mp3", "ogg", "opus", "copy").
         overwrite:
                 overwriting options, one of ("ask", "never", "always").
         ffmpeg_cmd:
-                an absolute path command of ffmpeg
+                an absolute path command of ffmpeg.
         ffmpeg_loglevel:
-                one of ("error", "warning", "info", "verbose", "debug") .
+                one of ("error", "warning", "info", "verbose", "debug").
         ffprobe_cmd:
                 an absolute path command of ffprobe.
         ffmpeg_add_params:
@@ -125,11 +124,12 @@ class FFCueSplitter(FFMpeg):
                 one of ("error", "warning", "info", "debug"),
                 default is `info`.
         testpatch:
-                Used for test cases only (do not use for normal tasks)
+                Used for test cases only (do not use for normal tasks).
         """
         super().__init__()
 
-        self.kwargs = kwargs
+        argsdata = DataArgs(**kwargs)
+        self.kwargs = argsdata.asdict()
 
         loglevel = self.kwargs['prg_loglevel']
         nlev = getattr(logging, loglevel.upper(), None)
@@ -147,6 +147,7 @@ class FFCueSplitter(FFMpeg):
         self.kwargs['logtofile'] = os.path.join(self.kwargs['outputdir'],
                                                 'ffcuesplitter.log')
         self.kwargs['tempdir'] = '.'
+
         self.audiotracks = None
         self.probedata = []
         self.cue_encoding = None  # data chardet
@@ -175,8 +176,9 @@ class FFCueSplitter(FFMpeg):
         This method is called by `deflacue_object_handler` method.
 
         Returns:
-            An updated audiotracks object with the new DURATION
-            keys for each track.
+            An `audiotracks` object updated with a DURATION
+            key and a definition of time in seconds as a value
+            (of type float) for each track.
 
         """
         if self.kwargs['testpatch']:

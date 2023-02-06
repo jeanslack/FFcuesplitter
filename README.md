@@ -73,9 +73,8 @@ and saves them in the `my_awesome_tracklist` directory.
 ### Using Python
 
 ```python
->>> from ffcuesplitter.cuesplitter import FFCueSplitter, DataArgs
->>> argsdata = DataArgs("tests/Three Samples_ASCII.cue", dry=True)
->>> getdata = FFCueSplitter(**argsdata.asdict())
+>>> from ffcuesplitter.cuesplitter import FFCueSplitter
+>>> getdata = FFCueSplitter(**kwargs)
 >>> tracks = getdata.audiotracks  # get all tracks data
 >>> getdata.commandargs(tracks)  # get FFmpeg command/arguments recipes.
 ```

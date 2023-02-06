@@ -2,7 +2,7 @@
 
 """
 Porpose: Contains test cases for the FFCueSplitter object.
-Rev: Feb 02 2023
+Rev: Feb 06 2023
 """
 import os
 import sys
@@ -13,7 +13,7 @@ PATH = os.path.realpath(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(os.path.dirname(PATH)))
 
 try:
-    from ffcuesplitter.cuesplitter import FFCueSplitter, DataArgs
+    from ffcuesplitter.cuesplitter import FFCueSplitter
     from ffcuesplitter.exceptions import InvalidFileError
 
 except ImportError as error:
@@ -47,16 +47,14 @@ class ParserCueSheetTestCase(unittest.TestCase):
         fname = {'filename': '/invalid/file.cue'}
 
         with self.assertRaises(InvalidFileError):
-            argsdata = DataArgs(**{**self.args, **fname})
-            FFCueSplitter(**argsdata.asdict())
+            FFCueSplitter(**{**self.args, **fname})
 
     def test_tracks_with_iso_file_encoding(self):
         """
         test cuefile parsing with ISO-8859-1 encoding
         """
         fname = {'filename': FILECUE_ISO}
-        argsdata = DataArgs(**{**self.args, **fname})
-        split = FFCueSplitter(**argsdata.asdict())
+        split = FFCueSplitter(**{**self.args, **fname})
         tracks = split.audiotracks
 
         self.assertEqual(tracks[0]['FILE'], 'Three Samples.flac')
@@ -70,8 +68,7 @@ class ParserCueSheetTestCase(unittest.TestCase):
         test cuefile parsing with ASCII encoding
         """
         fname = {'filename': FILECUE_ASCII}
-        argsdata = DataArgs(**{**self.args, **fname})
-        split = FFCueSplitter(**argsdata.asdict())
+        split = FFCueSplitter(**{**self.args, **fname})
         tracks = split.audiotracks
 
         self.assertEqual(tracks[0]['START'], 0)
@@ -100,8 +97,7 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         test argument strings and titletrack names
         """
         fname = {'filename': FILECUE_ASCII}
-        argsdata = DataArgs(**{**self.args, **fname})
-        split = FFCueSplitter(**argsdata.asdict())
+        split = FFCueSplitter(**{**self.args, **fname})
         split.kwargs['tempdir'] = os.path.abspath('.')
         tracks = split.audiotracks
         data = split.commandargs(tracks)
@@ -118,8 +114,7 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         test durations of the tracks in seconds
         """
         fname = {'filename': FILECUE_ASCII}
-        argsdata = DataArgs(**{**self.args, **fname})
-        split = FFCueSplitter(**argsdata.asdict())
+        split = FFCueSplitter(**{**self.args, **fname})
         split.kwargs['tempdir'] = os.path.abspath('.')
         tracks = split.audiotracks
         data = split.commandargs(tracks)

@@ -1,4 +1,14 @@
 +--------------------------------+
+February 06 2023  Version 1.0.22
++--------------------------------+
+
+- Refactored code.
+- Removed instantiation of DataArgs. DataArgs is now
+  implicitly included on the code instantiating the
+  FFCueSplitter class or the FileSystemOperations class (see docs)
+- update README usage and wiki page.
+
++--------------------------------+
 February 04 2023  Version 1.0.21
 +--------------------------------+
 

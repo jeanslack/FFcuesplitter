@@ -45,9 +45,7 @@ class FileSystemOperations(FFCueSplitter):
 
     USAGE:
         >>> from ffcuesplitter.user_service import FileSystemOperations
-        >>> from ffcuesplitter.cuesplitter import DataArgs
-        >>> argsdata = DataArgs(cuefile, dry=True)
-        >>> split = FileSystemOperations(**argsdata.asdict())
+        >>> split = FileSystemOperations(**kwargs)
         >>> if split.kwargs['dry']:
         >>>     split.dry_run_mode()
         >>> else:
@@ -55,10 +53,10 @@ class FileSystemOperations(FFCueSplitter):
         >>>     if not overw:
         >>>         split.work_on_temporary_directory()
 
-    For a better understanding of the details, see also `main()`
-    function of the `main` module on `ffcuesplitter` package.
+    For the arguments meaning see `FFCueSplitter` class
+    of the `cuesplitter` module on `ffcuesplitter` package.
 
-    For more options, visit the wiki page at:
+    Also, visit the wiki page at:
     https://github.com/jeanslack/FFcuesplitter/wiki/Usage-from-Python
     """
     # ----------------------------------------------------------------#

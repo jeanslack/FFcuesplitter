@@ -31,7 +31,7 @@ import os
 import logging
 import platform
 from tqdm import tqdm
-from ffcuesplitter.exceptions import FFMpegError
+from ffcuesplitter.exceptions import FFMpegError, FFCueSplitterError
 from ffcuesplitter.utils import makeoutputdirs, Popen
 
 if not platform.system() == 'Windows':
@@ -63,21 +63,31 @@ class FFMpeg:
     def codec_setup(self, sourcef):
         """
         Returns codec arg based on given format
+
+        Raises:
+            FFCueSplitterError from KeyError
+            if an unsupported format is given.
+        Returns:
+            tuple(codec, outsuffix)
         """
         if self.kwargs['outputformat'] == 'copy':
             self.outsuffix = os.path.splitext(sourcef)[1].replace('.', '')
             codec = '-c copy'
         else:
-            self.outsuffix = self.kwargs['outputformat']
-            codec = f'-c:a {FFMpeg.DATACODECS[self.kwargs["outputformat"]]}'
+            try:
+                self.outsuffix = self.kwargs['outputformat']
+                codec = f'-c:a {FFMpeg.DATACODECS[self.outsuffix]}'
+            except KeyError as error:
+                msgerr = f"Unsupported format '{self.outsuffix}'"
+                raise FFCueSplitterError(f'{msgerr}') from error
 
         return codec, self.outsuffix
     # -------------------------------------------------------------#
 
     def commandargs(self, audiotracks: (list, tuple)) -> dict:
         """
-        Builds `FFmpeg` arguments and calculates time seconds
-        for each audio track.
+        Builds the FFmpeg command argument string and assign
+        the corresponding duration and name to each audio track.
 
         It expects a list type object.
 
@@ -85,7 +95,6 @@ class FFMpeg:
             dict(recipes)
         """
         data = []
-
         meters = {'tqdm': '-progress pipe:1 -nostats -nostdin', 'standard': ''}
 
         for track in audiotracks:

@@ -7,7 +7,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Feb 02 2023
+Rev: Feb 06 2023
 Code checker: flake8, pylint
 ####################################################################
 
@@ -36,7 +36,6 @@ from ffcuesplitter.str_utils import (msgdebug,
                                      msgend,
                                      msgcolor,
                                      )
-from ffcuesplitter.cuesplitter import DataArgs
 from ffcuesplitter.user_service import (FileSystemOperations,
                                         FileFinder,
                                         )
@@ -164,7 +163,7 @@ def main():
                         )
     args = parser.parse_args()
 
-    find = FileFinder(args.input_fd)  # get file collection
+    find = FileFinder(args.input_fd)  # get all cue files
     if args.recursive is True:
         allfiles = find.find_files_recursively(suffix=('.cue', '.CUE'))
 
@@ -192,12 +191,12 @@ def main():
         kwargs['progress_meter'] = args.progress_meter
         kwargs['dry'] = args.dry
         kwargs['prg_loglevel'] = args.prg_loglevel.upper()
+        kwargs['testpatch'] = False
 
         msgcolor(green='FFcuesplitter: ',
                  tail=f"Processing: '{kwargs['filename']}'")
         try:
-            argsdata = DataArgs(**kwargs)
-            split = FileSystemOperations(**argsdata.asdict())
+            split = FileSystemOperations(**kwargs)
             if kwargs['dry']:
                 split.dry_run_mode()
             else:
