@@ -50,6 +50,7 @@ class FFMpeg:
                   'ogg': 'libvorbis -ar 44100',
                   'opus': 'libopus',
                   'mp3': 'libmp3lame -ar 44100',
+                  'm4a': 'aac -ar 44100',
                   }
 
     def __init__(self, **kwargs):

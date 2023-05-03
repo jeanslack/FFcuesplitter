@@ -41,7 +41,7 @@ both as a Python module and from command line.
 ```
 ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
               [-r]
-              [-f {wav,flac,mp3,ogg,opus,copy}]
+              [-f {wav,flac,mp3,ogg,opus,m4a,copy}]
               [-o OUTPUTDIR]
               [-c {artist+album,artist,album}]
               [-ow {ask,never,always}]
