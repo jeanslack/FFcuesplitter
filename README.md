@@ -1,4 +1,4 @@
-# FFcuesplitter - FFmpeg based audio splitter for audio CD images supplied with .cue sheet files.
+# FFcuesplitter - FFmpeg-based audio splitter for CDDA images associated with .cue files .
 
 [![Image](https://img.shields.io/static/v1?label=python&logo=python&message=3.7%20|%203.8%20|%203.9%20|%203.10%20|%203.11&color=blue)](https://www.python.org/downloads/)
 [![Python application](https://github.com/jeanslack/FFcuesplitter/actions/workflows/CI.yml/badge.svg)](https://github.com/jeanslack/FFcuesplitter/actions/workflows/CI.yml)
@@ -34,9 +34,7 @@ both as a Python module and from command line.
 - [FFmpeg](https://ffmpeg.org/) *(including ffprobe)*
 
 
-## Usage
-
-### Using Command Line
+## Using Command Line
 
 ```
 ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
@@ -70,7 +68,7 @@ and saves them in the `my_awesome_tracklist` directory.
 **For further information and other examples visit the [wiki page](https://github.com/jeanslack/FFcuesplitter/wiki)**
 ***
 
-### Using Python
+## Using Python
 
 ```python
 >>> from ffcuesplitter.cuesplitter import FFCueSplitter

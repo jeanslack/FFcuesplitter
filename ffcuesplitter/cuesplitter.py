@@ -2,12 +2,12 @@
 First release: January 16 2022
 
 Name: cuesplitter.py
-Porpose: FFmpeg based audio splitter for Cue sheet files
+Porpose: FFmpeg based audio splitter for CDDA images associated with .cue files
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Feb 06 2023
+Rev: Aug 12 2023
 Code checker: flake8 and pylint
 ####################################################################
 
