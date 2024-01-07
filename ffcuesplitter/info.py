@@ -3,8 +3,8 @@ Name: info.py
 Porpose: program information strings
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Feb 02 2023
+Copyright: (C) 2024 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Rev: Aug 12 2023
 ####################################################################
 
 This file is part of FFcuesplitter.
@@ -26,16 +26,16 @@ __author__ = "Gianluca Pernigotto - Jeanslack"
 __contact__ = '<jeanlucperni@gmail.com>'
 __maintainer__ = "Gianluca Pernigotto - Jeanslack"
 __maintainer_contact__ = "jeanlucperni@gmail.com"
-__copyleft__ = '2023'
-__version__ = '1.0.22'
-__release__ = 'February 06 2023'
+__copyleft__ = '2024'
+__version__ = '1.0.23'
+__release__ = 'August 12 2023'
 __appname__ = "FFcuesplitter"
 __packagename__ = "ffcuesplitter"
 __license__ = "GPL3 (Gnu Public License)"
 __projecturl__ = "https://github.com/jeanslack/FFcuesplitter"
 __githuburl__ = "https://github.com/jeanslack/FFcuesplitter"
-__description__ = ("FFmpeg based audio splitter for audio CD "
-                   "images supplied with CUE sheet files.")
+__description__ = ("FFmpeg based audio splitter for CDDA images associated "
+                   "with .cue files.")
 __descriptionfull__ = """FFcuesplitter is a multi-platform CUE sheet splitter
 entirely based on FFmpeg. Splits big audio tracks and automatically embeds tags
 using the information contained in the associated **"CUE"** sheet. It supports
