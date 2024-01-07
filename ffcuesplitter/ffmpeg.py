@@ -197,9 +197,9 @@ class FFMpeg:
 
                     for output in proc.stdout:
                         if "out_time_ms" in output.strip():
-                            out_time_ms_value = output.split('=')[1].strip()
-                            if out_time_ms_value.isdigit():
-                                s_processed = int(out_time_ms_value) / 1_000_000
+                            out_time_ms_val = output.split('=')[1].strip()
+                            if out_time_ms_val.isdigit():
+                                s_processed = int(out_time_ms_val) / 1_000_000
                                 percent = s_processed / seconds * 100
                                 progbar.update(round(percent) - progbar.n)
 
