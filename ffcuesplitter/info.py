@@ -3,7 +3,7 @@ Name: info.py
 Porpose: program information strings
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Copyright: (C) 2024 Gianluca Pernigotto <jeanlucperni@gmail.com>
 Rev: Aug 12 2023
 ####################################################################
 
@@ -26,7 +26,7 @@ __author__ = "Gianluca Pernigotto - Jeanslack"
 __contact__ = '<jeanlucperni@gmail.com>'
 __maintainer__ = "Gianluca Pernigotto - Jeanslack"
 __maintainer_contact__ = "jeanlucperni@gmail.com"
-__copyleft__ = '2023'
+__copyleft__ = '2024'
 __version__ = '1.0.23'
 __release__ = 'August 12 2023'
 __appname__ = "FFcuesplitter"

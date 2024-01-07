@@ -6,7 +6,7 @@ Porpose: FFmpeg based audio splitter for CDDA images associated with .cue files
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Copyright: (C) 2024 Gianluca Pernigotto <jeanlucperni@gmail.com>
 Rev: Aug 12 2023
 Code checker: flake8 and pylint
 ####################################################################
