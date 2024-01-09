@@ -8,8 +8,9 @@ Splits big audio tracks and automatically embeds tags using the information
 contained in the associated **"CUE"** sheet. It supports multiple CUE sheet
 encodings and many input formats (due to FFmpeg), including APE format, without
 need installing extra audio libs and packages. It has the ability to accept both
-files and directories as input while also working in recursive mode. Can be used
-both as a Python module and from command line.
+files and directories as input while also working in recursive mode. It can be 
+used either as a [Python module](https://github.com/jeanslack/FFcuesplitter#using-python) 
+or from the [command line](https://github.com/jeanslack/FFcuesplitter#using-command-line).
 
 ## Features
 
@@ -23,7 +24,7 @@ both as a Python module and from command line.
 - Auto-tag from CUE file data.
 - Features automatic character set detection for CUE files (via [chardet](https://pypi.org/project/chardet/)).
 - Works on Linux, MacOs, FreeBSD, Windows.
-- Can be used both as a Python module and in command line mode.
+- It can be used either as a Python module or from the command line.
 
 ## Requires
 
@@ -92,7 +93,7 @@ and saves them in the `my_awesome_tracklist` directory.
 
 ## License and Copyright
 
-Copyright (C) 2023 Gianluca Pernigotto   
-Author and Developer: Gianluca Pernigotto   
-Mail: <jeanlucperni@gmail.com>   
-License: GPL3 (see LICENSE file in the source directory)   
+Copyright: (C) 2024 Gianluca Pernigotto
+Author and Developer: Gianluca Pernigotto
+Mail: <jeanlucperni@gmail.com>
+License: GPL3 (see LICENSE file in the source directory)

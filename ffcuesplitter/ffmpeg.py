@@ -5,9 +5,9 @@ Porpose: builds arguments for FFmpeg processing.
 Compatibility: Python3
 Platform: all platforms
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
-Copyright: (C) 2023 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Copyright: (C) 2024 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Feb 02 2023
+Rev: Jan 07 2024
 Code checker: flake8, pylint
 ########################################################
 
