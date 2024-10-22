@@ -27,11 +27,11 @@ This file is part of FFcuesplitter.
     along with FFcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
 """
 import argparse
-from ffcuesplitter.info import (__appname__,
-                                __description__,
-                                __version__,
-                                __release__,
-                                )
+from ffcuesplitter.about import (APPNAME,
+                                 SHORT_DESCRIPT,
+                                 VERSION,
+                                 RELEASE
+                                 )
 from ffcuesplitter.str_utils import (msgdebug,
                                      msgend,
                                      msgcolor,
@@ -51,15 +51,15 @@ def main():
     Defines and evaluates positional arguments
     using the argparser module.
     """
-    parser = argparse.ArgumentParser(prog=__appname__,
-                                     description=__description__,
+    parser = argparse.ArgumentParser(prog=APPNAME,
+                                     description=SHORT_DESCRIPT,
                                      # add_help=False,
                                      )
     parser.add_argument('--version',
                         help="Show the current version and exit.",
                         action='version',
-                        version=(f"ffcuesplitter v{__version__} "
-                                 f"- {__release__}"),
+                        version=(f"ffcuesplitter v{VERSION} "
+                                 f"- {RELEASE}"),
                         )
     parser.add_argument('-i', '--input-fd',
                         metavar='FILENAMES DIRNAMES',
@@ -166,8 +166,7 @@ def main():
     find = FileFinder(args.input_fd)  # get all cue files
     if args.recursive is True:
         allfiles = find.find_files_recursively(suffix=('.cue', '.CUE'))
-
-    elif args.recursive is False:
+    else:
         allfiles = find.find_files(suffix=('.cue', '.CUE'))
 
     filelist = set(allfiles['FOUND']

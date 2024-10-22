@@ -87,5 +87,4 @@ def ffprobe(filename, cmd='ffprobe', **kwargs):
     except (OSError, FileNotFoundError) as excepterr:
         raise FFProbeError(excepterr) from excepterr
 
-    else:
-        return json.loads(output)
+    return json.loads(output)

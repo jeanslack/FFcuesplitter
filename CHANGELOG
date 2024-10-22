@@ -1,4 +1,15 @@
 +--------------------------------+
+October 22 2024  Version 1.0.25
++--------------------------------+
+
+- Switched to hatchling as the default build backend which replaces setuptools.
+- Fixed some lint warn/error (pylint + flake8).
+- Changed info.py to about.py + code improvements.
+- Removed setup.py file because it was obsolete.
+- Removed MANIFEST.in file because it was obsolete.
+- Minimum Python version fixed at v3.8 .
+
++--------------------------------+
 January 07 2024  Version 1.0.23
 +--------------------------------+
 

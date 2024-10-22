@@ -1,7 +1,0 @@
-include README.md
-include AUTHORS
-include BUGS
-include CHANGELOG
-include LICENSE
-include TODO
-include tests/*
