@@ -1,0 +1,89 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ffcuesplitter"
+dynamic = ["version"]
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  {name = "Gianluca Pernigotto", email = "jeanlucperni@gmail.com"}
+]
+maintainers = [
+  {name = "Gianluca Pernigotto", email = "jeanlucperni@gmail.com"}
+]
+description = "FFmpeg-based audio splitter for CDDA images associated with .cue files ."
+license =  {text = "GNU General Public License v3 (GPLv3)"}
+keywords = [
+    "ffcuesplitter",
+    "converter",
+    "audio splitter",
+    "ffmpeg"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Sound/Audio :: Conversion",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "chardet>=4.0.0",
+    "tqdm>=4.38.0",
+    "deflacue>=2.0.1"
+]
+build = [
+    "build",
+    "hatchling",
+    "pip",
+    "six",
+    "wheel",
+    "setuptools",
+]
+[tool.hatch.version]
+path = "ffcuesplitter/about.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "ffcuesplitter",
+    "tests",
+    "man",
+    "AUTHORS",
+    "BUGS",
+    "CHANGELOG",
+    "INSTALL",
+    "LICENSE",
+    "README.md",  # already included as readme
+    "TODO",
+    "ffcuesplitter.py",
+    ".gitignore",  # already included by default, needed for auto-excludes
+    ".flake8",
+    ".pylintrc",
+]
+exclude = [
+]
+[tool.hatch.build.targets.wheel]
+packages = ["ffcuesplitter"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"man/ffcuesplitter.1.gz" = "share/man/man1/ffcuesplitter.1.gz"
+[project.scripts]
+ffcuesplitter = "ffcuesplitter.main:main"
+
+[project.urls]
+Homepage = "https://github.com/jeanslack/FFcuesplitter"
+Documentation = "https://github.com/jeanslack/FFcuesplitter#readme"
+Wiki = "https://github.com/jeanslack/FFcuesplitter/wiki"
+Tracker = "https://github.com/jeanslack/Videomass/issues"

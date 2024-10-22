@@ -4,7 +4,7 @@ Porpose: program information strings
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyright: (C) 2024 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Aug 12 2023
+Rev: Oct 22 2024
 ####################################################################
 
 This file is part of FFcuesplitter.
@@ -22,32 +22,30 @@ This file is part of FFcuesplitter.
     You should have received a copy of the GNU General Public License
     along with FFcuesplitter.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Gianluca Pernigotto - Jeanslack"
-__contact__ = '<jeanlucperni@gmail.com>'
-__maintainer__ = "Gianluca Pernigotto - Jeanslack"
-__maintainer_contact__ = "jeanlucperni@gmail.com"
-__copyleft__ = '2024'
-__version__ = '1.0.23'
-__release__ = 'January 09 2024'
-__appname__ = "FFcuesplitter"
-__packagename__ = "ffcuesplitter"
-__license__ = "GPL3 (Gnu Public License)"
-__projecturl__ = "https://github.com/jeanslack/FFcuesplitter"
-__githuburl__ = "https://github.com/jeanslack/FFcuesplitter"
-__description__ = ("FFmpeg based audio splitter for CDDA images associated "
-                   "with .cue files.")
-__descriptionfull__ = """FFcuesplitter is a multi-platform CUE sheet splitter
+AUTHOR = "Gianluca Pernigotto - Jeanslack"
+CONTACT = '<jeanlucperni@gmail.com>'
+MAINTAINER = "Gianluca Pernigotto - Jeanslack"
+COPYLEFT = '2024'
+VERSION = '1.0.25'
+RELEASE = 'October 21 2024'
+APPNAME = "FFcuesplitter"
+PKGNAME = "ffcuesplitter"
+LICENSE_NAME = "GPL3 (Gnu Public License)"
+PROJECTURL = "https://github.com/jeanslack/FFcuesplitter"
+GITHUBURL = "https://github.com/jeanslack/FFcuesplitter"
+SHORT_DESCRIPT = ("FFmpeg based audio splitter for CDDA images associated "
+                  "with .cue files.")
+LONG_DESCRIPT = """FFcuesplitter is a multi-platform CUE sheet splitter
 entirely based on FFmpeg. Splits big audio tracks and automatically embeds tags
 using the information contained in the associated **"CUE"** sheet. It supports
 multiple CUE sheet encodings and many input formats (due to FFmpeg), including
 APE format, without need installing extra audio libs and packages. It has the
 ability to accept both files and directories as input while also working in
 recursive mode. Can be used both as a Python module or by command line."""
-__license__ = "GPL3 (Gnu Public License)"
-__licensefull__ = f"""
-Copyright - {__copyleft__} {__author__}
-Author and Developer: {__author__}
-Mail: {__contact__}
+SHORT_LICENSE = f"""
+Copyright - {COPYLEFT} {AUTHOR}
+Author and Developer: {AUTHOR}
+Mail: {CONTACT}
 
 FFcuesplitter is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

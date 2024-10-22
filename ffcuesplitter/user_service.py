@@ -249,10 +249,10 @@ class FileFinder:
                 if os.path.splitext(files)[1] in suffix:
                     self.filtered.append(os.path.join(path, files))
 
-        return dict(FOUND=self.filtered,
-                    DISCARDED=self.rejected,
-                    INEXISTENT=self.nonexistent
-                    )
+        return {"FOUND": self.filtered,
+                "DISCARDED": self.rejected,
+                "INEXISTENT": self.nonexistent
+                }
     # -------------------------------------------------------------#
 
     def find_files(self, suffix: str = '') -> dict:
@@ -278,8 +278,8 @@ class FileFinder:
             else:
                 self.nonexistent.append(dirs)  # all non-existing files/dirs
 
-        return dict(FOUND=self.filtered,
-                    DISCARDED=self.rejected,
-                    INEXISTENT=self.nonexistent
-                    )
+        return {"FOUND": self.filtered,
+                "DISCARDED": self.rejected,
+                "INEXISTENT": self.nonexistent
+                }
 # ------------------------------------------------------------------------
