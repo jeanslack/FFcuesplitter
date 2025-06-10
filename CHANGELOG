@@ -4,7 +4,18 @@ June 10 2025  Version 1.0.26
 
 - Fix #40 `ffcuesplitter.log incomplete when there are multiple .cue files in
   the same directory.
-- Fix copyleft Year.
+- Update copyleft Year.
+- Fix #37 `FFcuesplitter: error: argument --ffmpeg-add-params: expected one
+  argument`. Updated help for `ffmpeg-add-params` parameter using the command
+  line.
+- Due to known issue in FFmpeg with cutting FLAC files, the `copy` option has
+  been removed from the `-f`, `--output-format` parser argument to splitting
+  FLAC files without re-encoding. To force this behavior, e.g. the source file
+  is not in FLAC format, use the `--ffmpeg-add-params` argument and add
+  `-c copy` parameter to split files without re-encoding, for instance:
+  `--ffmpeg-add-params='-c copy'`. This partially fix #37 too.
+- Changed `--format-type` argument to `--output-format` argument using command
+  line argparser.
 
 +--------------------------------+
 October 22 2024  Version 1.0.25

@@ -70,9 +70,9 @@ class FFMpeg:
         Returns:
             tuple(codec, outsuffix)
         """
-        if self.kwargs['outputformat'] == 'copy':
+        if '-c copy' in self.kwargs['ffmpeg_add_params']:
             self.outsuffix = os.path.splitext(sourcef)[1].replace('.', '')
-            codec = '-c copy'
+            codec = ''
         else:
             try:
                 self.outsuffix = self.kwargs['outputformat']

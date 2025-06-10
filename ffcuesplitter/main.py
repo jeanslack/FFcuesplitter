@@ -81,8 +81,8 @@ def main():
                               "have no effect with filenames."),
                         required=False,
                         )
-    parser.add_argument('-f', '--format-type',
-                        choices=["wav", "flac", "mp3", "ogg", "opus", "copy"],
+    parser.add_argument('-f', '--output-format',
+                        choices=["wav", "flac", "mp3", "ogg", "opus"],
                         help=("Preferred audio format to output, "
                               "default is 'flac'."),
                         required=False,
@@ -128,10 +128,12 @@ def main():
                         default='info'
                         )
     parser.add_argument("--ffmpeg-add-params",
-                        metavar="'parameters'",
-                        help=("Additionals ffmpeg parameters, as 'codec "
-                              "quality, bitrate, etc'. Note that additional "
-                              "parameters must be quoted."),
+                        metavar="parameters",
+                        help=("Additionals ffmpeg parameters. Note that the "
+                              "additional parameters must be quoted using "
+                              "single quotes and must be preceded by an "
+                              "equals sign (=), example: "
+                              "--ffmpeg-add-params='-c:a flac -ar 44100'."),
                         required=False,
                         default=''
                         )
@@ -181,7 +183,7 @@ def main():
         kwargs = {'filename': files}
         kwargs['outputdir'] = args.outputdir
         kwargs['collection'] = args.collection
-        kwargs['outputformat'] = args.format_type
+        kwargs['outputformat'] = args.output_format
         kwargs['overwrite'] = args.overwrite
         kwargs['ffmpeg_cmd'] = args.ffmpeg_cmd
         kwargs['ffmpeg_loglevel'] = args.ffmpeg_loglevel
