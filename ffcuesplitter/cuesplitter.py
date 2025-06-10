@@ -103,7 +103,7 @@ class FFCueSplitter(FFMpeg):
                 one of ("artist+album", "artist", "album").
         outputformat:
                 output format, one of
-                ("wav", "flac", "mp3", "ogg", "opus", "copy").
+                ("wav", "flac", "mp3", "ogg", "opus").
         overwrite:
                 overwriting options, one of ("ask", "never", "always").
         ffmpeg_cmd:

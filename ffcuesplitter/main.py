@@ -81,8 +81,8 @@ def main():
                               "have no effect with filenames."),
                         required=False,
                         )
-    parser.add_argument('-f', '--format-type',
-                        choices=["wav", "flac", "mp3", "ogg", "opus", "copy"],
+    parser.add_argument('-f', '--output-format',
+                        choices=["wav", "flac", "mp3", "ogg", "opus"],
                         help=("Preferred audio format to output, "
                               "default is 'flac'."),
                         required=False,
@@ -183,7 +183,7 @@ def main():
         kwargs = {'filename': files}
         kwargs['outputdir'] = args.outputdir
         kwargs['collection'] = args.collection
-        kwargs['outputformat'] = args.format_type
+        kwargs['outputformat'] = args.output_format
         kwargs['overwrite'] = args.overwrite
         kwargs['ffmpeg_cmd'] = args.ffmpeg_cmd
         kwargs['ffmpeg_loglevel'] = args.ffmpeg_loglevel
