@@ -128,10 +128,12 @@ def main():
                         default='info'
                         )
     parser.add_argument("--ffmpeg-add-params",
-                        metavar="'parameters'",
-                        help=("Additionals ffmpeg parameters, as 'codec "
-                              "quality, bitrate, etc'. Note that additional "
-                              "parameters must be quoted."),
+                        metavar="parameters",
+                        help=("Additionals ffmpeg parameters. Note that the "
+                              "additional parameters must be quoted using "
+                              "single quotes and must be preceded by an "
+                              "equals sign (=), example: "
+                              "--ffmpeg-add-params='-c:a flac -ar 44100'."),
                         required=False,
                         default=''
                         )
@@ -162,6 +164,9 @@ def main():
                         default='info'
                         )
     args = parser.parse_args()
+
+    print(args)
+    return
 
     find = FileFinder(args.input_fd)  # get all cue files
     if args.recursive is True:
