@@ -6,8 +6,8 @@ Porpose: FFmpeg based audio splitter for CDDA images associated with .cue files
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Copyright: (C) 2024 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Aug 12 2023
+Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Rev: June 10 2025
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -144,10 +144,11 @@ class FFCueSplitter(FFMpeg):
             self.kwargs['outputdir'] = self.kwargs['dirname']
         else:
             self.kwargs['outputdir'] = os.path.abspath(outputdir)
-        self.kwargs['logtofile'] = os.path.join(self.kwargs['outputdir'],
-                                                'ffcuesplitter.log')
+        basename = os.path.basename(self.kwargs['filename'])
+        fname = os.path.splitext(basename)[0]
+        logn = f'{fname}.ffcuesplitter.log'
+        self.kwargs['logtofile'] = os.path.join(self.kwargs['outputdir'], logn)
         self.kwargs['tempdir'] = '.'
-
         self.audiotracks = None
         self.probedata = []
         self.cue_encoding = None  # data chardet
@@ -283,8 +284,11 @@ class FFCueSplitter(FFMpeg):
         if subdirs:
             self.kwargs['outputdir'] = os.path.join(self.kwargs['outputdir'],
                                                     subdirs)
+            basename = os.path.basename(self.kwargs['filename'])
+            fname = os.path.splitext(basename)[0]
+            logn = f'{fname}.ffcuesplitter.log'
             self.kwargs['logtofile'] = os.path.join(self.kwargs['outputdir'],
-                                                    'ffcuesplitter.log')
+                                                    logn)
         else:
             raise FFCueSplitterError(f"Invalid argument: "
                                      f"'{self.kwargs['collection']}'")

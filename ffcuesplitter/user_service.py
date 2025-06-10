@@ -6,8 +6,8 @@ Porpose: Services for the end user.
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Copyright: (C) 2024 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Feb 02 2023
+Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Rev: June 10 2025
 Code checker: flake8, pylint
 ####################################################################
 

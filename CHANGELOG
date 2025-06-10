@@ -1,4 +1,12 @@
 +--------------------------------+
+June 10 2025  Version 1.0.26
++--------------------------------+
+
+- Fix #40 `ffcuesplitter.log incomplete when there are multiple .cue files in
+  the same directory.
+- Fix copyleft Year.
+
++--------------------------------+
 October 22 2024  Version 1.0.25
 +--------------------------------+
 
