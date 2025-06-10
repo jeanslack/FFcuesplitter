@@ -3,9 +3,9 @@
 Name: str_utils.py (module)
 Porpose: module for cosmetic output console in ANSI sequences
 Writer: Gianluca Pernigoto <jeanlucperni@gmail.com>
-Copyright: (C) 2024 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
-Rev: Jan 29 2023
+Rev: June 10 2025
 Code checker: flake8, pylint
 """
 

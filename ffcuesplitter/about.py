@@ -3,8 +3,8 @@ Name: info.py
 Porpose: program information strings
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Copyright: (C) 2024 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: Oct 22 2024
+Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Rev: June 10 2025
 ####################################################################
 
 This file is part of FFcuesplitter.
