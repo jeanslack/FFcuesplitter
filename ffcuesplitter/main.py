@@ -165,9 +165,6 @@ def main():
                         )
     args = parser.parse_args()
 
-    print(args)
-    return
-
     find = FileFinder(args.input_fd)  # get all cue files
     if args.recursive is True:
         allfiles = find.find_files_recursively(suffix=('.cue', '.CUE'))
