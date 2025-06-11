@@ -33,14 +33,13 @@ import datetime
 
 def sanitize(string: str = 'string') -> str:
     r"""
-    Makes the passed string consistent and compatible
-    with the OS file system.
+    Makes the passed string consistent and compatible with most
+    popular operating system file systems.
 
-    - On Windows, removes the following illegal chars: " * : < > ? / \ |
-
-    - On all operating systems, it replaces slash (/) character
-      with hyphen (-) and removes leading/trailing spaces
-      and dots (.)
+    - Replaces slash (/) character with hyphen (-) .
+    - Removes several meta-characters that may be incompatible
+      with filesystems .
+    - Normalizes all spaces and tabs along the string.
 
     Returns the new sanitized string.
 
@@ -48,11 +47,10 @@ def sanitize(string: str = 'string') -> str:
     if not isinstance(string, str):
         raise TypeError("Expects Type string only")
 
-    if platform.system() == 'Windows':
-        string = re.sub(r"[\"\*\:\<\>\?\|\\]", '', string)
     string = string.replace('/', '-')
+    string = re.sub(r"[\.\'\^\`\~\"\#\'\%\&\*\:\<\>\?\/\\\{\|\}]", '', string)
 
-    return string.strip().strip('.')  # removes spaces and dots
+    return " ".join(string.split())  # normalizing all spaces
 # ------------------------------------------------------------------------
 
 

@@ -247,10 +247,9 @@ class FFCueSplitter(FFMpeg):
                         raise FFCueSplitterError('No audio files found!')
                 continue
 
-            filename = f"{sanitize(track[1].title)}"  # titles to sanitize
-
             data = {'FILE': str(track_file), **cd_info, **track[1].data}
-            data['TITLE'] = filename
+            data['TITLE'] = track[1].title  # to metadata destination
+            data['FILE_TITLE'] = f"{sanitize(track[1].title)}"  # to filename
             data['START'] = track[1].start
 
             if track[1].end != 0:

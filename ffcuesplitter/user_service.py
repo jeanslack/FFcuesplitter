@@ -115,7 +115,7 @@ class FileSystemOperations(FFCueSplitter):
 
         for data in tracks:  # self.audiotracks
             track = (f"{str(data['TRACK_NUM']).rjust(2, '0')} - "
-                     f"{data['TITLE']}.{self.kwargs['outputformat']}")
+                     f"{data['FILE_TITLE']}.{self.kwargs['outputformat']}")
             pathfile = os.path.join(outputdir, track)
 
             if os.path.exists(pathfile):
@@ -195,7 +195,7 @@ class FileSystemOperations(FFCueSplitter):
             lengh = len(recipes['recipes'])
             for args in recipes['recipes']:
                 count += 1
-                msg = (f'TRACK {count}/{lengh} >> '
+                msg = (f'Write Track {count}/{lengh} >> '
                        f'"{args[1]["titletrack"]}" ...')
                 logging.info(msg)
                 self.command_runner(args[0], args[1]['duration'])
