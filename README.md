@@ -23,6 +23,7 @@ or from the [command line](https://github.com/jeanslack/FFcuesplitter#using-comm
 - Ability to generate audio collection directories (Artist/Album/TrackNumber - Title)
 - Auto-tag from CUE file data.
 - Features automatic character set detection for CUE files (via [chardet](https://pypi.org/project/chardet/)).
+- Ability to remove original file after conversion.
 - Works on Linux, MacOs, FreeBSD, Windows.
 - It can be used either as a Python module or from the command line.
 
@@ -40,13 +41,14 @@ or from the [command line](https://github.com/jeanslack/FFcuesplitter#using-comm
 ```
 ffcuesplitter -i FILENAMES DIRNAMES [FILENAMES DIRNAMES ...]
               [-r]
-              [-f {wav,flac,mp3,ogg,opus,copy}]
+              [-f {wav,flac,mp3,ogg,opus}]
               [-o OUTPUTDIR]
+              [-del]
               [-c {artist+album,artist,album}]
               [-ow {ask,never,always}]
               [--ffmpeg-cmd URL]
               [--ffmpeg-loglevel {error,warning,info,verbose,debug}]
-              [--ffmpeg-add-params 'parameters']
+              [--ffmpeg-add-params='parameters']
               [-p {tqdm,standard}]
               [--ffprobe-cmd URL]
               [--dry]

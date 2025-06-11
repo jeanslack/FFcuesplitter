@@ -1,5 +1,5 @@
 +--------------------------------+
-June 10 2025  Version 1.0.26
+June 11 2025  Version 1.0.26
 +--------------------------------+
 
 - Fix #40 `ffcuesplitter.log incomplete when there are multiple .cue files in
@@ -14,8 +14,14 @@ June 10 2025  Version 1.0.26
   is not in FLAC format, use the `--ffmpeg-add-params` argument and add
   `-c copy` parameter to split files without re-encoding, for instance:
   `--ffmpeg-add-params='-c copy'`. This partially fix #37 too.
-- Changed `--format-type` argument to `--output-format` argument using command
-  line argparser.
+- Changed `--format-type` flag argument to `--output-format` argument using command
+  line argparser, `output_format` using Python.
+- New feature, added `-del` flag to remove original files on split
+  operations #38 .
+- Improved the writing of track titles to files preserving the original titles
+  to be used for metadata (Tag). This would lead to increased portability of
+  files on any file system of any OS.
+- Documentation and wiki pages updated with new additions and changes.
 
 +--------------------------------+
 October 22 2024  Version 1.0.25

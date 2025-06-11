@@ -61,6 +61,29 @@ class FileSystemOperations(FFCueSplitter):
     """
     # ----------------------------------------------------------------#
 
+    def remove_source_file(self):
+        """
+        Remove the CUE file and the original audio file
+        from the filesystem. If either one is missing, no
+        deletion will be applied.
+        Return True if deletion was successfull, False otherwise.
+        """
+        cuef = self.kwargs['filename']
+        audf = self.audiosource
+        exist = False
+        if os.path.exists(cuef) and os.path.exists(audf):
+            if os.path.isfile(cuef) and os.path.isfile(audf):
+                exist = True
+                logging.info("Deleting CUE file: '%s'", cuef)
+                os.remove(cuef)
+                logging.info("Deleting audio source file: '%s'", audf)
+                os.remove(audf)
+        if not exist:
+            logging.warning("File deletion failed, source files are missing")
+            return exist
+        return exist
+    # ----------------------------------------------------------------#
+
     def dry_run_mode(self):
         """
         lists recipes in dry run mode.
@@ -92,7 +115,7 @@ class FileSystemOperations(FFCueSplitter):
 
         for data in tracks:  # self.audiotracks
             track = (f"{str(data['TRACK_NUM']).rjust(2, '0')} - "
-                     f"{data['TITLE']}.{self.kwargs['outputformat']}")
+                     f"{data['FILE_TITLE']}.{self.kwargs['outputformat']}")
             pathfile = os.path.join(outputdir, track)
 
             if os.path.exists(pathfile):
@@ -172,15 +195,17 @@ class FileSystemOperations(FFCueSplitter):
             lengh = len(recipes['recipes'])
             for args in recipes['recipes']:
                 count += 1
-                msg = (f'TRACK {count}/{lengh} >> '
+                msg = (f'Write Track {count}/{lengh} >> '
                        f'"{args[1]["titletrack"]}" ...')
                 logging.info(msg)
-
                 self.command_runner(args[0], args[1]['duration'])
 
             logging.info("...done exctracting")
             # You must move the files from within the temporary context
             self.move_files_to_outputdir()
+            # remove source file if `del_orig_files` argument is given.
+            if self.kwargs['del_orig_files']:
+                self.remove_source_file()
 # ------------------------------------------------------------------------
 
 

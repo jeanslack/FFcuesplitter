@@ -97,6 +97,14 @@ def main():
                         required=False,
                         default='.'
                         )
+    parser.add_argument("-del", "--del-orig-files",
+                        action='store_true',
+                        help=("Remove original files after successfull "
+                              "conversion. Please note that the audio file "
+                              "and CUE file will be permanently deleted from "
+                              "your filesystem, do this at your own risk."),
+                        required=False,
+                        )
     parser.add_argument("-c", "--collection",
                         choices=["artist+album", "artist", "album"],
                         help=("Create additional sub-dirctories for audio "
@@ -185,6 +193,7 @@ def main():
         kwargs['collection'] = args.collection
         kwargs['outputformat'] = args.output_format
         kwargs['overwrite'] = args.overwrite
+        kwargs['del_orig_files'] = args.del_orig_files
         kwargs['ffmpeg_cmd'] = args.ffmpeg_cmd
         kwargs['ffmpeg_loglevel'] = args.ffmpeg_loglevel
         kwargs['ffmpeg_add_params'] = args.ffmpeg_add_params
