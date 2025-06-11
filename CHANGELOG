@@ -24,6 +24,7 @@ June 11 2025  Version 1.0.26
 - Documentation and wiki pages updated with new additions and changes.
 - Changed `-metadata` to `metadata:s:a:0` and added `-map 0` trying to fix
   issue #30 .
+- Drop support for Python 3.8 (EOL).
 
 +--------------------------------+
 October 22 2024  Version 1.0.25
