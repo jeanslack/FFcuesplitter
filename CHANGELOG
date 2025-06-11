@@ -22,6 +22,8 @@ June 11 2025  Version 1.0.26
   to be used for metadata (Tag). This would lead to increased portability of
   files on any file system of any OS.
 - Documentation and wiki pages updated with new additions and changes.
+- Changed `-metadata` to `metadata:s:a:0` and added `-map 0` trying to fix
+  issue #30 .
 
 +--------------------------------+
 October 22 2024  Version 1.0.25
