@@ -15,7 +15,8 @@ June 10 2025  Version 1.0.26
   `-c copy` parameter to split files without re-encoding, for instance:
   `--ffmpeg-add-params='-c copy'`. This partially fix #37 too.
 - Changed `--format-type` argument to `--output-format` argument using command
-  line argparser.
+  line argparser, `output_format` using Python.
+- New feature, added argument to remove original files on split operations #38 .
 
 +--------------------------------+
 October 22 2024  Version 1.0.25

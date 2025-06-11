@@ -49,6 +49,7 @@ class DataArgs:
     collection: str = ''
     outputformat: str = 'flac'
     overwrite: str = "ask"
+    del_orig_files: bool = False
     ffmpeg_cmd: str = 'ffmpeg'
     ffmpeg_loglevel: str = "info"
     ffprobe_cmd: str = 'ffprobe'
@@ -98,6 +99,9 @@ class FFCueSplitter(FFMpeg):
                 absolute or relative CUE sheet file ('filename.cue').
         outputdir:
                 absolute or relative pathname to output files.
+        del_orig_files:
+                With `True`, removes original files after successfull
+                conversion. Default is `False`.
         collection:
                 auto-create additional sub-dirs,
                 one of ("artist+album", "artist", "album").
@@ -118,7 +122,7 @@ class FFCueSplitter(FFMpeg):
                 one of ('tqdm', 'standard'), default is 'standard'.
         dry:
                 with `True`, perform the dry run with no changes
-                done to filesystem.
+                done to filesystem. Default is `False`.
         prg_loglevel:
                 Set the logging level of tracking events to console,
                 one of ("error", "warning", "info", "debug"),
@@ -153,6 +157,7 @@ class FFCueSplitter(FFMpeg):
         self.probedata = []
         self.cue_encoding = None  # data chardet
         self.cue = None  # data deflacue
+        self.audiosource = None  # absolute path to the source audio file name
 
         self.open_cuefile()  # requires to open cue file first
     # ----------------------------------------------------------------#
@@ -233,8 +238,8 @@ class FFCueSplitter(FFMpeg):
             track_file = track[1].file.path
 
             if not track_file.exists():
-                logging.warning('Not found: `%s`. '
-                                'Track is skipped.', track_file)
+                logging.warning('Not found: `%s`. Track is skipped.',
+                                os.path.abspath(track_file))
 
                 if str(track_file) in sourcenames:
                     sourcenames.pop(str(track_file))
@@ -256,6 +261,8 @@ class FFCueSplitter(FFMpeg):
 
         for val in sourcenames.values():
             self.audiotracks += self.get_track_durations(val)
+
+        self.audiosource = os.path.abspath(list(sourcenames.keys())[0])
 
         return self.audiotracks
     # ----------------------------------------------------------------#
