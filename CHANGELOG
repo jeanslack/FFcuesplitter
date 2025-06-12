@@ -1,4 +1,12 @@
 +--------------------------------+
+June 12 2025  Version 1.0.27
++--------------------------------+
+
+- Update man page
+- Removed `metadata:s:a:0` because this program gets metadata from CUE file
+  and not from the audio source file.
+
++--------------------------------+
 June 11 2025  Version 1.0.26
 +--------------------------------+
 

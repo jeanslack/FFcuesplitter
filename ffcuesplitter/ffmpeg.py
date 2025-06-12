@@ -115,12 +115,11 @@ class FFMpeg:
             cmd += f" {meters[self.kwargs['progress_meter']]}"
             fpath = os.path.join(self.kwargs["dirname"], track["FILE"])
             cmd += f' -i "{fpath}"'
-            cmd += ' -map 0'
             cmd += f" -ss {round(track['START'] / 44100, 6)}"  # ff to secs
             if 'END' in track:
                 cmd += f" -to {round(track['END'] / 44100, 6)}"  # ff to secs
             for key, val in metadata.items():
-                cmd += f' -metadata:s:a:0 {key}="{val}"'
+                cmd += f' -metadata {key}="{val}"'
             cmd += f' {codec}'
             cmd += f" {self.kwargs['ffmpeg_add_params']}"
             cmd += ' -y'
