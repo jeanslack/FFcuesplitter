@@ -200,7 +200,6 @@ class FileSystemOperations(FFCueSplitter):
             self.move_files_to_outputdir()
             # remove source file if `del_orig_files` argument is given.
             if self.kwargs['del_orig_files']:
-                #self.remove_source_file()
                 self.del_orig_files()
 # ------------------------------------------------------------------------
 
