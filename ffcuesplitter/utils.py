@@ -5,7 +5,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: June 10 2025
+Rev: June 14 2025
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -105,6 +105,24 @@ def makeoutputdirs(outputdir):
                     )
     except Exception as error:
         raise ValueError(error) from error
+# ------------------------------------------------------------------------
+
+
+def remove_source_file(cuef, audf):
+    """
+    Remove the CUE file and the original audio file
+    from the filesystem. If either one is missing, no
+    deletion will be applied.
+    Return True if deletion was successfull, False otherwise.
+    """
+    if os.path.exists(cuef) and os.path.exists(audf):
+        if os.path.isfile(cuef) and os.path.isfile(audf):
+            os.remove(cuef)
+            os.remove(audf)
+            return True
+        else:
+            return False
+    return False
 # ------------------------------------------------------------------------
 
 

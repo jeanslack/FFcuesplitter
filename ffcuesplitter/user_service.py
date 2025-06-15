@@ -32,6 +32,7 @@ import tempfile
 import logging
 from ffcuesplitter.cuesplitter import FFCueSplitter
 from ffcuesplitter.exceptions import FFCueSplitterError
+from ffcuesplitter.utils import remove_source_file
 
 
 class FileSystemOperations(FFCueSplitter):
@@ -61,7 +62,7 @@ class FileSystemOperations(FFCueSplitter):
     """
     # ----------------------------------------------------------------#
 
-    def remove_source_file(self):
+    def del_orig_files(self):
         """
         Remove the CUE file and the original audio file
         from the filesystem. If either one is missing, no
@@ -70,18 +71,12 @@ class FileSystemOperations(FFCueSplitter):
         """
         cuef = self.kwargs['filename']
         audf = self.audiosource
-        exist = False
-        if os.path.exists(cuef) and os.path.exists(audf):
-            if os.path.isfile(cuef) and os.path.isfile(audf):
-                exist = True
-                logging.info("Deleting CUE file: '%s'", cuef)
-                os.remove(cuef)
-                logging.info("Deleting audio source file: '%s'", audf)
-                os.remove(audf)
-        if not exist:
+        ret = remove_source_file(cuef, audf)
+        if ret is True:
+            logging.info("Deleting CUE file: '%s'", cuef)
+            logging.info("Deleting audio source file: '%s'", audf)
+        else:
             logging.warning("File deletion failed, source files are missing")
-            return exist
-        return exist
     # ----------------------------------------------------------------#
 
     def dry_run_mode(self):
@@ -205,7 +200,8 @@ class FileSystemOperations(FFCueSplitter):
             self.move_files_to_outputdir()
             # remove source file if `del_orig_files` argument is given.
             if self.kwargs['del_orig_files']:
-                self.remove_source_file()
+                #self.remove_source_file()
+                self.del_orig_files()
 # ------------------------------------------------------------------------
 
 

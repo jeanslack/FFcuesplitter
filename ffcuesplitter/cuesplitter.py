@@ -7,7 +7,7 @@ Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
 Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: June 10 2025
+Rev: June 14 2025
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -238,13 +238,14 @@ class FFCueSplitter(FFMpeg):
             track_file = track[1].file.path
 
             if not track_file.exists():
-                logging.warning('Not found: `%s`. Track is skipped.',
+                logging.warning('Not found: "%s"',
                                 os.path.abspath(track_file))
 
                 if str(track_file) in sourcenames:
                     sourcenames.pop(str(track_file))
                     if not sourcenames:
-                        raise FFCueSplitterError('No audio files found!')
+                        raise FFCueSplitterError(f'No audio track found: '
+                                                 f'«{track_file}»')
                 continue
 
             data = {'FILE': str(track_file), **cd_info, **track[1].data}
