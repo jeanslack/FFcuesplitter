@@ -120,8 +120,7 @@ def remove_source_file(cuef, audf):
             os.remove(cuef)
             os.remove(audf)
             return True
-        else:
-            return False
+        return False
     return False
 # ------------------------------------------------------------------------
 

@@ -106,7 +106,7 @@ def main():
                         required=False,
                         )
     parser.add_argument("-c", "--collection",
-                        choices=["artist+album", "artist", "album"],
+                        choices=["author+album", "author", "album"],
                         help=("Create additional sub-dirctories for audio "
                               "collection."),
                         required=False,

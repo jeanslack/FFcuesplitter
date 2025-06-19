@@ -1,4 +1,16 @@
 +--------------------------------+
+June 19 2025  Version 1.0.29
++--------------------------------+
+
+- Changed artist+album argument to author+album argument.
+- Check for sanitize target filename on FFmpeg command build e.g empty strings
+  will be replaced with the default string: Untitled .
+- Collection (Author/Album), if given as empty strings will be replaced with the
+  default strings: Unknown Author/Unknown Album .
+- Update man page .
+- Update online documentation (wiki and web page).
+
++--------------------------------+
 June 14 2025  Version 1.0.28
 +--------------------------------+
 

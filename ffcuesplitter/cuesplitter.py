@@ -104,7 +104,7 @@ class FFCueSplitter(FFMpeg):
                 conversion. Default is `False`.
         collection:
                 auto-create additional sub-dirs,
-                one of ("artist+album", "artist", "album").
+                one of ("author+album", "author", "album").
         outputformat:
                 output format, one of
                 ("wav", "flac", "mp3", "ogg", "opus").
@@ -230,8 +230,8 @@ class FFCueSplitter(FFMpeg):
         sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
 
         if self.kwargs['collection']:  # Artist&Album names to sanitize
-            self.set_subdirs(cd_info.get('PERFORMER', 'Unknown Artist'),
-                             cd_info.get('ALBUM', 'Unknown Album'))
+            self.custon_destination_dir(cd_info['PERFORMER'], cd_info['ALBUM'])
+
         self.clear_logfile()  # erases previous log file data
 
         for track in enumerate(tracks):
@@ -267,9 +267,9 @@ class FFCueSplitter(FFMpeg):
         return self.audiotracks
     # ----------------------------------------------------------------#
 
-    def set_subdirs(self, performer, album):
+    def custon_destination_dir(self, author, album):
         """
-        Set artist/album-name as possible sub-directories
+        Set author/album-name as possible sub-directories
         for audio collections. This method overwrites
         `self.kwargs['outputdir']` and `self.kwargs['logtofile']`
         attributes joining the sanitized audio collection names
@@ -279,13 +279,17 @@ class FFCueSplitter(FFMpeg):
         """
         subdirs = None
 
-        if self.kwargs['collection'] == 'artist+album':
-            subdirs = os.path.join(sanitize(performer), sanitize(album))
+        if self.kwargs['collection'] == 'author+album':
+            author = 'Unknown Author' if not sanitize(author) else author
+            album = 'Unknown Album' if not sanitize(album) else album
+            subdirs = os.path.join(sanitize(author), sanitize(album))
 
-        elif self.kwargs['collection'] == 'artist':
-            subdirs = f"{sanitize(performer)}"
+        elif self.kwargs['collection'] == 'author':
+            author = 'Unknown Author' if not sanitize(author) else author
+            subdirs = f"{sanitize(author)}"
 
         elif self.kwargs['collection'] == 'album':
+            album = 'Unknown Album' if not sanitize(album) else album
             subdirs = f"{sanitize(album)}"
 
         if subdirs:
@@ -299,6 +303,7 @@ class FFCueSplitter(FFMpeg):
         else:
             raise FFCueSplitterError(f"Invalid argument: "
                                      f"'{self.kwargs['collection']}'")
+
     # ----------------------------------------------------------------#
 
     def check_cuefile(self):
