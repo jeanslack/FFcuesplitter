@@ -32,7 +32,7 @@ import logging
 import platform
 from tqdm import tqdm
 from ffcuesplitter.exceptions import FFMpegError, FFCueSplitterError
-from ffcuesplitter.utils import makeoutputdirs, Popen , sanitize
+from ffcuesplitter.utils import makeoutputdirs, Popen, sanitize
 
 if not platform.system() == 'Windows':
     import shlex
@@ -143,17 +143,19 @@ class FFMpeg:
         This method must return if the `dry` keyword arg is true.
 
         """
+        cmdargs = arg
+        if not platform.system() == 'Windows':
+            cmdargs = shlex.split(arg)
+
         if self.kwargs['progress_meter'] == 'tqdm':
-            cmd = arg if platform.system() == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
-                return cmd
-            self.run_ffmpeg_command_with_progress(cmd, secs)
+                return cmdargs
+            self.run_ffmpeg_command_with_progress(cmdargs, secs)
 
         elif self.kwargs['progress_meter'] == 'standard':
-            cmd = arg if platform.system() == 'Windows' else shlex.split(arg)
             if self.kwargs['dry'] is True:
-                return cmd
-            self.run_ffmpeg_command(cmd)
+                return cmdargs
+            self.run_ffmpeg_command(cmdargs)
         return None
     # --------------------------------------------------------------#
 
