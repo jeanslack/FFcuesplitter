@@ -32,7 +32,7 @@ import logging
 import platform
 from tqdm import tqdm
 from ffcuesplitter.exceptions import FFMpegError, FFCueSplitterError
-from ffcuesplitter.utils import makeoutputdirs, Popen
+from ffcuesplitter.utils import makeoutputdirs, Popen , sanitize
 
 if not platform.system() == 'Windows':
     import shlex
@@ -124,7 +124,9 @@ class FFMpeg:
             cmd += f" {self.kwargs['ffmpeg_add_params']}"
             cmd += ' -y'
             num = str(track['TRACK_NUM']).rjust(2, '0')
-            name = f'{num} - {track["FILE_TITLE"]}.{suffix}'
+            trk = track["FILE_TITLE"]
+            filetitle = 'Untitled' if not sanitize(trk) else trk
+            name = f'{num} - {filetitle}.{suffix}'
             cmd += f' "{os.path.join(self.kwargs["tempdir"], name)}"'
             args = (cmd, {'duration': track['DURATION'], 'titletrack': name})
             data.append(args)
