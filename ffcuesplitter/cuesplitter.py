@@ -30,13 +30,13 @@ import os
 import logging
 from dataclasses import dataclass, asdict
 import chardet
-from deflacue.deflacue import CueParser
 from ffcuesplitter.utils import sanitize
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
                                       )
 from ffcuesplitter.ffprobe import ffprobe
 from ffcuesplitter.ffmpeg import FFMpeg
+from ffcuesplitter.cue_parser import CueParser
 
 
 @dataclass
@@ -64,7 +64,7 @@ class DataArgs:
         return asdict(self)
 
 
-class FFCueSplitter(FFMpeg):
+class FFCueSplitter(FFMpeg, CueParser):
     """
     This is a subclass derived from the `FFMpeg` base
     class, it implements an interface to fetch the
@@ -190,10 +190,9 @@ class FFCueSplitter(FFMpeg):
         if self.kwargs['testpatch']:
             probe = {'format': {'duration': 6.000000}}
         else:
-            filename = audiotracks[0].get('FILE')
-            cmd = self.kwargs['ffprobe_cmd']
-            kwargs = {'loglevel': 'error', 'hide_banner': None}
-            probe = ffprobe(filename, cmd=cmd, **kwargs)
+            filename = os.path.join(self.kwargs['dirname'],
+                                    audiotracks[0].get('FILE'))
+            probe = ffprobe(filename, cmd=self.kwargs['ffprobe_cmd'])
             self.probedata.append(probe)
 
         durations = []
@@ -227,7 +226,7 @@ class FFCueSplitter(FFMpeg):
         self.audiotracks = []
         cd_info = self.cue.meta.data
         tracks = self.cue.tracks
-        sourcenames = {k: [] for k in [str(x.file.path) for x in tracks]}
+        sourcesplits = {k: [] for k in [str(x.file.path) for x in tracks]}
 
         if self.kwargs['collection']:  # Artist&Album names to sanitize
             self.custon_destination_dir(cd_info['PERFORMER'], cd_info['ALBUM'])
@@ -235,20 +234,21 @@ class FFCueSplitter(FFMpeg):
         self.clear_logfile()  # erases previous log file data
 
         for track in enumerate(tracks):
-            track_file = track[1].file.path
+            trackname = track[1].file.path
+            tracksrc = os.path.join(self.kwargs['dirname'], track[1].file.path)
 
-            if not track_file.exists():
+            if not os.path.exists(tracksrc):
                 logging.warning('Not found: "%s"',
-                                os.path.abspath(track_file))
+                                os.path.abspath(trackname))
 
-                if str(track_file) in sourcenames:
-                    sourcenames.pop(str(track_file))
-                    if not sourcenames:
+                if str(trackname) in sourcesplits:
+                    sourcesplits.pop(str(trackname))
+                    if not sourcesplits:
                         raise FFCueSplitterError(f'No audio track found: '
-                                                 f'«{track_file}»')
+                                                 f'«{trackname}»')
                 continue
 
-            data = {'FILE': str(track_file), **cd_info, **track[1].data}
+            data = {'FILE': str(trackname), **cd_info, **track[1].data}
             data['TITLE'] = track[1].title  # to metadata destination
             data['FILE_TITLE'] = f"{sanitize(track[1].title)}"  # to filename
             data['START'] = track[1].start
@@ -256,13 +256,13 @@ class FFCueSplitter(FFMpeg):
             if track[1].end != 0:
                 data['END'] = track[1].end
 
-            if f"{data['FILE']}" in sourcenames.keys():
-                sourcenames[f'{data["FILE"]}'].append(data)
+            if f"{data['FILE']}" in sourcesplits.keys():
+                sourcesplits[f'{data["FILE"]}'].append(data)
 
-        for val in sourcenames.values():
-            self.audiotracks += self.get_track_durations(val)
+        for chunk in sourcesplits.values():
+            self.audiotracks += self.get_track_durations(chunk)
 
-        self.audiosource = os.path.abspath(list(sourcenames.keys())[0])
+        self.audiosource = os.path.abspath(list(sourcesplits.keys())[0])
 
         return self.audiotracks
     # ----------------------------------------------------------------#
@@ -303,7 +303,6 @@ class FFCueSplitter(FFMpeg):
         else:
             raise FFCueSplitterError(f"Invalid argument: "
                                      f"'{self.kwargs['collection']}'")
-
     # ----------------------------------------------------------------#
 
     def check_cuefile(self):
@@ -325,8 +324,6 @@ class FFCueSplitter(FFMpeg):
         """
         logging.debug("Processing: '%s'", self.kwargs['filename'])
         self.check_cuefile()
-        curdir = os.getcwd()
-        os.chdir(self.kwargs['dirname'])
 
         with open(self.kwargs['filename'], 'rb') as file:
             cuebyte = file.read()
@@ -336,4 +333,3 @@ class FFCueSplitter(FFMpeg):
                                      encoding=self.cue_encoding['encoding'])
         self.cue = parser.run()
         self.deflacue_object_handler()
-        os.chdir(curdir)

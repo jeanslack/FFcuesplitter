@@ -41,7 +41,6 @@ classifiers = [
 dependencies = [
     "chardet>=4.0.0",
     "tqdm>=4.38.0",
-    "deflacue>=2.0.1"
 ]
 build = [
     "build",

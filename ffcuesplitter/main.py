@@ -43,6 +43,7 @@ from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
                                       FFProbeError,
                                       FFMpegError,
+                                      ParserError,
                                       )
 
 
@@ -218,6 +219,7 @@ def main():
                 FFCueSplitterError,
                 FFProbeError,
                 FFMpegError,
+                ParserError,
                 ) as error:
             msgdebug(err=f"{error}")
             return None

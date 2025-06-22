@@ -40,3 +40,7 @@ class InvalidFileError(Exception):
 
 class FFCueSplitterError(Exception):
     """Exception raised in all other cases."""
+
+
+class ParserError(Exception):
+    """Exception raised parsing file cue."""
