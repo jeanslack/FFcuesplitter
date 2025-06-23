@@ -40,7 +40,8 @@ def ffprobe(filename, cmd='ffprobe'):
 
     Raises:
         `FFProbeError` from `FileNotFoundError` or from `OSError`.
-        `FFProbeError` if non-zero exit code from `proc.returncode`.
+        `FFProbeError` if `error` from `proc.communicate`.
+        `FFProbeError` if the given file is invalid.
     Return:
         A JSON representation of the ffprobe output.
     Usage:
@@ -51,6 +52,8 @@ def ffprobe(filename, cmd='ffprobe'):
             f'-loglevel error -hide_banner "{filename}"'
             )
     args = shlex.split(args) if platform.system() != 'Windows' else args
+    output = None
+    unchunkable = 'Invalid or non-splittable source file'
 
     try:
         with Popen(args,
@@ -62,10 +65,21 @@ def ffprobe(filename, cmd='ffprobe'):
                    ) as proc:
             output, error = proc.communicate()
 
-            if proc.returncode != 0:
+            if error:
                 raise FFProbeError(f'ffprobe: {error}')
 
     except (OSError, FileNotFoundError) as excepterr:
         raise FFProbeError(excepterr) from excepterr
 
-    return json.loads(output)
+    if output:
+        output = json.loads(output)
+        if output['format'].get('duration'):
+            dur = output['format'].get('duration')
+            if int(float(dur)) == 0:
+                raise FFProbeError(f'"{filename}"\nffprobe: {unchunkable}')
+        else:
+            raise FFProbeError(f'"{filename}"\nffprobe: {unchunkable}')
+    else:
+        raise FFProbeError(f'"{filename}"\nffprobe: {unchunkable}')
+
+    return output
