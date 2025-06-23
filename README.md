@@ -30,7 +30,6 @@ or from the [command line](https://github.com/jeanslack/FFcuesplitter#using-comm
 ## Requires
 
 - Python >=3.9
-- [deflacue](https://pypi.org/project/deflacue/)
 - [chardet](https://pypi.org/project/chardet/)
 - [tqdm](https://pypi.org/project/tqdm/#description)
 - [FFmpeg](https://ffmpeg.org/) *(including ffprobe)*

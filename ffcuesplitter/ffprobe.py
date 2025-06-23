@@ -30,61 +30,56 @@ import subprocess
 import shlex
 import platform
 import json
-from ffcuesplitter.exceptions import FFProbeError
 from ffcuesplitter.utils import Popen
+from ffcuesplitter.exceptions import FFProbeError
 
 
-def from_kwargs_to_args(kwargs):
-    """
-    Helper function to build command line
-    arguments out of dict.
-    """
-    args = []
-    for key in sorted(kwargs.keys()):
-        val = kwargs[key]
-        args.append(f'-{key}')
-        if val is not None:
-            args.append(f'{val}')
-    return args
-
-
-def ffprobe(filename, cmd='ffprobe', **kwargs):
+def ffprobe(filename, cmd='ffprobe'):
     """
     Run ffprobe subprocess on the specified file.
 
     Raises:
         `FFProbeError` from `FileNotFoundError` or from `OSError`.
-        `FFProbeError` if non-zero exit code from `proc.returncode`.
+        `FFProbeError` if `error` from `proc.communicate`.
+        `FFProbeError` if the given file is invalid.
     Return:
         A JSON representation of the ffprobe output.
     Usage:
         >>> from ffcuesplitter.ffprobe import ffprobe
-        >>> probe = ffprobe(filename,
-                            cmd='/usr/bin/ffprobe',
-                            loglevel='error',
-                            hide_banner=None,
-                            **kwargs,
-                            )
+        >>> probe = ffprobe(filename, cmd='/usr/bin/ffprobe')
     """
     args = (f'"{cmd}" -show_format -show_streams -of json '
-            f'{" ".join(from_kwargs_to_args(kwargs))} '
-            f'"{filename}"'
+            f'-loglevel error -hide_banner "{filename}"'
             )
     args = shlex.split(args) if platform.system() != 'Windows' else args
+    output = None
+    unchunkable = 'Invalid or non-splittable source file'
 
     try:
         with Popen(args,
                    stdout=subprocess.PIPE,
                    stderr=subprocess.PIPE,
                    universal_newlines=True,
+                   bufsize=1,
                    encoding='utf8',
                    ) as proc:
             output, error = proc.communicate()
 
-            if proc.returncode != 0:
+            if error:
                 raise FFProbeError(f'ffprobe: {error}')
 
     except (OSError, FileNotFoundError) as excepterr:
         raise FFProbeError(excepterr) from excepterr
 
-    return json.loads(output)
+    if output:
+        output = json.loads(output)
+        if output['format'].get('duration'):
+            dur = output['format'].get('duration')
+            if int(float(dur)) == 0:
+                raise FFProbeError(f'"{filename}"\nffprobe: {unchunkable}')
+        else:
+            raise FFProbeError(f'"{filename}"\nffprobe: {unchunkable}')
+    else:
+        raise FFProbeError(f'"{filename}"\nffprobe: {unchunkable}')
+
+    return output

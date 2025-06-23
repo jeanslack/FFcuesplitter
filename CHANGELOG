@@ -1,4 +1,14 @@
 +--------------------------------+
+June 22 2025  Version 1.0.30
++--------------------------------+
+
+- Removed `deflacue` Python package dependency.
+- Removed `os.chdir` from the code, as it could cause problems if used with
+  relative paths.
+- Added new file `cue_parser.py` to work with CUE file parsing.
+- Improved error handling on `ffprobe` function.
+
++--------------------------------+
 June 19 2025  Version 1.0.29
 +--------------------------------+
 
