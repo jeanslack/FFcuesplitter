@@ -1,0 +1,15 @@
+ffcuesplitter for Debian
+
+Please edit this to provide information specific to
+this ffcuesplitter Debian package.
+
+    FFcuesplitter is a powerful, multi-platform CUE sheet splitter based on 
+    FFmpeg. Splits big audio tracks and automatically embeds tags using the 
+    information contained in the associated "CUE" sheet. It supports multiple 
+    CUE sheet encodings and many input formats (due to FFmpeg), including 
+    proprietary APE format, without need installing extra audio libs and 
+    packages. It has the ability to accept both files and directories as input 
+    while also working in recursive mode. It can be used either as a Python 
+    module or from the command line. 
+
+ -- Gianluca Pernigotto <jeanlucperni@gmail.com>  Tue, 24 Jun 2025 07:24:33 +0200
