@@ -158,7 +158,7 @@ class FFCueSplitter(FFMpeg, CueParser):
         self.kwargs['tempdir'] = '.'
         self.audiotracks = None
         self.probedata = []
-        self.cue_encoding = None  # data chardet
+        self.chars_enc = None  # characters encoding data
         self.cue = None  # data deflacue
         self.audiosource = None  # absolute path to the source audio file name
 
@@ -331,14 +331,14 @@ class FFCueSplitter(FFMpeg, CueParser):
         if self.kwargs['characters_encoding'] == 'auto':
             with open(self.kwargs['filename'], 'rb') as file:
                 cuebyte = file.read()
-                self.cue_encoding = detect(cuebyte)
+                self.chars_enc = detect(cuebyte)
         else:
-            self.cue_encoding = {'encoding':
-                                     self.kwargs['characters_encoding'],
-                                 'language': None, 'confidence': None}
-        logging.info("characters encoding: '%s'",
-                     self.cue_encoding['encoding'])
+            self.chars_enc = {'encoding': self.kwargs['characters_encoding'],
+                              'language': None,
+                              'confidence': None
+                              }
+        logging.info("characters encoding: '%s'", self.chars_enc['encoding'])
         parser = CueParser.from_file(self.kwargs['filename'],
-                                     encoding=self.cue_encoding['encoding'])
+                                     encoding=self.chars_enc['encoding'])
         self.cue = parser.run()
         self.deflacue_object_handler()
