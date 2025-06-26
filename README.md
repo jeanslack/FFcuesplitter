@@ -6,10 +6,10 @@
 FFcuesplitter is a multi-platform CUE sheet splitter entirely based on FFmpeg.
 Splits big audio tracks and automatically embeds tags using the information
 contained in the associated **"CUE"** sheet. It supports multiple CUE sheet
-encodings and many input formats (due to FFmpeg), including APE format, without
-need installing extra audio libs and packages. It has the ability to accept both
-files and directories as input while also working in recursive mode. It can be 
-used either as a [Python module](https://github.com/jeanslack/FFcuesplitter#using-python) 
+encodings (via charset-normalizer) and many input formats (due to FFmpeg), including 
+APE format, without need installing extra audio libs and packages. It has the ability 
+to accept both files and directories as input while also working in recursive mode. It can 
+be used either as a [Python module](https://github.com/jeanslack/FFcuesplitter#using-python) 
 or from the [command line](https://github.com/jeanslack/FFcuesplitter#using-command-line).
 
 ## Features
@@ -22,7 +22,7 @@ or from the [command line](https://github.com/jeanslack/FFcuesplitter#using-comm
 - Ability to perform recursive searches.
 - Ability to generate audio collection directories (Artist/Album/TrackNumber - Title)
 - Auto-tag from CUE file data.
-- Features automatic character set detection for CUE files (via [chardet](https://pypi.org/project/chardet/)).
+- Features automatic character set detection for CUE files (via [python3-charset-normalizer](https://pypi.org/project/charset-normalizer/)).
 - Ability to remove original file after conversion.
 - Works on Linux, MacOs, FreeBSD, Windows.
 - It can be used either as a Python module or from the command line.
@@ -30,7 +30,7 @@ or from the [command line](https://github.com/jeanslack/FFcuesplitter#using-comm
 ## Requires
 
 - Python >=3.9
-- [chardet](https://pypi.org/project/chardet/)
+- [python3-charset-normalizer](https://pypi.org/project/charset-normalizer/)
 - [tqdm](https://pypi.org/project/tqdm/#description)
 - [FFmpeg](https://ffmpeg.org/) *(including ffprobe)*
 

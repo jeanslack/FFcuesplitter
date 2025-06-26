@@ -1,9 +1,0 @@
-ffcuesplitter (1.0.30-1) UNRELEASED; urgency=low
-
-  * Removed `deflacue` Python package dependency.
-  * Removed `os.chdir` from the code, as it could cause problems if used with
-    relative paths.
-  * Added new file `cue_parser.py` to work with CUE file parsing.
-  * Improved error handling on `ffprobe` function.
-
- -- Gianluca Pernigotto <jeanlucperni@gmail.com>  Tue, 24 Jun 2025 07:24:33 +0200

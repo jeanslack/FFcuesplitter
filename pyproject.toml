@@ -39,7 +39,7 @@ classifiers = [
     "Topic :: Utilities",
 ]
 dependencies = [
-    "chardet>=4.0.0",
+    "charset-normalizer>=3.0.1",
     "tqdm>=4.38.0",
 ]
 build = [

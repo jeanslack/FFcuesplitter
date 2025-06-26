@@ -29,7 +29,7 @@ This file is part of FFcuesplitter.
 import os
 import logging
 from dataclasses import dataclass, asdict
-import chardet
+from charset_normalizer import detect
 from ffcuesplitter.utils import sanitize
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
@@ -327,7 +327,7 @@ class FFCueSplitter(FFMpeg, CueParser):
 
         with open(self.kwargs['filename'], 'rb') as file:
             cuebyte = file.read()
-            self.cue_encoding = chardet.detect(cuebyte)
+            self.cue_encoding = detect(cuebyte)
 
         parser = CueParser.from_file(self.kwargs['filename'],
                                      encoding=self.cue_encoding['encoding'])
