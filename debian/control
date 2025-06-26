@@ -18,9 +18,9 @@ Rules-Requires-Root: no
 Package: python3-ffcuesplitter
 Architecture: all
 Multi-Arch: foreign
-Depends: python3-charset-normalizer,
+Depends: ffmpeg,
+         python3-charset-normalizer,
          python3-tqdm,
-         ffmpeg,
          ${misc:Depends},
          ${python3:Depends}
 Description: command line audio splitter based on FFmpeg

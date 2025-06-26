@@ -5,7 +5,8 @@ ffcuesplitter (1.0.31-1) UNRELEASED; urgency=medium
   * Added new `charset-normalizer` dependency for auto-detect character
     encodings.
   * Added new option to manually set character encoding.
-  * Improved test file for track title and cue data
+  * Improved tests data.
+  * Update man page and documentation.
 
  -- Gianluca Pernigotto <jeanlucperni@gmail.com>  Thu, 26 Jun 2025 00:00:00 +0200
 

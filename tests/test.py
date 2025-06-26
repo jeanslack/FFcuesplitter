@@ -53,28 +53,30 @@ class ParserCueSheetTestCase(unittest.TestCase):
         """
         test cuefile parsing with ISO-8859-1 encoding
         """
-        fname = {'filename': FILECUE_ISO}
-        split = FFCueSplitter(**{**self.args, **fname})
+        args = {'filename': FILECUE_ISO, 'characters_encoding': 'ISO-8859-1'}
+        split = FFCueSplitter(**{**self.args, **args})
         tracks = split.audiotracks
 
         self.assertEqual(tracks[0]['FILE'], 'Three Samples.flac')
         self.assertEqual(tracks[0]['END'], 88200)
         self.assertEqual(tracks[1]['END'], 176400)
         self.assertEqual(tracks[2]['START'], 176400)
-        self.assertEqual(tracks[2]['TITLE'], 'è di 500 Hz')
+        self.assertEqual(tracks[2]['TITLE'], ('500 Hz, ISO-8859-1 '
+                                              '(è, é, ì, ò, à, ç, °)')
+                        )
 
     def test_tracks_with_ascii_file_encoding(self):
         """
         test cuefile parsing with ASCII encoding
         """
-        fname = {'filename': FILECUE_ASCII}
+        fname = {'filename': FILECUE_ASCII, 'characters_encoding': 'utf-8'}
         split = FFCueSplitter(**{**self.args, **fname})
         tracks = split.audiotracks
 
         self.assertEqual(tracks[0]['START'], 0)
         self.assertEqual(tracks[1]['START'], 88200)
         self.assertEqual(tracks[2]['DURATION'], 2.0)
-        self.assertEqual(tracks[2]['ALBUM'], 'Sox - Three samples')
+        self.assertEqual(tracks[2]['ALBUM'], 'Test Samples ASCII')
 
 
 class FFmpegArgumentsTestCase(unittest.TestCase):
@@ -90,6 +92,7 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
                      'overwrite': OVERWRITE,
                      'dry': True,
                      'testpatch': True,
+                     'characters_encoding': 'utf-8',
                      }
 
     def test_ffmpeg_arguments(self):
@@ -103,11 +106,11 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         data = split.commandargs(tracks)
         self.assertEqual(data['recipes'][0][0].split()[0], '"ffmpeg"')
         self.assertEqual(data['recipes'][0][1]['titletrack'],
-                         '01 - 300 Hz.flac')
+                         '01 - 300 Hz, ASCII.flac')
         self.assertEqual(data['recipes'][1][1]['titletrack'],
-                         '02 - 400 Hz.flac')
+                         '02 - 400 Hz, ASCII.flac')
         self.assertEqual(data['recipes'][2][1]['titletrack'],
-                         '03 - 500 Hz.flac')
+                         '03 - 500 Hz, ASCII (è, é, ì, ò, à, ç, °).flac')
 
     def test_track_durations(self):
         """

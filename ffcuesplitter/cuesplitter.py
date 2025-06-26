@@ -49,6 +49,7 @@ class DataArgs:
     collection: str = ''
     outputformat: str = 'flac'
     overwrite: str = "ask"
+    characters_encoding: str = "auto"
     del_orig_files: bool = False
     ffmpeg_cmd: str = 'ffmpeg'
     ffmpeg_loglevel: str = "info"
@@ -110,6 +111,8 @@ class FFCueSplitter(FFMpeg, CueParser):
                 ("wav", "flac", "mp3", "ogg", "opus").
         overwrite:
                 overwriting options, one of ("ask", "never", "always").
+        characters_encoding:
+                Default is `auto`.
         ffmpeg_cmd:
                 an absolute path command of ffmpeg.
         ffmpeg_loglevel:
@@ -325,10 +328,16 @@ class FFCueSplitter(FFMpeg, CueParser):
         logging.debug("Processing: '%s'", self.kwargs['filename'])
         self.check_cuefile()
 
-        with open(self.kwargs['filename'], 'rb') as file:
-            cuebyte = file.read()
-            self.cue_encoding = detect(cuebyte)
-
+        if self.kwargs['characters_encoding'] == 'auto':
+            with open(self.kwargs['filename'], 'rb') as file:
+                cuebyte = file.read()
+                self.cue_encoding = detect(cuebyte)
+        else:
+            self.cue_encoding = {'encoding':
+                                     self.kwargs['characters_encoding'],
+                                 'language': None, 'confidence': None}
+        logging.info("characters encoding: '%s'",
+                     self.cue_encoding['encoding'])
         parser = CueParser.from_file(self.kwargs['filename'],
                                      encoding=self.cue_encoding['encoding'])
         self.cue = parser.run()
