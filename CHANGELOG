@@ -7,8 +7,10 @@ ffcuesplitter (1.0.31-1) UNRELEASED; urgency=medium
   * Added new option to manually set character encoding.
   * Improved tests data.
   * Update man page and documentation.
+  * Fixed `ffmpeg-add-params` issue used with codec copy argument: Allowed 
+    arguments are `-c copy` and `-c:a copy` not just `-c copy`. 
 
- -- Gianluca Pernigotto <jeanlucperni@gmail.com>  Thu, 26 Jun 2025 00:00:00 +0200
+ -- Gianluca Pernigotto <jeanlucperni@gmail.com>  Fri, 27 Jun 2025 00:00:00 +0200
 
 ffcuesplitter (1.0.30-1) UNRELEASED; urgency=low
 
