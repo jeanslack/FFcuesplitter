@@ -122,6 +122,14 @@ def main():
                         required=False,
                         default='ask'
                         )
+    parser.add_argument("-ce", "--characters-encoding",
+                        action="store",
+                        help=("Specify a custom character encoding, in case "
+                              "the automatic one fails. The default is "
+                              "«auto»"),
+                        required=False,
+                        default='auto'
+                        )
     parser.add_argument("--ffmpeg-cmd",
                         metavar='URL',
                         help=("Specify an absolute ffmpeg path command, "
@@ -194,6 +202,7 @@ def main():
         kwargs['collection'] = args.collection
         kwargs['outputformat'] = args.output_format
         kwargs['overwrite'] = args.overwrite
+        kwargs['characters_encoding'] = args.characters_encoding.strip()
         kwargs['del_orig_files'] = args.del_orig_files
         kwargs['ffmpeg_cmd'] = args.ffmpeg_cmd
         kwargs['ffmpeg_loglevel'] = args.ffmpeg_loglevel

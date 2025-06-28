@@ -29,7 +29,7 @@ This file is part of FFcuesplitter.
 import os
 import logging
 from dataclasses import dataclass, asdict
-import chardet
+from charset_normalizer import detect
 from ffcuesplitter.utils import sanitize
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
@@ -49,6 +49,7 @@ class DataArgs:
     collection: str = ''
     outputformat: str = 'flac'
     overwrite: str = "ask"
+    characters_encoding: str = "auto"
     del_orig_files: bool = False
     ffmpeg_cmd: str = 'ffmpeg'
     ffmpeg_loglevel: str = "info"
@@ -110,6 +111,8 @@ class FFCueSplitter(FFMpeg, CueParser):
                 ("wav", "flac", "mp3", "ogg", "opus").
         overwrite:
                 overwriting options, one of ("ask", "never", "always").
+        characters_encoding:
+                Default is `auto`.
         ffmpeg_cmd:
                 an absolute path command of ffmpeg.
         ffmpeg_loglevel:
@@ -155,7 +158,7 @@ class FFCueSplitter(FFMpeg, CueParser):
         self.kwargs['tempdir'] = '.'
         self.audiotracks = None
         self.probedata = []
-        self.cue_encoding = None  # data chardet
+        self.chars_enc = None  # characters encoding data
         self.cue = None  # data deflacue
         self.audiosource = None  # absolute path to the source audio file name
 
@@ -325,11 +328,17 @@ class FFCueSplitter(FFMpeg, CueParser):
         logging.debug("Processing: '%s'", self.kwargs['filename'])
         self.check_cuefile()
 
-        with open(self.kwargs['filename'], 'rb') as file:
-            cuebyte = file.read()
-            self.cue_encoding = chardet.detect(cuebyte)
-
+        if self.kwargs['characters_encoding'] == 'auto':
+            with open(self.kwargs['filename'], 'rb') as file:
+                cuebyte = file.read()
+                self.chars_enc = detect(cuebyte)
+        else:
+            self.chars_enc = {'encoding': self.kwargs['characters_encoding'],
+                              'language': None,
+                              'confidence': None
+                              }
+        logging.info("characters encoding: '%s'", self.chars_enc['encoding'])
         parser = CueParser.from_file(self.kwargs['filename'],
-                                     encoding=self.cue_encoding['encoding'])
+                                     encoding=self.chars_enc['encoding'])
         self.cue = parser.run()
         self.deflacue_object_handler()

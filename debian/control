@@ -2,7 +2,7 @@ Source: ffcuesplitter
 Section: sound
 Priority: optional
 Maintainer: Gianluca Pernigotto <jeanlucperni@gmail.com>
-Build-Depends: debhelper-compat (= 13), 
+Build-Depends: debhelper-compat (= 13),
                dh-python,
                pybuild-plugin-pyproject,
                python3-all,
@@ -18,18 +18,18 @@ Rules-Requires-Root: no
 Package: python3-ffcuesplitter
 Architecture: all
 Multi-Arch: foreign
-Depends: python3-chardet,
+Depends: ffmpeg,
+         python3-charset-normalizer,
          python3-tqdm,
-         ffmpeg,
-         ${misc:Depends}, 
+         ${misc:Depends},
          ${python3:Depends}
 Description: command line audio splitter based on FFmpeg
- FFcuesplitter is a powerful, multi-platform CUE sheet splitter 
- based on FFmpeg. Splits big audio tracks and automatically embeds 
- tags using the information contained in the associated "CUE" sheet. 
- It supports multiple CUE sheet encodings and many input formats 
- (due to FFmpeg), including proprietary APE format, without need 
- installing extra audio libs and packages. It has the ability to 
- accept both files and directories as input while also working in 
- recursive mode. It can be used either as a Python library or 
+ FFcuesplitter is a powerful, multi-platform CUE sheet splitter
+ based on FFmpeg. Splits big audio tracks and automatically embeds
+ tags using the information contained in the associated "CUE" sheet.
+ It supports multiple CUE sheet encodings and many input formats
+ (due to FFmpeg), including proprietary APE format, without need
+ installing extra audio libs and packages. It has the ability to
+ accept both files and directories as input while also working in
+ recursive mode. It can be used either as a Python library or
  from the command line.
