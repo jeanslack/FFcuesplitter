@@ -1,0 +1,2 @@
+charset-normalizer>=3.0.1
+tqdm>=4.38.0

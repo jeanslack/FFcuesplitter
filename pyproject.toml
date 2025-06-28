@@ -55,17 +55,20 @@ path = "ffcuesplitter/about.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
+    "debian",
     "ffcuesplitter",
-    "tests",
     "man",
-    "AUTHORS",
-    "BUGS",
+    "tests",
     "CHANGELOG",
-    "INSTALL",
+    "BUGS",
     "LICENSE",
-    "README.md",  # already included as readme
+    "requirements.txt",
     "TODO",
+    "README.md",  # already included as readme
+    "AUTHORS",
     "ffcuesplitter.py",
+    "pyproject.toml",
+    "INSTALL",
     ".gitignore",  # already included by default, needed for auto-excludes
     ".flake8",
     ".pylintrc",
