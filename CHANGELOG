@@ -5,6 +5,7 @@ October 08 2026  Version 1.0.32
 
   * Fixed Metadata issue with quotes in title #54.
   * The fix #54 also resolves any escaping errors in the COMMENT metadata field.
+  * Updates `tests/test.py` to new string parser features (see #55).
   * Requires Python version >= 3.10 .
   * Updates CopyLeft date.
 
