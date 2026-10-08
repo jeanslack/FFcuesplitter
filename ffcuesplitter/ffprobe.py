@@ -5,7 +5,7 @@ Porpose: simple cross-platform wrap for ffprobe
 Compatibility: Python3
 Platform: all
 Author: Gianluca Pernigotto <jeanlucperni@gmail.com>
-Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Copyleft: (C) 2026 Gianluca Pernigotto <jeanlucperni@gmail.com>
 license: GPL3
 Rev: June 10 2025
 Code checker: flake8, pylint
