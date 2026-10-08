@@ -2,7 +2,7 @@
 
 """
 Porpose: Contains test cases for the FFCueSplitter object.
-Rev: Feb 06 2023
+Rev: October 08 2026
 """
 import os
 import sys
@@ -22,6 +22,7 @@ except ImportError as error:
 WORKDIR = os.path.dirname(PATH)
 FILECUE_ASCII = os.path.join(WORKDIR, 'Three Samples_ASCII.cue')
 FILECUE_ISO = os.path.join(WORKDIR, 'Three Samples_ISO-8859-1.cue')
+MALFORMED_STR = os.path.join(WORKDIR, 'Malformed_titles_and comment.cue')
 OUTFORMAT = 'flac'
 OVERWRITE = "always"
 
@@ -63,7 +64,7 @@ class ParserCueSheetTestCase(unittest.TestCase):
         self.assertEqual(tracks[2]['START'], 176400)
         self.assertEqual(tracks[2]['TITLE'], ('500 Hz, ISO-8859-1 '
                                               '(è, é, ì, ò, à, ç, °)')
-                        )
+                         )
 
     def test_tracks_with_ascii_file_encoding(self):
         """
@@ -124,6 +125,54 @@ class FFmpegArgumentsTestCase(unittest.TestCase):
         self.assertEqual(data['recipes'][0][1]['duration'], 2.0)
         self.assertEqual(data['recipes'][1][1]['duration'], 2.0)
         self.assertEqual(data['recipes'][2][1]['duration'], 2.0)
+
+
+class MalformedStringsTestCase(unittest.TestCase):
+    """
+    Test case to prove the parser's effectiveness with
+    malformed CUE file strings.
+    """
+    def setUp(self):
+        """
+        Method called to prepare the test fixture
+        """
+        self.args = {'outputdir': os.path.dirname(MALFORMED_STR),
+                     'outputformat': OUTFORMAT,
+                     'overwrite': OVERWRITE,
+                     'dry': True,
+                     'testpatch': True,
+                     'characters_encoding': 'utf-8',
+                     }
+
+    def test_matadata_title_tracks(self):
+        """
+        Tests the parser's effectiveness on malformed titles to
+        be added to the `-metadata` arguments passed to FFmpeg.
+        """
+        fname = {'filename': MALFORMED_STR}
+        split = FFCueSplitter(**{**self.args, **fname})
+        split.kwargs['tempdir'] = os.path.abspath('.')
+        tracks = split.audiotracks
+        self.assertEqual(tracks[0].get('TITLE', ''),
+                         "This is a 'Malformed title")
+        self.assertEqual(tracks[1].get('TITLE', ''),
+                         "Another two seconds of \\\"malformed TITLE")
+        self.assertEqual(tracks[2].get('TITLE', ''),
+                         "Again? Yes\\\", 'unfortunately', \\\"another "
+                         "malformed\\\" title.")
+
+    def test_metadata_comment(self):
+        """
+        Tests the parser's effectiveness on malformed comment to
+        be added to the `-metadata` argument passed to FFmpeg.
+        """
+        fname = {'filename': MALFORMED_STR}
+        split = FFCueSplitter(**{**self.args, **fname})
+        split.kwargs['tempdir'] = os.path.abspath('.')
+        tracks = split.audiotracks
+        self.assertEqual(tracks[0].get('COMMENT', ''),
+                         ("Test with \\\"malformed COMMENT\\\" and 'some' "
+                          "malformed 'TITLE"))
 
 
 def main():

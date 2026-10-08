@@ -6,7 +6,7 @@ Porpose: Cue Sheet file parser
 Platform: all
 Writer: Igor Starikov idlesign (edited by Gianluca Pernigotto)
 license: BSD-3-Clause license
-Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Copyleft: (C) 2026 Gianluca Pernigotto <jeanlucperni@gmail.com>
 Rev: June 22 2025
 Code checker: flake8, pylint
 ####################################################################

@@ -1,6 +1,6 @@
 # FFcuesplitter - FFmpeg-based audio splitter for CDDA images associated with .cue files .
 
-[![Image](https://img.shields.io/static/v1?label=python&logo=python&message=3.9%20|%203.10%20|%203.11%20|%203.12&color=blue)](https://www.python.org/downloads/)
+[![Image](https://img.shields.io/static/v1?label=python&logo=python&message=3.10%20|%203.11%20|%203.12%20|%203.13|%203.14&color=blue)](https://www.python.org/downloads/)
 [![Python application](https://github.com/jeanslack/FFcuesplitter/actions/workflows/CI.yml/badge.svg)](https://github.com/jeanslack/FFcuesplitter/actions/workflows/CI.yml)
 
 FFcuesplitter is a multi-platform CUE sheet splitter entirely based on FFmpeg.
@@ -29,7 +29,7 @@ or from the [command line](https://github.com/jeanslack/FFcuesplitter#using-comm
 
 ## Requires
 
-- Python >=3.9
+- Python >=3.10
 - [python3-charset-normalizer](https://pypi.org/project/charset-normalizer/)
 - [tqdm](https://pypi.org/project/tqdm/#description)
 - [FFmpeg](https://ffmpeg.org/) *(including ffprobe)*
@@ -95,7 +95,7 @@ and saves them in the `my_awesome_tracklist` directory.
 
 ## License and Copyright
 
-Copyleft: (C) 2025 Gianluca Pernigotto
+Copyleft: (C) 2026 Gianluca Pernigotto
 Author and Developer: Gianluca Pernigotto
 Mail: <jeanlucperni@gmail.com>
 License: GPL3 (see LICENSE file in the source directory)

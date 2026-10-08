@@ -1,4 +1,17 @@
-ffcuesplitter (1.0.31-1) UNRELEASED; urgency=medium
+
++--------------------------------+
+October 08 2026  Version 1.0.32
++--------------------------------+
+
+  * Fixed Metadata issue with quotes in title #54.
+  * The fix #54 also resolves any escaping errors in the COMMENT metadata field.
+  * Updates `tests/test.py` to new string parser features (see #55).
+  * Requires Python version >= 3.10 .
+  * Updates CopyLeft date.
+
++--------------------------------+
+Jun 27 2025  Version 1.0.31
++--------------------------------+
 
   * Added debian directory with default data.
   * Removed `chardet` dependency because seems to be unmantained.
@@ -7,20 +20,18 @@ ffcuesplitter (1.0.31-1) UNRELEASED; urgency=medium
   * Added new option to manually set character encoding.
   * Improved tests data.
   * Update man page and documentation.
-  * Fixed `ffmpeg-add-params` issue used with codec copy argument: Allowed 
-    arguments are `-c copy` and `-c:a copy` not just `-c copy`. 
+  * Fixed `ffmpeg-add-params` issue used with codec copy argument: Allowed
+    arguments are `-c copy` and `-c:a copy` not just `-c copy`.
 
- -- Gianluca Pernigotto <jeanlucperni@gmail.com>  Fri, 27 Jun 2025 00:00:00 +0200
-
-ffcuesplitter (1.0.30-1) UNRELEASED; urgency=low
++--------------------------------+
+Jun 24 2025 Version 1.0.30
++--------------------------------+
 
   * Removed `deflacue` Python package dependency.
   * Removed `os.chdir` from the code, as it could cause problems if used with
     relative paths.
   * Added new file `cue_parser.py` to work with CUE file parsing.
   * Improved error handling on `ffprobe` function.
-
- -- Gianluca Pernigotto <jeanlucperni@gmail.com>  Tue, 24 Jun 2025 07:24:33 +0200
 
 +--------------------------------+
 June 19 2025  Version 1.0.29

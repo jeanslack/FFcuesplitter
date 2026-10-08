@@ -6,7 +6,7 @@ Porpose: provides command line arguments for ffcuesplitter
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Copyleft: (C) 2026 Gianluca Pernigotto <jeanlucperni@gmail.com>
 Rev: June 10 2025
 Code checker: flake8, pylint
 ####################################################################

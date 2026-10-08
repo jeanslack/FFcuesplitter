@@ -6,8 +6,8 @@ Porpose: FFmpeg based audio splitter for CDDA images associated with .cue files
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: June 14 2025
+Copyleft: (C) 2026 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Rev: October 08 2026
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -30,7 +30,7 @@ import os
 import logging
 from dataclasses import dataclass, asdict
 from charset_normalizer import detect
-from ffcuesplitter.utils import sanitize
+from ffcuesplitter.utils import sanitize, fmtstr
 from ffcuesplitter.exceptions import (InvalidFileError,
                                       FFCueSplitterError,
                                       )
@@ -252,7 +252,8 @@ class FFCueSplitter(FFMpeg, CueParser):
                 continue
 
             data = {'FILE': str(trackname), **cd_info, **track[1].data}
-            data['TITLE'] = track[1].title  # to metadata destination
+            data['TITLE'] = fmtstr(track[1].title)  # to metadata
+            data['COMMENT'] = fmtstr(cd_info['COMMENT'])  # to metadata
             data['FILE_TITLE'] = f"{sanitize(track[1].title)}"  # to filename
             data['START'] = track[1].start
 

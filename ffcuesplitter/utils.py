@@ -4,8 +4,8 @@ Porpose: utils used by FFcuesplitter
 Platform: all
 Writer: jeanslack <jeanlucperni@gmail.com>
 license: GPL3
-Copyleft: (C) 2025 Gianluca Pernigotto <jeanlucperni@gmail.com>
-Rev: June 14 2025
+Copyleft: (C) 2026 Gianluca Pernigotto <jeanlucperni@gmail.com>
+Rev: October 08 2026
 Code checker: flake8 and pylint
 ####################################################################
 
@@ -29,6 +29,27 @@ import re
 import subprocess
 import platform
 import datetime
+
+
+def fmtstr(string: str = 'string') -> str:
+    r"""
+    This function creates the necessary escapes for double and
+    single quotes to make the string compatible with FFmpeg metadata.
+
+    - Remove the leading and trailing quotation marks (1)
+    - Escapes the single quote (\') (2)
+    - Escapes the double quote (\") using a double backslash, so
+      Python writes an actual backslash into the final string (3)
+
+    Returns the new formatted string.
+
+    """
+    text = string.strip("'\"")
+    text = text.replace("'", "\'")
+    text = text.replace('"', '\\"')
+
+    return text
+# ------------------------------------------------------------------------
 
 
 def sanitize(string: str = 'string') -> str:
